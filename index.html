@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>foxy - Vulpes Vulpes Faction Tools</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+	<link href="https://fonts.googleapis.com/css?family=Roboto:300,400" rel="stylesheet">
+
+</head>
+<body style="font-family: Roboto, sans-serif;">
+
+<div class="container-fluid">
+	<h1>Torn API Testing <small>Something about PA Results</small></h1>
+	<div class="row">
+	<div class="col-sm-2" style="background-color:#FF8F00;"><b>Faction Tools</b></div>
+	<div class="col-sm-8" style="background-color:#00707a;"><small>Vulpes Vulpes</small></div>
+	</div>
+  	Quote of the month:<br />
+	<blockquote>
+		<p>Everything not saved will be lost.</p>
+		<footer>Nintendo 'Quit Screen' message</footer>
+	</blockquote>
+  
+	<!---- Here comes the content *sings* -->
+	<form id="userForm">
+		<pre>[ ] Jan 2021
+[ ] Feb 2021
+[ ] Mar 2021</pre>
+
+		API Key: <input type="password" id="trustedkey" name="trustedkey"/> <br/> <br/>
+	</form>
+	<br/>
+	<button onclick="userSubmit()">Submit</button>  
+  	<br/>
+	<br/>
+	<p id="debug"></p> <br/>
+	<p id="summary"></p> <br/>
+	<p id="output"></p> <br/>
+</div>
+
+
+<script>
+	function userSubmit() {
+		var x = document.getElementById("userForm");
+		var outputDemo = document.getElementById("trustedkey").value;
+		document.getElementById("debug").innerHTML = '<small>Debug only: API key used (to be removed after release): ' + outputDemo + '</small>';
+		//apiCall(outputDemo);
+		callTornAPI(outputDemo, 'faction', 'basic,crimes');
+	}
+	
+	function callTornAPI(key, part, selection) {
+		var request = new XMLHttpRequest();
+
+		request.open('GET', 'https://api.torn.com/' + part + '/?selections=' + selection + '&key=' + key, true);
+		request.onload = function () {
+			// Begin accessing JSON data here
+			var jsonData = JSON.parse(this.response);
+	  		//console.log(jsonData);
+			if (request.status >= 200 && request.status < 400) {
+
+				if (jsonData.hasOwnProperty('error')){
+				
+					document.getElementById('summary').innerHTML = printAlert('Error', jsonData['error'].error);
+				} else {
+					
+					if (jsonData.hasOwnProperty('crimes') && jsonData.hasOwnProperty('members')){
+						document.getElementById('summary').innerHTML = printAlert('Success', 'API Call successful!');
+						parseCrimes(jsonData['crimes'], 'output', jsonData['members']);
+					} else {
+						document.getElementById('summary').innerHTML = printAlert('Warning', 'Ask your faction leader for faction API peremissions.');
+					}
+				}
+				
+			} else {
+				console.log('API not available.');
+			}
+		}
+		request.send();
+	}
+	
+	function printAlert(alertType, alertText) {
+		var alertClass;
+		if (alertType === 'Error') { alertClass = 'alert-danger' };
+		if (alertType === 'Success') { alertClass = 'alert-success' };
+		if (alertType === 'Info') { alertClass = 'alert-info' };
+		if (alertType === 'Warning') { alertClass = 'alert-warning' };
+		
+		return '<div class="alert ' + alertClass + '"><strong>' + alertType + ':</strong> ' + alertText + '</div>';
+		
+		
+	}
+ 
+ 
+	function apiCall(key) {
+		var request = new XMLHttpRequest();
+		var membersList = '';
+
+		request.open('GET', 'https://api.torn.com/faction/?selections=basic&key=' + key, true);
+		request.onload = function () {
+			// Begin accessing JSON data here
+			var basicData = JSON.parse(this.response);
+	  
+			console.log(basicData);
+
+			if (request.status >= 200 && request.status < 400) {
+				membersList = parseBasic(basicData, 'summary');
+				console.log(membersList);
+			} else {
+				console.log('error 1');
+			}	
+		}
+		request.send();
+
+		var request = new XMLHttpRequest();
+
+		request.open('GET', 'https://api.torn.com/faction/?selections=crimes&key=' + key, true);
+		request.onload = function () {
+			// Begin accessing JSON data here
+			var crimeData = JSON.parse(this.response);
+	  
+			//console.log(crimeData)
+
+			if (request.status >= 200 && request.status < 400) {
+				parseCrimes(crimeData, 'output', membersList);
+			} else {
+				console.log('error 2');
+			}
+		}
+		request.send();
+	}
+	
+	function parseBasic (basicData, element) {
+		
+		var membersList = '';
+		console.log(basicData['35092'].name);
+		
+		for( var id in basicData ){
+			var member = basicData[id];
+			
+			membersList = membersList + '[' + id + '-'+ member.name +'];';
+		}
+		//console.log(basicData);
+		return membersList;
+	}
+
+	function parseCrimes (crimeData, element, membersList) {
+		
+		//console.log(membersList);
+		
+		var table = '<table class="table table-condensed table-hover"><thead><tr>'
+				  + '<th>Date</th>'
+				  + '<th>Crime Type</th>'
+				  + '<th>Participants</th>'
+				  + '<th>Money Gained<br/>per member</th>'
+				  + '<th>Respect Gained</th>'
+				  + '</tr></thead><tbody>';
+		
+		for( var id in crimeData ){
+			var crime = crimeData[id];
+			if (crime.crime_id === 8) {
+				if (crime.initiated === 1) {
+					var ts = new Date(crime.time_completed * 1000);
+					var crimeResult = 'default';
+					var participants = '';
+
+					if (crime.success === 1) {
+						crimeResult = 'success';
+					} else {
+						crimeResult = 'danger';
+					}
+					
+					crime.participants.forEach(obj => {
+						Object.entries(obj).forEach(([key, value]) => {
+							var memberID = `${key}`;
+							//var len = memberID.length;
+							var memberName =  '';
+							if (JSON.stringify(membersList).indexOf(memberID) != -1) {
+								memberName = membersList[memberID].name;
+							} else {
+								memberName = memberID;
+							}
+							
+							if (participants === '') {
+								participants = memberName;
+								
+							} else {
+								participants = participants + ', ' + memberName;
+							}
+						});
+					});
+						
+					
+					table = table + '<tr class="'+crimeResult+'">'
+							+'<td>' + ts.toISOString() + '</td>'
+							+'<td>' + crime.crime_name + '</td>'
+							+'<td>' + participants + '</td>'
+							+'<td>' + crime.money_gain.toLocaleString('en-US') +'<br />'+ (crime.money_gain / 5).toLocaleString('en-US') + '</td>'
+							+'<td>' + crime.respect_gain + '</td>'
+							+'</tr>';
+				}
+			}
+		}
+		
+		table = table + '</tbody></table>';
+		document.getElementById(element).innerHTML = table;
+		
+		console.log('-------------------');
+	}
+</script>
+
+</body>
+</html>
