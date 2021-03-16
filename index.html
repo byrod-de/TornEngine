@@ -36,7 +36,7 @@
 	<button onclick="userSubmit()">Submit</button>  
   	<br/>
 	<br/>
-	<p id="debug"></p> <br/>
+	<!--p id="debug"></p> <br/-->
 	<p id="summary"></p> <br/>
 	<p id="output"></p> <br/>
 </div>
@@ -46,7 +46,7 @@
 	function userSubmit() {
 		var x = document.getElementById("userForm");
 		var outputDemo = document.getElementById("trustedkey").value;
-		document.getElementById("debug").innerHTML = '<small>Debug only: API key used (to be removed after release): ' + outputDemo + '</small>';
+		//document.getElementById("debug").innerHTML = '<small>Debug only: API key used (to be removed after release): ' + outputDemo + '</small>';
 		//apiCall(outputDemo);
 		callTornAPI(outputDemo, 'faction', 'basic,crimes');
 	}
