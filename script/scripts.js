@@ -17,22 +17,22 @@
 
 				if (jsonData.hasOwnProperty('error')){
 					if (jsonData['error'].code === 7) {
-						document.getElementById('summary').innerHTML = printAlert('Warning', 'You are trying to access sensible faction data, but are not allowed to. Ask your faction leader for faction API permissions.');
+						printAlert('Warning', 'You are trying to access sensible faction data, but are not allowed to. Ask your faction leader for faction API permissions.');
 					} else {
-						document.getElementById('summary').innerHTML = printAlert('Error', jsonData['error'].error);
+						printAlert('Error', jsonData['error'].error);
 					}
 				} else {
 					
 					if (jsonData.hasOwnProperty('crimes') && jsonData.hasOwnProperty('members')){
-						document.getElementById('summary').innerHTML = printAlert('Success', 'API Call successful!');
+						printAlert('Success', 'API Call successful!');
 						parseCrimes(jsonData['crimes'], 'output', jsonData['members']);
 					} else {
-						document.getElementById('summary').innerHTML = printAlert('Warning', 'Ask your faction leader for faction API permissions.');
+						printAlert('Warning', 'Ask your faction leader for faction API permissions.');
 					}
 				}
 				
 			} else {
-				document.getElementById('summary').innerHTML = printAlert('#chedded', 'Torn API not available.');
+				printAlert('#chedded', 'Torn API not available.');
 			}
 		}
 		request.send();
@@ -45,9 +45,8 @@
 		if (alertType === 'Info') { alertClass = 'alert-info' };
 		if (alertType === 'Warning') { alertClass = 'alert-warning' };
 		if (alertType === '#chedded') { alertClass = 'alert-danger' };
-
 		
-		return '<div class="alert ' + alertClass + '"><strong>' + alertType + ':</strong> ' + alertText + '</div>';
+		document.getElementById('alert').innerHTML = '<div class="alert ' + alertClass + '"><strong>' + alertType + ':</strong> ' + alertText + '</div>';
 		
 		
 	}
@@ -55,26 +54,44 @@
 
 	function parseCrimes (crimeData, element, membersList) {
 		
-		var table = '<table class="table table-condensed table-hover"><thead><tr>'
+		var table = '<div class="col-sm-12 badge-secondary" ><b>Crime Details</b></div>';
+		table = table + '<table class="table table-hover"><thead><tr>'
+				  + '<th>Result</th>'
 				  + '<th>Date</th>'
 				  + '<th>Crime Type</th>'
 				  + '<th>Participants</th>'
 				  + '<th>Money Gained<br/>per member</th>'
 				  + '<th>Respect Gained</th>'
 				  + '</tr></thead><tbody>';
+				  
+		var memberMap = {};
+		var today = new Date();
 		
+		if (document.getElementById('current').checked) {
+			var currentMonth = today.getMonth() + 1;
+		}
+		if (document.getElementById('last').checked) {
+			var currentMonth = today.getMonth();
+		}
+		if (document.getElementById('before').checked) {
+			var currentMonth = today.getMonth() - 1;
+		}
+		console.log(currentMonth);
 		for( var id in crimeData ){
 			var crime = crimeData[id];
-			if (crime.crime_id === 8) {
-				if (crime.initiated === 1) {
-					var ts = new Date(crime.time_completed * 1000);
-					var crimeResult = 'default';
+			if (crime.crime_id === 8) { //8 = PA
+				var ts = new Date(crime.time_completed * 1000);
+				
+				if (crime.initiated === 1 && ts.getMonth()+1 === currentMonth) {
+					
+					var crimeResult = '';
 					var participants = '';
+					var tmp = '';
 
-					if (crime.success === 1) {
-						crimeResult = 'table-success';
+					if (crime.success === 0) {
+						crimeResult = '<span class="badge badge-pill badge-danger">Failed</span>';
 					} else {
-						crimeResult = 'table-danger';
+						crimeResult = '<span class="badge badge-pill badge-success">Success</span>';
 					}
 					
 					crime.participants.forEach(obj => {
@@ -84,6 +101,12 @@
 							var memberName =  '';
 							if (JSON.stringify(membersList).indexOf(memberID) != -1) {
 								memberName = membersList[memberID].name;
+								if (memberName in memberMap) {
+									memberMap[memberName] = memberMap[memberName] + (crime.money_gain / 5);
+								} else {
+									memberMap[memberName] = (crime.money_gain / 5);
+								}
+								
 							} else {
 								memberName = memberID;
 							}
@@ -98,11 +121,12 @@
 					});
 						
 					
-					table = table + '<tr class="'+crimeResult+'">'
+					table = table + '<tr>'
+							+'<td>' + crimeResult + '</td>'
 							+'<td>' + ts.toISOString() + '</td>'
 							+'<td>' + crime.crime_name + '</td>'
 							+'<td>' + participants + '</td>'
-							+'<td>' + crime.money_gain.toLocaleString('en-US') +'<br />'+ (crime.money_gain / 5).toLocaleString('en-US') + '</td>'
+							+'<td>$' + crime.money_gain.toLocaleString('en-US') + '</td>'
 							+'<td>' + crime.respect_gain + '</td>'
 							+'</tr>';
 				}
@@ -111,4 +135,39 @@
 		
 		table = table + '</tbody></table>';
 		document.getElementById(element).innerHTML = table;
+		
+		
+		var summary = '<div class="col-sm-12 badge-secondary" ><b>Results for ' + monthToText(currentMonth) + '</b></div>';
+		summary = summary + '<table class="table table-hover" style="max-width: 50%;"><thead><tr>'
+				  + '<th>Name</th>'
+				  + '<th>Money earned</th>'
+				  + '</tr></thead><tbody>';
+				  
+		memberMap = sortObj(memberMap);
+		for (var name in memberMap) {
+			summary = summary + '<tr>' 
+						+'<td>' + name + '</td>'
+						+'<td>' +' $' + memberMap[name].toLocaleString('en-US') + '</td>'
+						+'</tr>';
+			
+		}
+		summary = summary + '</tbody></table>';
+		
+		document.getElementById('summary').innerHTML = summary;
 	}
+
+
+function sortObj(obj) {
+  return Object.keys(obj).sort().reduce(function (result, key) {
+    result[key] = obj[key];
+    return result;
+  }, {});
+}
+
+function monthToText(month) {
+	const monthNames = ["January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"];
+  
+  return monthNames[month - 1];
+
+}
