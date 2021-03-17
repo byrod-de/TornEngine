@@ -69,12 +69,14 @@
 		
 		if (document.getElementById('current').checked) {
 			var currentMonth = today.getMonth() + 1;
+			if (currentMonth > 11) { currentMonth = 0; }
 		}
 		if (document.getElementById('last').checked) {
 			var currentMonth = today.getMonth();
 		}
 		if (document.getElementById('before').checked) {
 			var currentMonth = today.getMonth() - 1;
+			if (currentMonth < 0) { currentMonth = 11; }
 		}
 		console.log(currentMonth);
 		for( var id in crimeData ){
