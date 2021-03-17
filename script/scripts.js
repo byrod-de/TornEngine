@@ -8,7 +8,7 @@
 	function callTornAPI(key, part, selection) {
 		var request = new XMLHttpRequest();
 
-		request.open('GET', 'https://api.torn.com/' + part + '/1?selections=' + selection + '&key=' + key, true);
+		request.open('GET', 'https://api.torn.com/' + part + '/?selections=' + selection + '&key=' + key, true);
 		request.onload = function () {
 
 			var jsonData = JSON.parse(this.response);
@@ -17,7 +17,7 @@
 
 				if (jsonData.hasOwnProperty('error')){
 					if (jsonData['error'].code === 7) {
-						document.getElementById('summary').innerHTML = printAlert('Warning', 'Ask your faction leader for faction API permissions.');
+						document.getElementById('summary').innerHTML = printAlert('Warning', 'You are trying to access sensible faction data, but are not allowed to. Ask your faction leader for faction API permissions.');
 					} else {
 						document.getElementById('summary').innerHTML = printAlert('Error', jsonData['error'].error);
 					}
