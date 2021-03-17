@@ -16,8 +16,11 @@
 			if (request.status >= 200 && request.status < 400) {
 
 				if (jsonData.hasOwnProperty('error')){
-				
-					document.getElementById('summary').innerHTML = printAlert('Error', jsonData['error'].error);
+					if (jsonData['error'].code === 7) {
+						document.getElementById('summary').innerHTML = printAlert('Warning', 'Ask your faction leader for faction API permissions.');
+					} else {
+						document.getElementById('summary').innerHTML = printAlert('Error', jsonData['error'].error);
+					}
 				} else {
 					
 					if (jsonData.hasOwnProperty('crimes') && jsonData.hasOwnProperty('members')){
