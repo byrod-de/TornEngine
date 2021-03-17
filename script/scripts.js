@@ -78,7 +78,7 @@
 			var currentMonth = today.getMonth() - 1;
 			if (currentMonth < 0) { currentMonth = 11; }
 		}
-		console.log(currentMonth);
+		//console.log(currentMonth);
 		for( var id in crimeData ){
 			var crime = crimeData[id];
 			if (crime.crime_id === 8) { //8 = PA
