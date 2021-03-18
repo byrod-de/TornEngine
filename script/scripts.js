@@ -1,7 +1,7 @@
 	function userSubmit() {
-		var x = document.getElementById("userForm");
 		var outputDemo = document.getElementById("trustedkey").value;
-		//document.getElementById("debug").innerHTML = '<small>Debug only: API key used (to be removed after release): ' + outputDemo + '</small>';
+		//document.getElementById("debug").innerHTML = 
+		//'<small>Debug only: API key used (to be removed after release): ' + outputDemo + '</small>';
 		callTornAPI(outputDemo, 'faction', 'basic,crimes');
 	}
 	
