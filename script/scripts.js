@@ -40,16 +40,6 @@
 	
 	function parseCrimes (crimeData, element, membersList) {
 		
-		var table = '<div class="col-sm-12 badge-primary" ><b>Crime Details</b></div>';
-		table = table + '<table class="table table-hover"><thead><tr>'
-				  + '<th>Date</th>'
-				  + '<th>Participants</th>'
-				  + '<th>Crime Type</th>'
-				  + '<th>Result</th>'
-				  + '<th>Money Gained<br/>'
-				  + '<th>Respect Gained</th>'
-				  + '</tr></thead><tbody>';
-				  
 		var memberMoney = {};
 		var memberSuccess = {};
 		var memberFailed = {};
@@ -74,6 +64,17 @@
 			if (currentMonth < 0) { currentMonth = 11; }
 		}
 		
+		var table = '<div class="col-sm-12 badge-primary" ><b>PA Details for ' + monthToText(currentMonth) + '</b></div>';
+		table = table + '<table class="table table-hover"><thead><tr>'
+				  + '<th>Date</th>'
+				  + '<th>Participants</th>'
+				  + '<th>Crime Type</th>'
+				  + '<th>Result</th>'
+				  + '<th>Money Gained<br/>'
+				  + '<th>Respect Gained</th>'
+				  + '</tr></thead><tbody>';
+				  
+				
 		for( var id in crimeData ){
 			var crime = crimeData[id];
 			if (crime.crime_id === 8) { //8 = PA
@@ -130,7 +131,7 @@
 					totalRespect = totalRespect + crime.respect_gain;
 					totalMoney = totalMoney + crime.money_gain;
 					
-					var formatted_date = ts.getFullYear() + "-" + (ts.getMonth() + 1) + "-" + ts.getDate() + " " + ts.getHours() + ":" + ts.getMinutes() + ":" + ts.getSeconds()
+					var formatted_date =  ts.toISOString().replace('T',' ').replace('.000Z','');
 					
 					table = table + '<tr>'
 							+'<td>' + formatted_date + '</td>'
@@ -161,7 +162,7 @@
 		document.getElementById(element).innerHTML = table;
 		
 		
-		var summary = '<div class="col-sm-12 badge-primary" ><b>Results for ' + monthToText(currentMonth) + '</b></div>';
+		var summary = '<div class="col-sm-12 badge-primary" ><b>Individual results for ' + monthToText(currentMonth) + '</b></div>';
 		summary = summary + '<table class="table table-hover"><thead><tr>'
 				  + '<th>Name</th>'
 				  + '<th>Money earned (<sup>1</sup>/<sub>5</sub>th of result)</th>'
