@@ -2,7 +2,11 @@
 		var outputDemo = document.getElementById("trustedkey").value;
 		//document.getElementById("debug").innerHTML = 
 		//'<small>Debug only: API key used (to be removed after release): ' + outputDemo + '</small>';
-		callTornAPI(outputDemo, 'faction', 'basic,crimes');
+		if (outputDemo === '') {
+			printAlert('Warning', 'You might want to enter your API key if you expect this to work...');
+		} else {
+			callTornAPI(outputDemo, 'faction', 'basic,crimes');
+		}
 	}
 	
 	function callTornAPI(key, part, selection) {
@@ -18,8 +22,10 @@
 				if (jsonData.hasOwnProperty('error')){
 					if (jsonData['error'].code === 7) {
 						printAlert('Warning', 'You are trying to access sensible faction data, but are not allowed to. Ask your faction leader for faction API permissions.');
+					} else if (jsonData['error'].code === 2) {
+						printAlert('Error', 'You are using an incorrect API key.');
 					} else {
-						printAlert('Error', jsonData['error'].error);
+						printAlert('Error', 'Torn API returned the following error: ' + jsonData['error'].error);
 					}
 				} else {
 					
