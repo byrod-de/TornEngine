@@ -14,7 +14,7 @@
 
 <div class="container-fluid">
 	<br />
-	<h1>Faction Tools <small>A collection of useful things</small></h1>
+	<h1>Faction Tools <small>Something about Reports</small></h1>
 	<br />
 	<div class="row">
 	<div class="col-sm-4 badge-primary" ><b>Faction Tools</b></div>
@@ -28,12 +28,48 @@
   
 	<!-- Here comes the content *sings* -->
 	<button type="button" class="btn btn-outline-secondary"><a href="crimes.html">PA Summary</a></button>
-	<button type="button" class="btn btn-outline-secondary"><a href="reports.html">Faction Reports</a></button>
+	<button type="button" class="btn btn-secondary">Faction Reports</button>
+		
+	<form id="userForm">
+	<div class="row">
+	
+		<div class="form-group col-sm-3">
+		<label for="trustedkey">API Key *</label>
+		<input type="password" class="form-control" id="trustedkey" name="trustedkey" placeholder="API Key"/>
+		
+		</div>
+	
+	
+		<div class="form-group col-sm-5">
+		<legend>Select report category</legend>
+		<div class="form-check">
+        <label class="form-check-label">
+          <input type="radio" class="form-check-input" name="optionsRadios" id="stats" value="stats" checked="checked">
+          Stat Spies
+        </label>
+		</div>
+		<div class="form-check">
+		<label class="form-check-label">
+          <input type="radio" class="form-check-input" name="optionsRadios" id="money" value="money">
+          Money Spies
+        </label>
+		</div>
+		<div class="form-check">
+		<label class="form-check-label">
+          <input type="radio" class="form-check-input" name="optionsRadios" id="friendorfoe" value="friendorfoe">
+          Friend or Foe
+        </label>
+      </div>
 
+	</div>
+
+	</div>
+	</form>
+	<button onclick="userSubmitReports()" class="btn btn-primary">Submit</button>  
 	<br/>
 	<br/>
 	<p id="alert"></p>
-	<!--p id="debug"></p> <br/-->
+	<p id="debug"></p> <br/>
 	<p id="summary"></p> <br/>
 	<p id="output"></p> <br/>
 

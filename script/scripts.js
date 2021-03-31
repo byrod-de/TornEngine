@@ -1,4 +1,4 @@
-	function userSubmit() {
+	function userSubmitCrimes() {
 		var outputDemo = document.getElementById("trustedkey").value;
 		//document.getElementById("debug").innerHTML = 
 		//'<small>Debug only: API key used (to be removed after release): ' + outputDemo + '</small>';
@@ -6,6 +6,18 @@
 			printAlert('Warning', 'You might want to enter your API key if you expect this to work...');
 		} else {
 			callTornAPI(outputDemo, 'faction', 'basic,crimes');
+		}
+	}
+	
+	
+	function userSubmitReports() {
+		var outputDemo = document.getElementById("trustedkey").value;
+		document.getElementById("debug").innerHTML = 
+		'<small>Debug only: API key used (to be removed after release): ' + outputDemo + '</small>';
+		if (outputDemo === '') {
+			printAlert('Warning', 'You might want to enter your API key if you expect this to work...');
+		} else {
+			callTornAPI(outputDemo, 'faction', 'basic,reports');
 		}
 	}
 	
@@ -29,11 +41,22 @@
 					}
 				} else {
 					
+					if (selection === 'basic,crimes') {
 					if (jsonData.hasOwnProperty('crimes') && jsonData.hasOwnProperty('members')){
 						printAlert('Success', 'The API Call successful, find the results below.');
 						parseCrimes(jsonData['crimes'], 'output', jsonData['members']);
 					} else {
 						printAlert('Warning', 'Ask your faction leader for faction API permissions.');
+					}
+					}
+					
+					if (selection === 'basic,reports') {
+					if (jsonData.hasOwnProperty('reports') && jsonData.hasOwnProperty('members')){
+						printAlert('Success', 'The API Call successful, find the results below.');
+						parseReports(jsonData['reports'], 'output', jsonData['members']);
+					} else {
+						printAlert('Warning', 'Ask your faction leader for faction API permissions.');
+					}
 					}
 				}
 				
@@ -42,6 +65,67 @@
 			}
 		}
 		request.send();
+	}
+	
+	function parseReports (reportData, element, membersList) {
+		console.log(reportData);
+		
+		var type = '';
+		var header = '';
+				
+		if (document.getElementById('money').checked) {
+			type = 'money';
+			header = 'Money Reports'
+		}
+		if (document.getElementById('stats').checked) {
+			type = 'stats';
+			header = 'Stat Spies'
+		}
+		if (document.getElementById('friendorfoe').checked) {
+			type = 'friendorfoe';
+			header = 'Friend or Foe Reports'
+		}
+		
+		document.getElementById('summary').innerHTML = 'You are looking for ' + header + '.';
+
+		var table = '<div class="col-sm-12 badge-primary" ><b> ' + header + '</b></div>';
+		table = table + '<table class="table table-hover"><thead><tr>'
+				  + '<th>Date</th>'
+				  + '<th>Member</th>'
+				  + '<th>Type</th>'
+				  + '<th>Target</th>';
+				  
+		if (type === 'money') {
+			table = table +'<th>Money</th>'
+		}
+				  
+		table = table + '</tr></thead><tbody>';
+		
+		
+		for( var id in reportData ){
+			var report = reportData[id];
+			if (report.type === type) {
+				console.log(type);
+				var ts = new Date(report.timestamp * 1000);
+				var formatted_date =  ts.toISOString().replace('T',' ').replace('.000Z','');
+				
+				table = table + '<tr>'
+							+'<td>' + formatted_date + '</td>'
+							+'<td>' + membersList[report.user_id].name + '</td>'
+							+'<td>' + header + '</td>'
+							+'<td><a href="https://www.torn.com/profiles.php?XID=' + report.target + '" target="_blank">' + report.target + '</a></td>';
+				
+				if (type === 'money') {
+					table = table +'<td>$' + report.report.money.toLocaleString('en-US') + '</td>'
+				}
+				
+				
+				table = table + '</tr>';
+			}
+		}	
+		table = table + '</tbody></table>';
+		document.getElementById(element).innerHTML = table;
+		
 	}
 	
 	function parseCrimes (crimeData, element, membersList) {
@@ -172,7 +256,8 @@
 		summary = summary + '<table class="table table-hover"><thead><tr>'
 				  + '<th>Name</th>'
 				  + '<th>Money earned (<sup>1</sup>/<sub>5</sub>th of result)</th>'
-				  + '<th>Success Rate</th>'
+				  + '<th>Fail</th>'
+				  + '<th>Success</th>'
 				  + '</tr></thead><tbody>';
 				  
 		memberMoney = sortObj(memberMoney);
@@ -183,10 +268,8 @@
 			summary = summary + '<tr>' 
 						+'<td>' + name + '</td>'
 						+'<td>' +' $' + memberMoney[name].toLocaleString('en-US') + '</td>'
-						+'<td>' 
-							+ '<span class="badge badge-pill '+badgeFailed+'">'+ memberFailed[name] + '</span>-'
-							+ '<span class="badge badge-pill '+badgeSuccess+'">' + memberSuccess[name] + '</span>'
-						+ '</td>'
+						+'<td><span class="badge badge-pill '+badgeFailed+'">'+ memberFailed[name] + '</span></td>'
+						+'<td><span class="badge badge-pill '+badgeSuccess+'">' + memberSuccess[name] + '</span></td>'
 						+'</tr>';
 			
 		}
@@ -197,10 +280,8 @@
 		summary = summary + '<tr class="table-dark">' 
 						+'<td>Faction totals</td>'
 						+'<td>' +' $' + factionMoney.toLocaleString('en-US') + '</td>'
-						+'<td>' 
-							+ '<span class="badge badge-pill '+badgeFailed+'">'+ factionFailed + '</span>-'
-							+ '<span class="badge badge-pill '+badgeSuccess+'">'+ factionSuccess + '</span>'
-						+ '</td>'
+						+'<td><span class="badge badge-pill '+badgeFailed+'">'+ factionFailed + '</span></td>'
+						+'<td><span class="badge badge-pill '+badgeSuccess+'">'+ factionSuccess + '</span></td>'
 						+'</tr>';
 		summary = summary + '</tbody></table>';
 		
