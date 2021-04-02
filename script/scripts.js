@@ -1,23 +1,39 @@
 	function userSubmitCrimes() {
-		var outputDemo = document.getElementById("trustedkey").value;
-		//document.getElementById("debug").innerHTML = 
-		//'<small>Debug only: API key used (to be removed after release): ' + outputDemo + '</small>';
-		if (outputDemo === '') {
+		var trustedApiKey = document.getElementById("trustedkey").value;
+		
+		sessionStorage.trustedApiKey = trustedApiKey;
+		//document.getElementById("debug").innerHTML = '<small>Debug only: API key used (to be removed after release): ' + trustedApiKey + '</small>';
+		if (trustedApiKey === '') {
 			printAlert('Warning', 'You might want to enter your API key if you expect this to work...');
 		} else {
-			callTornAPI(outputDemo, 'faction', 'basic,crimes');
+			callTornAPI(trustedApiKey, 'faction', 'basic,crimes');
 		}
 	}
 	
 	
 	function userSubmitReports() {
-		var outputDemo = document.getElementById("trustedkey").value;
-		document.getElementById("debug").innerHTML = 
-		'<small>Debug only: API key used (to be removed after release): ' + outputDemo + '</small>';
-		if (outputDemo === '') {
+		var trustedApiKey = document.getElementById("trustedkey").value;
+		
+		sessionStorage.trustedApiKey = trustedApiKey;
+		//document.getElementById("debug").innerHTML = '<small>Debug only: API key used (to be removed after release): ' + trustedApiKey + '</small>';
+
+		if (trustedApiKey === '') {
 			printAlert('Warning', 'You might want to enter your API key if you expect this to work...');
 		} else {
-			callTornAPI(outputDemo, 'faction', 'basic,reports');
+			callTornAPI(trustedApiKey, 'user', 'basic,reports');
+		}
+	}
+	
+	function factionSubmitReports() {
+		var trustedApiKey = document.getElementById("trustedkey").value;
+		
+		sessionStorage.trustedApiKey = trustedApiKey;
+		//document.getElementById("debug").innerHTML = '<small>Debug only: API key used (to be removed after release): ' + trustedApiKey + '</small>';
+
+		if (trustedApiKey === '') {
+			printAlert('Warning', 'You might want to enter your API key if you expect this to work...');
+		} else {
+			callTornAPI(trustedApiKey, 'faction', 'basic,reports');
 		}
 	}
 	
@@ -44,6 +60,7 @@
 					if (selection === 'basic,crimes') {
 					if (jsonData.hasOwnProperty('crimes') && jsonData.hasOwnProperty('members')){
 						printAlert('Success', 'The API Call successful, find the results below.');
+
 						parseCrimes(jsonData['crimes'], 'output', jsonData['members']);
 					} else {
 						printAlert('Warning', 'Ask your faction leader for faction API permissions.');
@@ -58,6 +75,14 @@
 						printAlert('Warning', 'Ask your faction leader for faction API permissions.');
 					}
 					}
+					
+					if (selection === 'basic,reports') {
+					if (jsonData.hasOwnProperty('reports')){
+						printAlert('Success', 'The API Call successful, find the results below.');
+
+						parseReports(jsonData['reports'], 'output', jsonData.name);
+					}
+					}
 				}
 				
 			} else {
@@ -68,7 +93,6 @@
 	}
 	
 	function parseReports (reportData, element, membersList) {
-		console.log(reportData);
 		
 		var type = '';
 		var header = '';
@@ -96,7 +120,16 @@
 				  + '<th>Target</th>';
 				  
 		if (type === 'money') {
-			table = table +'<th>Money</th>'
+			table = table +'<th>Money</th>';
+		}
+		
+		if (type === 'stats') {
+			table = table +'<th>Total</th>';
+			table = table +'<th>Str</th>';
+			table = table +'<th>Def</th>';
+			table = table +'<th>Spd</th>';
+			table = table +'<th>Dex</th>';
+					
 		}
 				  
 		table = table + '</tr></thead><tbody>';
@@ -105,18 +138,51 @@
 		for( var id in reportData ){
 			var report = reportData[id];
 			if (report.type === type) {
-				console.log(type);
+
 				var ts = new Date(report.timestamp * 1000);
 				var formatted_date =  ts.toISOString().replace('T',' ').replace('.000Z','');
 				
 				table = table + '<tr>'
 							+'<td>' + formatted_date + '</td>'
 							+'<td>' + membersList[report.user_id].name + '</td>'
+							//+'<td>' + membersList + '</td>'
 							+'<td>' + header + '</td>'
 							+'<td><a href="https://www.torn.com/profiles.php?XID=' + report.target + '" target="_blank">' + report.target + '</a></td>';
 				
 				if (type === 'money') {
 					table = table +'<td>$' + report.report.money.toLocaleString('en-US') + '</td>'
+				}
+				
+				if (type === 'stats') {
+					if (report.report.hasOwnProperty('total_battlestats')) {
+						table = table +'<td>' + report.report.total_battlestats.toLocaleString('en-US') + '</td>';
+					} else {
+						table = table +'<td>N/A</td>';
+					}
+					
+					if (report.report.hasOwnProperty('strength')) {
+						table = table +'<td>' + report.report.strength.toLocaleString('en-US') + '</td>';
+					} else {
+						table = table +'<td>N/A</td>';
+					}
+					
+					if (report.report.hasOwnProperty('defense')) {
+						table = table +'<td>' + report.report.defense.toLocaleString('en-US') + '</td>';
+					} else {
+						table = table +'<td>N/A</td>';
+					}
+					
+					if (report.report.hasOwnProperty('speed')) {
+						table = table +'<td>' + report.report.speed.toLocaleString('en-US') + '</td>';
+					} else {
+						table = table +'<td>N/A</td>';
+					}
+					
+					if (report.report.hasOwnProperty('dexterity')) {
+						table = table +'<td>' + report.report.dexterity.toLocaleString('en-US') + '</td>';
+					} else {
+						table = table +'<td>N/A</td>';
+					}
 				}
 				
 				
@@ -314,3 +380,13 @@
 	  return monthNames[month - 1];
 
 	}
+	
+	
+
+function loadKeyFromSession() {
+  if (typeof(Storage) !== "undefined") {
+    if (sessionStorage.trustedApiKey) {
+       document.getElementById("trustedkey").value = sessionStorage.trustedApiKey;
+		}
+	}
+}

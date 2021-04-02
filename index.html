@@ -21,28 +21,59 @@
 	<div class="col-sm-8 badge-secondary">Vulpes Vulpes</div>
 	</div>
 	<br />
-	<!--blockquote>
-		<p class="mb-0">Everything not saved will be lost.</p>
-		<footer class="blockquote-footer">Nintendo 'Quit Screen' message</footer>
-	</blockquote-->
-  
-	<!-- Here comes the content *sings* -->
-	<button type="button" class="btn btn-outline-secondary"><a href="crimes.html">PA Summary</a></button>
-	<button type="button" class="btn btn-outline-secondary"><a href="reports.html">Faction Reports</a></button>
+	
+	<!-- Navbar -->	
+	<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+	  <a class="navbar-brand" href="index.html">Home</a>
+	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	  </button>
 
+	  <div class="collapse navbar-collapse" id="navbarColor01">
+		<ul class="navbar-nav mr-auto">
+		  <li class="nav-item">
+			<a class="nav-link" href="crimes.html">PA Summary</a>
+		  </li>
+		  <li class="nav-item">
+			<a class="nav-link" href="reports.html">Reports</a>
+		  </li>
+		</ul>
+	  </div>
+	</nav>
+	<br />
+    <br />
+	
+	<!-- Here comes the content *sings* -->
+	
+	<div class="card text-white bg-secondary mb-3" style="max-width: 20rem;">
+	  <div class="card-body">
+		<p class="card-text"><blockquote>
+		<p class="mb-0">Without mathematics, there is no art.<br /><br /></p>
+		<footer class="blockquote-footer">Luca Pacioli</footer>
+	</blockquote></p>
+	  </div>
+	</div>
+	
+	
+	<p><button onclick="clickCounter()" type="button">Click me!</button></p>
+<div id="result"></div>
+<p>Click the button to see the counter increase.</p>
+<p>Close the browser tab (or window), and try again, and the counter is reset.</p>
+	
+	
 	<br/>
 	<br/>
-	<p id="alert"></p>
+	<!--p id="alert"></p> <br/-->
 	<!--p id="debug"></p> <br/-->
-	<p id="summary"></p> <br/>
-	<p id="output"></p> <br/>
+	<!--p id="summary"></p> <br/-->
+	<!--p id="output"></p> <br/-->
 
 
 <div class="card border-primary mb-3" style="max-width: 100%;">
   <div class="card-header">Fineprint</div>
-  <div class="card-body">
-    <p class="card-text">Please note this is an early version, so it may or may not be a little bit buggy. Let me (<a href="https://www.torn.com/profiles.php?XID=1132772" class="card-link"> byrod [1132772] </a>) know about any issues. Thanks!<br />
-	* Your API key will not be stored or logged, and only be used to call <a href="https://api.torn.com" class="card-link">https://api.torn.com</a>.</p>
+  <div class="card-body" id="contact">
+    <p class="card-text">Please note this is an early version, so it may or may not be a little bit buggy. Let me (<a href="https://www.torn.com/profiles.php?XID=1132772" class="card-link" target="_blank"> byrod [1132772] </a>) know about any issues. Thanks!<br />
+	</p>
   </div>
 </div>
 
