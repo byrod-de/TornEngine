@@ -40,7 +40,7 @@
 	function callTornAPI(key, part, selection) {
 		var request = new XMLHttpRequest();
 
-		request.open('GET', 'https://api.torn.com/' + part + '/?selections=' + selection + '&key=' + key, true);
+		request.open('GET', 'https://api.torn.com/' + part + '/?selections=' + selection + '&key=' + key + '&comment=Foxy', true);
 		request.onload = function () {
 
 			var jsonData = JSON.parse(this.response);
