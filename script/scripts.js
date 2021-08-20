@@ -226,7 +226,7 @@
 		
 		var table = '<div class="col-sm-12 badge-primary" ><b>PA Details for ' + monthToText(currentMonth) + '</b></div>';
 		table = table + '<br />';
-		table = table + '<input type="button" class="btn btn-outline-light" value="select table content" onclick="selectElementContents( document.getElementById(\'totals\') );">';
+		table = table + '<input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents( document.getElementById(\'totals\') );">';
 		table = table + '<table class="table table-hover" id="totals"><thead><tr>'
 				  + '<th>Date</th>'
 				  + '<th>Participants</th>'
@@ -327,7 +327,7 @@
 		
 		var summary = '<div class="col-sm-12 badge-primary" ><b>Individual results for ' + monthToText(currentMonth) + '</b></div>';
 		summary = summary + '<br />';
-		summary = summary + '<input type="button" class="btn btn-outline-light" value="select table content" onclick="selectElementContents( document.getElementById(\'individual\') );">';
+		summary = summary + '<input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents( document.getElementById(\'individual\') );">';
 		summary = summary + '<table class="table table-hover" id="individual"><thead><tr>'
 				  + '<th>Name</th>'
 				  + '<th>Money earned (<sup>1</sup>/<sub>' + split + '</sub>th of result)</th>'
