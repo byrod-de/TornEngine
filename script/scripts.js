@@ -79,8 +79,9 @@
 					if (selection === 'basic,reports') {
 					if (jsonData.hasOwnProperty('reports')){
 						printAlert('Success', 'The API Call successful, find the results below.');
-
+//console.log('aaa');
 						parseReports(jsonData['reports'], 'output', jsonData.name);
+						
 					}
 					}
 				}
@@ -144,8 +145,8 @@
 				
 				table = table + '<tr>'
 							+'<td>' + formatted_date + '</td>'
-							+'<td>' + membersList[report.user_id].name + '</td>'
-							//+'<td>' + membersList + '</td>'
+							+'<td><a href="https://www.torn.com/profiles.php?XID=' + report.user_id + '" target="_blank">' + membersList[report.user_id].name + '</a></td>'
+							//+'<td>' + header + '</td>'
 							+'<td>' + header + '</td>'
 							+'<td><a href="https://www.torn.com/profiles.php?XID=' + report.target + '" target="_blank">' + report.target + '</a></td>';
 				
@@ -160,25 +161,25 @@
 						table = table +'<td>N/A</td>';
 					}
 					
-					if (report.report.hasOwnProperty('strength')) {
+					if (report.hasOwnProperty('strength')) {
 						table = table +'<td>' + report.report.strength.toLocaleString('en-US') + '</td>';
 					} else {
 						table = table +'<td>N/A</td>';
 					}
 					
-					if (report.report.hasOwnProperty('defense')) {
+					if (report.hasOwnProperty('defense')) {
 						table = table +'<td>' + report.report.defense.toLocaleString('en-US') + '</td>';
 					} else {
 						table = table +'<td>N/A</td>';
 					}
 					
-					if (report.report.hasOwnProperty('speed')) {
+					if (report.hasOwnProperty('speed')) {
 						table = table +'<td>' + report.report.speed.toLocaleString('en-US') + '</td>';
 					} else {
 						table = table +'<td>N/A</td>';
 					}
 					
-					if (report.report.hasOwnProperty('dexterity')) {
+					if (report.hasOwnProperty('dexterity')) {
 						table = table +'<td>' + report.report.dexterity.toLocaleString('en-US') + '</td>';
 					} else {
 						table = table +'<td>N/A</td>';
@@ -220,8 +221,13 @@
 			if (currentMonth < 0) { currentMonth = 11; }
 		}
 		
+		var split = document.getElementById('range').value;
+		
+		
 		var table = '<div class="col-sm-12 badge-primary" ><b>PA Details for ' + monthToText(currentMonth) + '</b></div>';
-		table = table + '<table class="table table-hover"><thead><tr>'
+		table = table + '<br />';
+		table = table + '<input type="button" class="btn btn-outline-light" value="select table content" onclick="selectElementContents( document.getElementById(\'totals\') );">';
+		table = table + '<table class="table table-hover" id="totals"><thead><tr>'
 				  + '<th>Date</th>'
 				  + '<th>Participants</th>'
 				  + '<th>Crime Type</th>'
@@ -260,11 +266,11 @@
 							if (JSON.stringify(membersList).indexOf(memberID) != -1) {
 								memberName = membersList[memberID].name;
 								if (memberName in memberMoney) {
-									memberMoney[memberName] = memberMoney[memberName] + (crime.money_gain / 5);
+									memberMoney[memberName] = memberMoney[memberName] + (crime.money_gain / split);
 									memberSuccess[memberName] = memberSuccess[memberName] +success;
 									memberFailed[memberName] = memberFailed[memberName] + failed;
 								} else {
-									memberMoney[memberName] = (crime.money_gain / 5);
+									memberMoney[memberName] = (crime.money_gain / split);
 									memberSuccess[memberName] = success;
 									memberFailed[memberName] = failed;
 								}
@@ -281,7 +287,8 @@
 						});
 					});
 					
-					factionMoney = factionMoney + (crime.money_gain / 5);
+					if (split == 5) {factionMoney = factionMoney + (crime.money_gain / split);}
+					if (split == 4) {factionMoney = 0;}
 					factionSuccess = factionSuccess + success;
 					factionFailed = factionFailed + failed;
 					totalRespect = totalRespect + crime.respect_gain;
@@ -305,7 +312,7 @@
 		if (factionSuccess > 0) {badgeSuccess = 'badge-success';}
 		
 		table = table + '<tr class="table-dark">' 
-						+'<td colspan = "3">Faction totals</td>'
+						+'<td colspan = "3">Totals</td>'
 						+'<td>' 
 							+ '<span class="badge badge-pill '+badgeFailed+'">'+ factionFailed + '</span>-'
 							+ '<span class="badge badge-pill '+badgeSuccess+'">'+ factionSuccess + '</span>'
@@ -319,9 +326,11 @@
 		
 		
 		var summary = '<div class="col-sm-12 badge-primary" ><b>Individual results for ' + monthToText(currentMonth) + '</b></div>';
-		summary = summary + '<table class="table table-hover"><thead><tr>'
+		summary = summary + '<br />';
+		summary = summary + '<input type="button" class="btn btn-outline-light" value="select table content" onclick="selectElementContents( document.getElementById(\'individual\') );">';
+		summary = summary + '<table class="table table-hover" id="individual"><thead><tr>'
 				  + '<th>Name</th>'
-				  + '<th>Money earned (<sup>1</sup>/<sub>5</sub>th of result)</th>'
+				  + '<th>Money earned (<sup>1</sup>/<sub>' + split + '</sub>th of result)</th>'
 				  + '<th>Fail</th>'
 				  + '<th>Success</th>'
 				  + '</tr></thead><tbody>';
@@ -380,6 +389,31 @@
 	  return monthNames[month - 1];
 
 	}
+	
+	
+	function selectElementContents(el) {
+		var body = document.body, range, sel;
+		if (document.createRange && window.getSelection) {
+			range = document.createRange();
+			sel = window.getSelection();
+			sel.removeAllRanges();
+			try {
+				range.selectNodeContents(el);
+				sel.addRange(range);
+			} catch (e) {
+				range.selectNode(el);
+				sel.addRange(range);
+			}
+		} else if (body.createTextRange) {
+			range = body.createTextRange();
+			range.moveToElementText(el);
+			range.select();
+	}
+	
+	//alert("Copied the text: " + range);
+	//navigator.clipboard.writeText(range);
+
+}
 	
 	
 
