@@ -1,4 +1,4 @@
-	function userSubmitCrimes() {
+	function userSubmitVulpesCrimes() {
 		var trustedApiKey = document.getElementById("trustedkey").value;
 		
 		sessionStorage.trustedApiKey = trustedApiKey;
@@ -6,7 +6,19 @@
 		if (trustedApiKey === '') {
 			printAlert('Warning', 'You might want to enter your API key if you expect this to work...');
 		} else {
-			callTornAPI(trustedApiKey, 'faction', 'basic,crimes');
+			callTornAPI(trustedApiKey, 'faction', 'basic,crimes', 'vulpes_crimes');
+		}
+	}
+	
+	function userSubmitOCOverview() {
+		var trustedApiKey = document.getElementById("trustedkey").value;
+		
+		sessionStorage.trustedApiKey = trustedApiKey;
+		//document.getElementById("debug").innerHTML = '<small>Debug only: API key used (to be removed after release): ' + trustedApiKey + '</small>';
+		if (trustedApiKey === '') {
+			printAlert('Warning', 'You might want to enter your API key if you expect this to work...');
+		} else {
+			callTornAPI(trustedApiKey, 'faction', 'basic,crimes', 'oc_overview');
 		}
 	}
 	
@@ -20,7 +32,7 @@
 		if (trustedApiKey === '') {
 			printAlert('Warning', 'You might want to enter your API key if you expect this to work...');
 		} else {
-			callTornAPI(trustedApiKey, 'user', 'basic,reports');
+			callTornAPI(trustedApiKey, 'user', 'basic,reports', 'reports');
 		}
 	}
 	
@@ -33,11 +45,11 @@
 		if (trustedApiKey === '') {
 			printAlert('Warning', 'You might want to enter your API key if you expect this to work...');
 		} else {
-			callTornAPI(trustedApiKey, 'faction', 'basic,reports');
+			callTornAPI(trustedApiKey, 'faction', 'basic,reports', 'reports');
 		}
 	}
 	
-	function callTornAPI(key, part, selection) {
+	function callTornAPI(key, part, selection, source) {
 		var request = new XMLHttpRequest();
 
 		request.open('GET', 'https://api.torn.com/' + part + '/?selections=' + selection + '&key=' + key + '&comment=Foxy', true);
@@ -57,17 +69,27 @@
 					}
 				} else {
 					
-					if (selection === 'basic,crimes') {
+					if (selection === 'basic,crimes' && source === 'vulpes_crimes') {
 					if (jsonData.hasOwnProperty('crimes') && jsonData.hasOwnProperty('members')){
 						printAlert('Success', 'The API Call successful, find the results below.');
 
-						parseCrimes(jsonData['crimes'], 'output', jsonData['members']);
+						parsePayouts(jsonData['crimes'], 'output', jsonData['members']);
 					} else {
 						printAlert('Warning', 'Ask your faction leader for faction API permissions.');
 					}
 					}
 					
-					if (selection === 'basic,reports') {
+					if (selection === 'basic,crimes' && source === 'oc_overview') {
+					if (jsonData.hasOwnProperty('crimes') && jsonData.hasOwnProperty('members')){
+						printAlert('Success', 'The API Call successful, find the results below.');
+
+						parseOCs(jsonData['crimes'], 'output', jsonData['members']);
+					} else {
+						printAlert('Warning', 'Ask your faction leader for faction API permissions.');
+					}
+					}
+					
+					if (selection === 'basic,reports' && source === 'reports') {
 					if (jsonData.hasOwnProperty('reports') && jsonData.hasOwnProperty('members')){
 						printAlert('Success', 'The API Call successful, find the results below.');
 						parseReports(jsonData['reports'], 'output', jsonData['members']);
@@ -76,10 +98,9 @@
 					}
 					}
 					
-					if (selection === 'basic,reports') {
+					if (selection === 'basic,reports' && source === 'reports') {
 					if (jsonData.hasOwnProperty('reports')){
 						printAlert('Success', 'The API Call successful, find the results below.');
-//console.log('aaa');
 						parseReports(jsonData['reports'], 'output', jsonData.name);
 						
 					}
@@ -195,7 +216,7 @@
 		
 	}
 	
-	function parseCrimes (crimeData, element, membersList) {
+	function parsePayouts (crimeData, element, membersList) {
 		
 		var memberMoney = {};
 		var memberSuccess = {};
@@ -361,6 +382,170 @@
 		summary = summary + '</tbody></table>';
 		
 		document.getElementById('summary').innerHTML = summary;
+	}
+	
+	function parseOCs (crimeData, element, membersList) {
+		
+		var memberStatus = {};
+		var memberSuccess = {};
+		var memberFailed = {};
+		var factionMoney = 0;
+		var factionSuccess = 0;
+		var factionFailed = 0;
+		var totalRespect = 0;
+		var totalMoney = 0;
+		var today = new Date();
+		var badgeSuccess = 'badge-dark';
+		var badgeFailed = 'badge-dark';
+		
+		if (document.getElementById('current').checked) {
+			var currentMonth = today.getMonth() + 1;
+			if (currentMonth > 11) { currentMonth = 0; }
+		}
+		if (document.getElementById('last').checked) {
+			var currentMonth = today.getMonth();
+		}
+		if (document.getElementById('before').checked) {
+			var currentMonth = today.getMonth() - 1;
+			if (currentMonth < 0) { currentMonth = 11; }
+		}
+		
+		var crimeList = '';
+		if (document.getElementById('PoliticalAssassination').checked) {
+			crimeList = document.getElementById('PoliticalAssassination').value + ',' + crimeList;
+		}
+		if (document.getElementById('PlaneHijacking').checked) {
+			crimeList = document.getElementById('PlaneHijacking').value + ',' + crimeList;
+		}
+		if (document.getElementById('TakeOverACruiseLiner').checked) {
+			crimeList = document.getElementById('TakeOverACruiseLiner').value + ',' + crimeList;
+		}
+		if (document.getElementById('RobbingOfAMoneyTrain').checked) {
+			crimeList = document.getElementById('RobbingOfAMoneyTrain').value + ',' + crimeList;
+		}
+		if (document.getElementById('PlannedRobbery').checked) {
+			crimeList = document.getElementById('PlannedRobbery').value + ',' + crimeList;
+		}
+		if (document.getElementById('BombThreat').checked) {
+			crimeList = document.getElementById('BombThreat').value + ',' + crimeList;
+		}
+		if (document.getElementById('Kidnapping').checked) {
+			crimeList = document.getElementById('Kidnapping').value + ',' + crimeList;
+		}
+		if (document.getElementById('Blackmailing').checked) {
+			crimeList = document.getElementById('Blackmailing').value + ',' + crimeList;
+		}
+		//console.log(crimeList);
+		
+		var table = '<div class="col-sm-12 badge-primary" ><b>Organized Crime Overview for ' + monthToText(currentMonth) + '</b> <input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents( document.getElementById(\'totals\') );"></div>';
+		table = table + '<br />';
+		//table = table + '<input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents( document.getElementById(\'totals\') );">';
+		table = table + '<table class="table table-hover" id="totals"><thead><tr>'
+				  + '<th>Date</th>'
+				  + '<th>Participants</th>'
+				  + '<th>Crime Type</th>'
+				  + '<th>Result</th>'
+				  + '<th>Money Gained<br/>'
+				  + '<th>Respect Gained</th>'
+				  + '</tr></thead><tbody>';
+				  
+				
+		for( var id in crimeData ){
+			var crime = crimeData[id];
+			
+			//console.log(crime.crime_name);
+			if (crimeList.includes(crime.crime_id)) {   //8 = Political Assassination
+										//7 = Plane hijacking
+										//6 = Take over a cruise liner
+										//5 = Robbing of a money train
+										//4 = Planned robbery
+										//3 = Bomb Threat
+										//2 = Kidnapping
+										//1 = Blackmailing
+				var ts = new Date(crime.time_completed * 1000);
+				
+				if (crime.initiated === 1 && ts.getMonth()+1 === currentMonth) {
+					
+					var crimeResult = '';
+					var failed = 0;
+					var success = 0;
+					var participants = '';
+					var tmp = '';
+
+					if (crime.success === 0) {
+						crimeResult = '<span class="badge badge-pill badge-danger">Failed</span>';
+						failed = 1;
+					} else {
+						crimeResult = '<span class="badge badge-pill badge-success">Success</span>';
+						success = 1;
+					}
+					
+					crime.participants.forEach(obj => {
+						Object.entries(obj).forEach(([key, value]) => {
+							var memberID = `${key}`;
+
+							var memberName =  '';
+							if (JSON.stringify(membersList).indexOf(memberID) != -1) {
+								memberName = membersList[memberID].name;
+								if (memberName in memberStatus) {
+									memberStatus[memberName] = memberStatus[memberName] + 1;
+									memberSuccess[memberName] = memberSuccess[memberName] +success;
+									memberFailed[memberName] = memberFailed[memberName] + failed;
+								} else {
+									memberStatus[memberName] = 1;
+									memberSuccess[memberName] = success;
+									memberFailed[memberName] = failed;
+								}
+							} else {
+								memberName = memberID;
+							}
+							
+							if (participants === '') {
+								participants = memberName;
+								
+							} else {
+								participants = participants + ', ' + memberName;
+							}
+						});
+					});
+					
+					//if (split == 5) {factionMoney = factionMoney + (crime.money_gain / split);}
+					//if (split == 4) {factionMoney = 0;}
+					factionSuccess = factionSuccess + success;
+					factionFailed = factionFailed + failed;
+					totalRespect = totalRespect + crime.respect_gain;
+					totalMoney = totalMoney + crime.money_gain;
+					
+					var formatted_date =  ts.toISOString().replace('T',' ').replace('.000Z','');
+					
+					table = table + '<tr>'
+							+'<td>' + formatted_date + '</td>'
+							+'<td>' + participants + '</td>'
+							+'<td>' + crime.crime_name + '</td>'
+							+'<td>' + crimeResult + '</td>'
+							+'<td>$' + crime.money_gain.toLocaleString('en-US') + '</td>'
+							+'<td>' + crime.respect_gain + '</td>'
+							+'</tr>';
+				}
+			}
+		}
+		
+		if (factionFailed > 0) {badgeFailed = 'badge-danger';}
+		if (factionSuccess > 0) {badgeSuccess = 'badge-success';}
+		
+		table = table + '<tr class="table-dark">' 
+						+'<td colspan = "3">Totals</td>'
+						+'<td>' 
+							+ '<span class="badge badge-pill '+badgeFailed+'">'+ factionFailed + '</span>-'
+							+ '<span class="badge badge-pill '+badgeSuccess+'">'+ factionSuccess + '</span>'
+						+'</td>'
+						+'<td>$' + totalMoney.toLocaleString('en-US') + '</td>'
+						+'<td>' + totalRespect + '</td>'
+						+'</tr>';
+		
+		table = table + '</tbody></table>';
+		document.getElementById(element).innerHTML = table;
+		
 	}
 	
 	
