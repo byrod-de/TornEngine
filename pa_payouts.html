@@ -18,7 +18,7 @@
 	<br />
 	<div class="row">
 	<div class="col-sm-4 badge-primary" ><b>Torn Faction Tools</b></div>
-	<div class="col-sm-8 badge-secondary">Something about Vulpes PA results</div>
+	<div class="col-sm-8 badge-secondary">Something about PA Payouts</div>
 	</div>
 	<br />
 	
@@ -32,7 +32,7 @@
 	  <div class="collapse navbar-collapse" id="navbarColor01">
 		<ul class="navbar-nav mr-auto">
 		  <li class="nav-item active">
-			<a class="nav-link" href="vulpes_crimes.html">Vulpes PA Payouts</a>
+			<a class="nav-link" href="pa_payouts.html">PA Payouts</a>
 		  </li>
 		  
 		  <li class="nav-item">
@@ -65,13 +65,13 @@
 		<legend>Select timeframe for PA results</legend>
 		<div class="form-check">
         <label class="form-check-label">
-          <input type="radio" class="form-check-input" name="optionsRadios" id="current" value="current">
+          <input type="radio" class="form-check-input" name="optionsRadios" id="current" value="current" checked="checked">
           Current month
         </label>
 		</div>
 		<div class="form-check">
 		<label class="form-check-label">
-          <input type="radio" class="form-check-input" name="optionsRadios" id="last" value="last" checked="checked">
+          <input type="radio" class="form-check-input" name="optionsRadios" id="last" value="last" >
           Last month
         </label>
 		</div>
@@ -83,13 +83,18 @@
       </div>
 	  <br />
 	  <legend>Split share per member</legend>
-      <sup>1</sup>/<sub>4</sub>th <input type="range" class="form-range" min="4" max="5" step="1" id="range"> <sup>1</sup>/<sub>5</sub>th 
-
+      <sup>1</sup>/<sub>4</sub>th <input type="range" class="form-range" min="4" max="5" step="1" value="5" id="range"> <sup>1</sup>/<sub>5</sub>th 
+	  <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" value="1" id="weighted" onclick="disableElement('weighted', 'range');">
+        <label class="form-check-label" for="weighted">
+          Weighted per PA rank
+        </label>
+      </div>
 	</div>
 
 	</div>
 	</form>
-	<button onclick="userSubmitVulpesCrimes()" class="btn btn-primary">Submit</button>  
+	<button onclick="userSubmitPAPayouts()" class="btn btn-primary">Submit</button>  
 	<br/>
 	<br/>
 	<p id="alert"></p>

@@ -1,4 +1,4 @@
-	function userSubmitVulpesCrimes() {
+	function userSubmitPAPayouts() {
 		var trustedApiKey = document.getElementById("trustedkey").value;
 		
 		sessionStorage.trustedApiKey = trustedApiKey;
@@ -6,7 +6,7 @@
 		if (trustedApiKey === '') {
 			printAlert('Warning', 'You might want to enter your API key if you expect this to work...');
 		} else {
-			callTornAPI(trustedApiKey, 'faction', 'basic,crimes', 'vulpes_crimes');
+			callTornAPI(trustedApiKey, 'faction', 'basic,crimes', 'pa_payouts');
 		}
 	}
 	
@@ -21,7 +21,6 @@
 			callTornAPI(trustedApiKey, 'faction', 'basic,crimes', 'oc_overview');
 		}
 	}
-	
 	
 	function userSubmitReports() {
 		var trustedApiKey = document.getElementById("trustedkey").value;
@@ -69,7 +68,7 @@
 					}
 				} else {
 					
-					if (selection === 'basic,crimes' && source === 'vulpes_crimes') {
+					if (selection === 'basic,crimes' && source === 'pa_payouts') {
 					if (jsonData.hasOwnProperty('crimes') && jsonData.hasOwnProperty('members')){
 						printAlert('Success', 'The API Call successful, find the results below.');
 
@@ -243,11 +242,12 @@
 		}
 		
 		var split = document.getElementById('range').value;
+		var weighted = document.getElementById('weighted').checked;
+		var paLeads = '';
 		
 		
 		var table = '<div class="col-sm-12 badge-primary" ><b>PA Details for ' + monthToText(currentMonth) + '</b> <input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents( document.getElementById(\'totals\') );"></div>';
 		table = table + '<br />';
-		//table = table + '<input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents( document.getElementById(\'totals\') );">';
 		table = table + '<table class="table table-hover" id="totals"><thead><tr>'
 				  + '<th>Date</th>'
 				  + '<th>Participants</th>'
@@ -257,7 +257,6 @@
 				  + '<th>Respect Gained</th>'
 				  + '</tr></thead><tbody>';
 				  
-				
 		for( var id in crimeData ){
 			var crime = crimeData[id];
 			if (crime.crime_id === 8) { //8 = PA
@@ -270,6 +269,8 @@
 					var success = 0;
 					var participants = '';
 					var tmp = '';
+					var countRank = 0;
+					var prefix = '';
 
 					if (crime.success === 0) {
 						crimeResult = '<span class="badge badge-pill badge-danger">Failed</span>';
@@ -282,10 +283,18 @@
 					crime.participants.forEach(obj => {
 						Object.entries(obj).forEach(([key, value]) => {
 							var memberID = `${key}`;
+							countRank = countRank + 1;
+							if (weighted) {
+								prefix = countRank  + '| ';
+							}
 
 							var memberName =  '';
 							if (JSON.stringify(membersList).indexOf(memberID) != -1) {
-								memberName = membersList[memberID].name;
+								memberName = prefix + membersList[memberID].name ;
+								if (weighted && prefix === '1| '){
+									if (!paLeads.includes(memberName))
+										paLeads = memberName + ';' + paLeads;
+								}
 								if (memberName in memberMoney) {
 									memberMoney[memberName] = memberMoney[memberName] + (crime.money_gain / split);
 									memberSuccess[memberName] = memberSuccess[memberName] +success;
@@ -308,8 +317,14 @@
 						});
 					});
 					
-					if (split == 5) {factionMoney = factionMoney + (crime.money_gain / split);}
-					if (split == 4) {factionMoney = 0;}
+					if (weighted)
+						factionMoney = factionMoney + (crime.money_gain)
+						
+					else {
+						if (split == 5) {factionMoney = factionMoney + (crime.money_gain / split);}
+						if (split == 4) {factionMoney = 0;}
+					}
+					
 					factionSuccess = factionSuccess + success;
 					factionFailed = factionFailed + failed;
 					totalRespect = totalRespect + crime.respect_gain;
@@ -345,14 +360,21 @@
 		table = table + '</tbody></table>';
 		document.getElementById(element).innerHTML = table;
 		
+		var multiplier = 0;
+		var numberOfTeams = paLeads.split(';').length-1;
 		
 		var summary = '<div class="col-sm-12 badge-primary" ><b>Individual results for ' + monthToText(currentMonth) + '</b> <input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents( document.getElementById(\'individual\') );"></div>';
 		summary = summary + '<br />';
-		//summary = summary + '<input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents( document.getElementById(\'individual\') );"><div id="copyIndiv"></div>';
 		summary = summary + '<table class="table table-hover" id="individual"><thead><tr>'
-				  + '<th>Name</th>'
-				  + '<th>Money earned (<sup>1</sup>/<sub>' + split + '</sub>th of result)</th>'
-				  + '<th>Fail</th>'
+				  + '<th>Name</th>';
+			
+		if (weighted) {
+			summary = summary + '<th>Money earned (weighted per PA rank)</th>';
+		} else {
+			summary = summary + '<th>Money earned (<sup>1</sup>/<sub>' + split + '</sub>th of result)</th>';
+		}
+			
+		summary = summary + '<th>Fail</th>'
 				  + '<th>Success</th>'
 				  + '</tr></thead><tbody>';
 				  
@@ -361,10 +383,23 @@
 		for (var name in memberMoney) {
 			if (memberFailed[name] > 0) {badgeFailed = 'badge-danger';} else {badgeFailed = 'badge-dark';}
 			if (memberSuccess[name] > 0) {badgeSuccess = 'badge-success';} else {badgeSuccess = 'badge-dark';}
+			
+			if (name.startsWith('1|')) multiplier = 0.4 / numberOfTeams;
+			if (name.startsWith('2|')) multiplier = 0.3 / numberOfTeams;
+			if (name.startsWith('3|')) multiplier = 0.2 / numberOfTeams;
+			if (name.startsWith('4|')) multiplier = 0.1 / numberOfTeams;
+			
 			summary = summary + '<tr>' 
-						+'<td>' + name + '</td>'
-						+'<td>' +' $' + memberMoney[name].toLocaleString('en-US') + '</td>'
-						+'<td><span class="badge badge-pill '+badgeFailed+'">'+ memberFailed[name] + '</span></td>'
+						+'<td>' + name + '</td>';
+			
+			if (!weighted) {
+				summary = summary + '<td>' +' $' + memberMoney[name].toLocaleString('en-US') + '</td>';
+			}
+			else {
+				summary = summary + '<td>' +' $' + (factionMoney * multiplier).toLocaleString('en-US') + '</td>';
+			}
+			
+			summary = summary +'<td><span class="badge badge-pill '+badgeFailed+'">'+ memberFailed[name] + '</span></td>'
 						+'<td><span class="badge badge-pill '+badgeSuccess+'">' + memberSuccess[name] + '</span></td>'
 						+'</tr>';
 			
@@ -548,7 +583,6 @@
 		
 	}
 	
-	
 	function printAlert(alertType, alertText) {
 		var alertClass;
 		if (alertType === 'Error') { alertClass = 'alert-danger' };
@@ -575,7 +609,6 @@
 
 	}
 	
-	
 	function selectElementContents(el) {
 		var body = document.body, range, sel;
 		if (document.createRange && window.getSelection) {
@@ -601,13 +634,15 @@
 	//navigator.clipboard.writeText(range);
 
 }
-	
-	
 
-function loadKeyFromSession() {
-  if (typeof(Storage) !== "undefined") {
-    if (sessionStorage.trustedApiKey) {
-       document.getElementById("trustedkey").value = sessionStorage.trustedApiKey;
+	function loadKeyFromSession() {
+		if (typeof(Storage) !== "undefined") {
+			if (sessionStorage.trustedApiKey) {
+				document.getElementById("trustedkey").value = sessionStorage.trustedApiKey;
+			}
 		}
 	}
-}
+
+	function disableElement(source, target) {
+		document.getElementById(target).disabled = document.getElementById(source).checked;
+	}
