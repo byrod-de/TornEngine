@@ -1,0 +1,31 @@
+byrod: Hi Milkbeard! I do have only a remotely torn related question to you. You have set up the Grafana thingy. As far as I know, there is no direct import from JSON as datasource out of the box possible. May I ask what you have used there? I'm playing around with a similar use case, so I am curious.
+Milkbeard: postgres can import json directly and then you can query using jsonb format
+byrod: Ah, postgres! That's still on my list to check out, thanks, Sir!
+Milkbeard: you can also parse the json and dump it into carbonite which is the default grafana timeseries rrd database
+Milkbeard: probably a little more efficient for timeseries data
+Milkbeard: really depends on what you are doing with it
+Milkbeard: sorry graphite not carbonite
+byrod: I see. I used only Prometheus so far, reading metrics as time series, and display with grafana. But the json import seems a bit clumsy.
+byrod: Yeah, these names are all too easy to mix up :-)
+Milkbeard: oh if you have prometheus you can use telegraf to read the json
+Milkbeard: that can output a prometheus client that you can scrape
+byrod: Stumbled across that too yesterday, but did not look further into it yet either.
+Milkbeard: https://github.com/influxdata/telegraf/blob/release-1.20/plugins/inputs/http/README.md
+Milkbeard: it will autocreate metrics for any numeric value
+Milkbeard: and serve them up to prometheus
+byrod: I see, I see!
+byrod: Thanks so far, looks like a lot of reading for me at the weekend :-)
+Milkbeard: super simple
+Milkbeard: this is an example one I use to graph ETH gas prices
+Milkbeard: [[inputs.http]] name_override = "gas" urls = ["https://ethgas.watch/api/gas"] data_format = "json" interval = "1m"
+Milkbeard: ugh formatting
+Milkbeard: but you get the idea. you just give it the url and the query interval
+Milkbeard: and then you define a prometheus output in telegraf
+Milkbeard: [[outputs.prometheus_client]] listen = ":9273" metric_version = 2
+Milkbeard: then scrape that port in prometheus as a static config
+Milkbeard: and done!
+byrod: Sounds simple enough for an average nerd like I am.
+Milkbeard: its not too bad
+
+
+PS C:\DevStuff\telegraf> .\telegraf.exe -config .\conf2.conf

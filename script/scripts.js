@@ -35,6 +35,19 @@
 		}
 	}
 	
+	function factionSubmitAttacks() {
+		var trustedApiKey = document.getElementById("trustedkey").value;
+		
+		sessionStorage.trustedApiKey = trustedApiKey;
+		//document.getElementById("debug").innerHTML = '<small>Debug only: API key used (to be removed after release): ' + trustedApiKey + '</small>';
+
+		if (trustedApiKey === '') {
+			printAlert('Warning', 'You might want to enter your API key if you expect this to work...');
+		} else {
+			parseAttacks(trustedApiKey, 'faction', 'basic,attacks', 'attacks');
+		}
+	}
+	
 	function factionSubmitReports() {
 		var trustedApiKey = document.getElementById("trustedkey").value;
 		
@@ -46,6 +59,22 @@
 		} else {
 			callTornAPI(trustedApiKey, 'faction', 'basic,reports', 'reports');
 		}
+	}
+	
+	function callTornAttacksWithTimestamp(key, part, selection, source, from, to, callBackMethod) {
+		const request = new XMLHttpRequest();
+		const url='https://api.torn.com/' + part + '/?selections=' + selection + '&from=' + from + '&key=' + key + '&comment=Foxy';
+		request.open("GET", url, true);
+		request.send();
+		
+		console.log(from);
+		
+
+		request.onreadystatechange = function() {
+
+			// Waits for correct readyState && status
+			if (request.readyState == 4 && request.status == 200) callBackMethod(JSON.parse(request.responseText)['attacks']);
+		 };
 	}
 	
 	function callTornAPI(key, part, selection, source) {
@@ -104,6 +133,14 @@
 						
 					}
 					}
+					
+					if (selection === 'basic,attacks' && source === 'attacks') {
+					if (jsonData.hasOwnProperty('attacks')){
+						printAlert('Success', 'The API Call successful, find the results below.');
+						parseAttacks(jsonData['attacks'], 'output', jsonData.name);
+						
+					}
+					}
 				}
 				
 			} else {
@@ -111,6 +148,80 @@
 			}
 		}
 		request.send();
+	}
+	
+	function printAttacks(attacksData) {
+		
+		var table = '';
+		for( var id in attacksData ){
+			
+			var attack = attacksData[id];
+			var direction = 'Outgoing';
+			var raid = '';
+			var wall = '';
+			var chain = '';
+			
+			var ts = new Date(attack.timestamp_started * 1000);
+			var formatted_date =  ts.toISOString().replace('T',' ').replace('.000Z','');
+			
+			if (attack.defender_faction == '7835') {
+				direction = 'Incoming';
+			}
+			
+			if (direction == 'Outgoing') {
+			if (attack.raid == 1) raid = '<span class="badge badge-pill badge-success">+</span>';
+			if (attack.modifiers.war == 2) wall = '<span class="badge badge-pill badge-success">+</span>';
+			if (attack.chain !== 0) chain = '<span class="badge badge-pill badge-success">+</span>';
+			table = table + '<tr>'
+							+'<td>' + formatted_date + '</td>'
+							+'<td><a href="https://www.torn.com/profiles.php?XID=' + attack.attacker_id + '" target="_blank">' + attack.attacker_name + '</a></td>'
+							+'<td><a href="https://www.torn.com/factions.php?step=profile&ID=' + attack.attacker_faction + '" target="_blank">' + attack.attacker_factionname + '</a></td>'
+							+'<td><a href="https://www.torn.com/profiles.php?XID=' + attack.defender_id + '" target="_blank">' + attack.defender_name  + '</a></td>'
+							+'<td><a href="https://www.torn.com/factions.php?step=profile&ID=' + attack.defender_faction + '" target="_blank">' + attack.defender_factionname + '</a></td>'
+							+'<td>' + direction + '</td>'
+							+'<td>' + attack.result + '</td>'
+							+'<td>' + chain + '</td>'
+							+'<td>' + wall + '</td>'
+							+'<td>' + raid + '</td>'
+							+'</tr>';
+			}
+			
+			document.getElementById("startTime").value = attack.timestamp_started;
+			console.log(attack.timestamp_started);
+			
+		}
+		
+		console.log("---------------------------------------");
+		document.getElementById('body').innerHTML += table;
+	}
+	
+	function parseAttacks (key, part, selection, source) {
+		document.getElementById('summary').innerHTML = 'You are looking for attack logs.';
+		
+		var element = 'head';
+		
+		
+		var table = '<tr>'
+				  + '<th>Date</th>'
+				  + '<th>Attacker</th>'
+				  + '<th>Attacker Faction</th>'
+				  + '<th>Defender</th>'
+				  + '<th>Defender Faction</th>'
+				  + '<th>Direction</th>'
+				  + '<th>Result</th>'
+				  + '<th>Chain hit</th>'
+				  + '<th>Wall Hit</th>'
+				  + '<th>Raid</th>';
+				  
+		table = table + '</tr>';
+		
+		callTornAttacksWithTimestamp(key, part, selection, source, document.getElementById("startTime").value, '', function(responseText) {
+			printAttacks(responseText);
+		});
+		
+		
+		document.getElementById(element).innerHTML = table;
+		
 	}
 	
 	function parseReports (reportData, element, membersList) {
