@@ -67,7 +67,6 @@
 		request.open("GET", url, true);
 		request.send();
 		
-		console.log(from);
 		
 
 		request.onreadystatechange = function() {
@@ -187,7 +186,6 @@
 			}
 			
 			document.getElementById("startTime").value = attack.timestamp_started;
-			console.log(attack.timestamp_started);
 			
 		}
 		
@@ -346,9 +344,11 @@
 		}
 		if (document.getElementById('last').checked) {
 			var currentMonth = today.getMonth();
+			if (currentMonth == 0) { currentMonth = 12; }
 		}
 		if (document.getElementById('before').checked) {
 			var currentMonth = today.getMonth() - 1;
+			if (currentMonth == 0) { currentMonth = 12; }
 			if (currentMonth < 0) { currentMonth = 11; }
 		}
 		
@@ -550,9 +550,11 @@
 		}
 		if (document.getElementById('last').checked) {
 			var currentMonth = today.getMonth();
+			if (currentMonth == 0) { currentMonth = 12; }
 		}
 		if (document.getElementById('before').checked) {
 			var currentMonth = today.getMonth() - 1;
+			if (currentMonth == 0) { currentMonth = 12; }
 			if (currentMonth < 0) { currentMonth = 11; }
 		}
 		
@@ -713,10 +715,9 @@
 	}
 
 	function monthToText(month) {
+		
 		const monthNames = ["January", "February", "March", "April", "May", "June",
 	  "July", "August", "September", "October", "November", "December"];
-	  
-	  return monthNames[month - 1];
 
 	}
 	
