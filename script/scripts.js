@@ -114,6 +114,9 @@
 	
 	
 	function callTornAttacksWithTimestamp(key, part, selection, source, from, to, callBackMethod) {
+		
+		
+		
 		const request = new XMLHttpRequest();
 		const url='https://api.torn.com/' + part + '/?selections=' + selection + '&from=' + from + '&key=' + key + '&comment=Foxy';
 		request.open("GET", url, true);
@@ -129,9 +132,17 @@
 	}
 	
 	function callTornAPI(key, part, selection, source) {
+		
+var factionid = document.getElementById("factionid").value;
+		
+		sessionStorage.factionid = factionid;
+		
 		var request = new XMLHttpRequest();
-
-		request.open('GET', 'https://api.torn.com/' + part + '/?selections=' + selection + '&key=' + key + '&comment=Foxy', true);
+		
+		if (isNaN(factionid))
+			request.open('GET', 'https://api.torn.com/' + part + '/?selections=' + selection + '&key=' + key + '&comment=Foxy', true);
+		else 
+			request.open('GET', 'https://api.torn.com/' + part + '/' + factionid +'?selections=' + selection + '&key=' + key + '&comment=Foxy', true);
 		request.onload = function () {
 
 			var jsonData = JSON.parse(this.response);
@@ -287,17 +298,31 @@
 	
 	function parseStatus (statusData, selection, element, membersList) {
 		
-		document.getElementById('summary').innerHTML = 'You are looking for ' + selection + '.';
+		
+		
+		
+		var statusList = '';
+		if (document.getElementById('Online').checked) {
+			statusList = document.getElementById('Online').value + ', ' + statusList;
+		}
+		if (document.getElementById('Idle').checked) {
+			statusList = document.getElementById('Idle').value + ', ' + statusList;
+		}
+		if (document.getElementById('Offline').checked) {
+			statusList = document.getElementById('Offline').value + ', ' + statusList;
+		}
+		
+		document.getElementById('summary').innerHTML = 'You are looking for members with the status ' + statusList + '.';
 
 		var table = '<div class="col-sm-12 badge-primary" ><b>Offline Members in Hospital</b></div>';
 		table = table + '<table class="table table-hover"><thead><tr>'
 				  + '<th>Name</th>'
 				  + '<th>Link</th>'
 				  + '<th>Status</th>'
-				  + '<th>Status</th>';
+				  + '<th>Details</th>';
 				  
 		table = table + '</tr></thead><tbody>';
-		//console.log(membersList)
+		//console.log(statusList)
 		for( var id in membersList ){
 			//console.log(id)
 			var member = membersList[id];
@@ -305,13 +330,14 @@
 
 				//var ts = new Date(news.timestamp * 1000);
 				//var formatted_date =  ts.toISOString().replace('T',' ').replace('.000Z','');
-				if (member.last_action.status == 'Offline' && !member.status.description.includes('hrs') && !member.status.description.includes('federal'))
+				if (statusList.includes(member.last_action.status) && !member.status.description.includes('hrs') && !member.status.description.includes('federal'))
 				table = table + '<tr>'
 
 							+'<td><a href="https://www.torn.com/profiles.php?XID=' + id + '" target="_blank">' + member.name + '</a></td>'
-							+'<td>https://www.torn.com/profiles.php?XID=' + id +  '</td>'
+							+'<td><a href="https://www.torn.com/profiles.php?XID=' + id + '" target="_blank">https://www.torn.com/profiles.php?XID=' + id +  '</a></td>'
+							+'<td>' + member.last_action.status + '</td>'
 							+'<td>' + member.status.description + '</td>'
-							+'<td>' + member.last_action.status + '</td>';
+							;
 				
 
 				
@@ -885,6 +911,9 @@
 
 	function loadKeyFromSession() {
 		if (typeof(Storage) !== "undefined") {
+			if (sessionStorage.factionid) {
+				document.getElementById("factionid").value = sessionStorage.factionid;
+			}
 			if (sessionStorage.trustedApiKey) {
 				document.getElementById("trustedkey").value = sessionStorage.trustedApiKey;
 			}

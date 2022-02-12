@@ -19,7 +19,7 @@
 	<br />
 	<div class="row">
 	<div class="col-sm-4 badge-primary" ><b>Torn Faction Tools</b></div>
-	<div class="col-sm-8 badge-secondary">Something about Reports</div>
+	<div class="col-sm-8 badge-secondary">Get Faction Members Status</div>
 	</div>
 	<br />
 	
@@ -42,7 +42,7 @@
 		  <li class="nav-item">
 			<a class="nav-link" href="reports.html">Reports</a>
 		  </li>
-		 		  <li class="nav-item">
+		  <li class="nav-item">
 			<a class="nav-link" href="news.html">News</a>
 		  </li>
 		 <li class="nav-item active">
@@ -66,8 +66,33 @@
 	
 		<div class="form-group col-sm-5">
 		<label for="factionid">Faction ID</label>
-		<input type="input" class="form-control" id="factionid" name="factionid" placeholder="Faction ID"/>
-        </div>
+		<input type="input" class="form-control" id="factionid" name="factionid" placeholder="Faction ID (if empty, your own faction is used)"/>
+        
+        
+        
+        <legend>Status</legend>
+      <fieldset class="form-group">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="Online" id="Online">
+        <label class="form-check-label" for="Online">
+          Online
+        </label>
+      </div>
+	  <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="Idle" id="Idle">
+        <label class="form-check-label" for="Idle">
+          Idle
+        </label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="Offline" id="Offline" checked="">
+        <label class="form-check-label" for="Offline" >
+          Offline
+        </label>
+      </div>
+	 
+    </fieldset>
+    </div>
       </div>
 
 
