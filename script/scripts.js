@@ -61,6 +61,58 @@
 		}
 	}
 	
+	
+	
+	function factionSubmitStatus() {
+		var trustedApiKey = document.getElementById("trustedkey").value;
+		
+		sessionStorage.trustedApiKey = trustedApiKey;
+		//document.getElementById("debug").innerHTML = '<small>Debug only: API key used (to be removed after release): ' + trustedApiKey + '</small>';
+
+		if (trustedApiKey === '') {
+			printAlert('Warning', 'You might want to enter your API key if you expect this to work...');
+		} else {
+
+
+			callTornAPI(trustedApiKey, 'faction', 'basic', 'status');
+		}
+	}
+	
+	
+	function factionSubmitNews() {
+		var trustedApiKey = document.getElementById("trustedkey").value;
+		
+		sessionStorage.trustedApiKey = trustedApiKey;
+		//document.getElementById("debug").innerHTML = '<small>Debug only: API key used (to be removed after release): ' + trustedApiKey + '</small>';
+
+		if (trustedApiKey === '') {
+			printAlert('Warning', 'You might want to enter your API key if you expect this to work...');
+		} else {
+			var selection = ''
+			if (document.getElementById('armorynews').checked) {
+				selection = 'armorynews';
+			}
+			if (document.getElementById('attacknews').checked) {
+				selection = 'attacknews';
+			}
+			if (document.getElementById('crimenews').checked) {
+				selection = 'crimenews';
+			}
+			if (document.getElementById('fundsnews').checked) {
+				selection = 'fundsnews';
+			}
+			if (document.getElementById('membershipnews').checked) {
+				selection = 'membershipnews';
+			}
+			if (document.getElementById('territorynews').checked) {
+				selection = 'territorynews';
+			}
+
+			callTornAPI(trustedApiKey, 'faction', selection, 'news');
+		}
+	}
+	
+	
 	function callTornAttacksWithTimestamp(key, part, selection, source, from, to, callBackMethod) {
 		const request = new XMLHttpRequest();
 		const url='https://api.torn.com/' + part + '/?selections=' + selection + '&from=' + from + '&key=' + key + '&comment=Foxy';
@@ -140,6 +192,16 @@
 						
 					}
 					}
+					
+					if (source === 'news') {
+						printAlert('Success', 'The API Call successful, find the results below.');	
+						parseNews(jsonData[selection], selection, 'output', jsonData.name);
+					}
+					
+					if (source === 'status') {
+						printAlert('Success', 'The API Call successful, find the results below.');	
+						parseStatus(jsonData[selection], selection, 'output', jsonData['members']);
+					}
 				}
 				
 			} else {
@@ -218,6 +280,80 @@
 		});
 		
 		
+		document.getElementById(element).innerHTML = table;
+		
+	}
+	
+	
+	function parseStatus (statusData, selection, element, membersList) {
+		
+		document.getElementById('summary').innerHTML = 'You are looking for ' + selection + '.';
+
+		var table = '<div class="col-sm-12 badge-primary" ><b>Offline Members in Hospital</b></div>';
+		table = table + '<table class="table table-hover"><thead><tr>'
+				  + '<th>Name</th>'
+				  + '<th>Link</th>'
+				  + '<th>Status</th>'
+				  + '<th>Status</th>';
+				  
+		table = table + '</tr></thead><tbody>';
+		//console.log(membersList)
+		for( var id in membersList ){
+			//console.log(id)
+			var member = membersList[id];
+			//if (news.type === type) {
+
+				//var ts = new Date(news.timestamp * 1000);
+				//var formatted_date =  ts.toISOString().replace('T',' ').replace('.000Z','');
+				if (member.last_action.status == 'Offline' && !member.status.description.includes('hrs') && !member.status.description.includes('federal'))
+				table = table + '<tr>'
+
+							+'<td><a href="https://www.torn.com/profiles.php?XID=' + id + '" target="_blank">' + member.name + '</a></td>'
+							+'<td>https://www.torn.com/profiles.php?XID=' + id +  '</td>'
+							+'<td>' + member.status.description + '</td>'
+							+'<td>' + member.last_action.status + '</td>';
+				
+
+				
+				
+				table = table + '</tr>';
+			//}
+		}	
+		table = table + '</tbody></table>';
+		document.getElementById(element).innerHTML = table;
+		
+	}
+	
+	function parseNews (newsData, selection, element, membersList) {
+		
+		document.getElementById('summary').innerHTML = 'You are looking for ' + selection + '.';
+
+		var table = '<div class="col-sm-12 badge-primary" ><b> ' + selection + '</b></div>';
+		table = table + '<table class="table table-hover"><thead><tr>'
+				  + '<th>Date</th>'
+				  + '<th>News</th>';
+				  
+		table = table + '</tr></thead><tbody>';
+		
+		for( var id in newsData ){
+
+			var news = newsData[id];
+			//if (news.type === type) {
+
+				var ts = new Date(news.timestamp * 1000);
+				var formatted_date =  ts.toISOString().replace('T',' ').replace('.000Z','');
+				
+				table = table + '<tr>'
+							+'<td>' + formatted_date + '</td>'
+							+'<td>' + news.news + '</td>';
+				
+
+				
+				
+				table = table + '</tr>';
+			//}
+		}	
+		table = table + '</tbody></table>';
 		document.getElementById(element).innerHTML = table;
 		
 	}
