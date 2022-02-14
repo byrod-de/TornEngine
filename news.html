@@ -19,7 +19,7 @@
 	<br />
 	<div class="row">
 	<div class="col-sm-4 badge-primary" ><b>Torn Faction Tools</b></div>
-	<div class="col-sm-8 badge-secondary">Something about Reports</div>
+	<div class="col-sm-8 badge-secondary">Factions news display thingy</div>
 	</div>
 	<br />
 	
@@ -32,6 +32,7 @@
 
 	  <div class="collapse navbar-collapse" id="navbarColor01">
 		<ul class="navbar-nav mr-auto">
+		
 		  <li class="nav-item">
 			<a class="nav-link" href="pa_payouts.html">PA Payouts</a>
 		  </li>
@@ -39,15 +40,19 @@
 		  <li class="nav-item">
 			<a class="nav-link" href="oc_overview.html">OC Overview</a>
 		  </li>
-		  <li class="nav-item">
+		  
+		  <!--  li class="nav-item">
 			<a class="nav-link" href="reports.html">Reports</a>
-		  </li>
-		 <li class="nav-item active">
+		  </li-->
+		  
+		  <li class="nav-item active">
 			<a class="nav-link" href="news.html">News</a>
 		  </li>
-		 <li class="nav-item">
-			<a class="nav-link" href="faction.html">Faction</a>
+		  
+		  <li class="nav-item">
+			<a class="nav-link" href="members.html">Member Status</a>
 		  </li>
+		  
 		</ul>
 	  </div>
 	</nav>
@@ -61,6 +66,7 @@
 		<div class="form-group col-sm-3">
 		<label for="trustedkey">API Key *</label>
 		<input type="input" class="form-control" id="trustedkey" name="trustedkey" placeholder="API Key"/>
+		<small id="hint" class="form-text text-muted">Full Access and faction AA permission required</small>
 		</div>
 	
 	
@@ -68,7 +74,7 @@
 		<legend>Select news category</legend>
 		<div class="form-check">
         <label class="form-check-label">
-          <input type="radio" class="form-check-input" name="optionsRadios" id="armorynews" value="armorynews" >
+          <input type="radio" class="form-check-input" name="optionsRadios" id="armorynews" value="armorynews" checked="">
           Armory News
         </label>
 		</div>
@@ -106,7 +112,7 @@
 
 	</div>
 	</form>
-	<button onclick="factionSubmitNews()" class="btn btn-primary">Submit</button>  
+	<button onclick="userSubmit('news')" class="btn btn-primary">Submit</button>  
 	<br/>
 	<br/>
 	<p id="alert"></p>

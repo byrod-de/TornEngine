@@ -39,16 +39,16 @@
 			<a class="nav-link" href="oc_overview.html">OC Overview</a>
 		  </li>
 		  
-		  
-		  <li class="nav-item">
+		  <!--  li class="nav-item">
 			<a class="nav-link" href="reports.html">Reports</a>
-		  </li>
+		  </li-->
 		  
 		  <li class="nav-item">
 			<a class="nav-link" href="news.html">News</a>
 		  </li>
-		 <li class="nav-item">
-			<a class="nav-link" href="faction.html">Faction</a>
+		  
+		  <li class="nav-item">
+			<a class="nav-link" href="members.html">Member Status</a>
 		  </li>
 		</ul>
 	  </div>
@@ -63,7 +63,7 @@
 		<div class="form-group col-sm-3">
 		<label for="trustedkey">API Key *</label>
 		<input type="input" class="form-control" id="trustedkey" name="trustedkey" placeholder="API Key"/>
-		
+		<small id="hint" class="form-text text-muted">Full Access and faction AA permission required</small>
 		</div>
 	
 	
@@ -144,7 +144,7 @@
 
 	</div>
 	</form>
-	<button onclick="userSubmitOCOverview()" class="btn btn-primary">Submit</button>  
+	<button onclick="userSubmit('oc_overview')" class="btn btn-primary">Submit</button>  
 	<br/>
 	<br/>
 	<p id="alert"></p>

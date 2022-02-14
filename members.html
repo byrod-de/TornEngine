@@ -32,6 +32,7 @@
 
 	  <div class="collapse navbar-collapse" id="navbarColor01">
 		<ul class="navbar-nav mr-auto">
+		
 		  <li class="nav-item">
 			<a class="nav-link" href="pa_payouts.html">PA Payouts</a>
 		  </li>
@@ -39,15 +40,19 @@
 		  <li class="nav-item">
 			<a class="nav-link" href="oc_overview.html">OC Overview</a>
 		  </li>
-		  <li class="nav-item">
+		  
+		  <!--  li class="nav-item">
 			<a class="nav-link" href="reports.html">Reports</a>
-		  </li>
+		  </li-->
+		  
 		  <li class="nav-item">
 			<a class="nav-link" href="news.html">News</a>
 		  </li>
-		 <li class="nav-item active">
-			<a class="nav-link" href="faction.html">Faction</a>
+		  
+		  <li class="nav-item active">
+			<a class="nav-link" href="members.html">Member Status</a>
 		  </li>
+		  
 		</ul>
 	  </div>
 	</nav>
@@ -61,43 +66,78 @@
 		<div class="form-group col-sm-3">
 		<label for="trustedkey">API Key *</label>
 		<input type="input" class="form-control" id="trustedkey" name="trustedkey" placeholder="API Key"/>
+		<small id="hint" class="form-text text-muted">Public Only access is sufficient</small>
 		</div>
 	
 	
 		<div class="form-group col-sm-5">
 		<label for="factionid">Faction ID</label>
 		<input type="input" class="form-control" id="factionid" name="factionid" placeholder="Faction ID (if empty, your own faction is used)"/>
-        
-        
-        
-        <legend>Status</legend>
-      <fieldset class="form-group">
-      <div class="form-check">
-        <input class="form-check-input" type="checkbox" value="Online" id="Online">
-        <label class="form-check-label" for="Online">
-          Online
-        </label>
-      </div>
-	  <div class="form-check">
-        <input class="form-check-input" type="checkbox" value="Idle" id="Idle">
-        <label class="form-check-label" for="Idle">
-          Idle
-        </label>
-      </div>
-      <div class="form-check">
-        <input class="form-check-input" type="checkbox" value="Offline" id="Offline" checked="">
-        <label class="form-check-label" for="Offline" >
-          Offline
-        </label>
-      </div>
-	 
-    </fieldset>
+        </div>
     </div>
+    <div class="row">
+    	<div class="form-group col-sm-3">
+    	</div>
+        <div class="form-group col-sm-2">
+        <legend>Status</legend>
+	    	<fieldset class="form-group">
+	 		   	<div class="form-check">
+	        		<input class="form-check-input" type="checkbox" value="Online" id="Online">
+	        		<label class="form-check-label" for="Online">
+	         	 	Online
+	        		</label>
+	      		</div>
+			  	<div class="form-check">
+			        <input class="form-check-input" type="checkbox" value="Idle" id="Idle">
+			        <label class="form-check-label" for="Idle">
+			          Idle
+			        </label>
+		      	</div>
+			      	<div class="form-check">
+			        <input class="form-check-input" type="checkbox" value="Offline" id="Offline" checked="">
+			        <label class="form-check-label" for="Offline" >
+			          Offline
+			        </label>
+		      	</div>
+	    	</fieldset>
+	    	</div>
+	
+	
+		<div class="form-group col-sm-2">
+			<legend>Details</legend>
+	    	<fieldset class="form-group">
+	 		   	<div class="form-check">
+	        		<input class="form-check-input" type="checkbox" value="Hospital" id="Hospital" checked="">
+	        		<label class="form-check-label" for="Hospital">
+	         	 	Hospital
+	        		</label>
+	      		</div>
+			  	<div class="form-check">
+			        <input class="form-check-input" type="checkbox" value="Okay" id="Okay" checked="">
+			        <label class="form-check-label" for="Okay">
+			          Okay
+			        </label>
+		      	</div>
+			    <div class="form-check">
+			        <input class="form-check-input" type="checkbox" value="Jail" id="Jail" checked="">
+			        <label class="form-check-label" for="Jail" >
+			          Jail
+			        </label>
+		      	</div>
+		      	<div class="form-check">
+			        <input class="form-check-input" type="checkbox" value="Traveling" id="Traveling" checked="">
+			        <label class="form-check-label" for="Traveling" >
+			          Traveling
+			        </label>
+		      	</div>
+	    	</fieldset>
+	    
+	    </div>
       </div>
 
 
 	</form>
-	<button onclick="factionSubmitStatus()" class="btn btn-primary">Submit</button>  
+	<button onclick="userSubmit('members')" class="btn btn-primary">Submit</button>  
 	<br/>
 	<br/>
 	<p id="alert"></p>
