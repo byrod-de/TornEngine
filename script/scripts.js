@@ -60,7 +60,7 @@ function callTornAPI(key, part, selection, source) {
 
 	var request = new XMLHttpRequest();
 
-	request.open('GET', 'https://api.torn.com/' + part + '/' + factionid +'?selections=' + selection + '&key=' + key + '&comment=Foxy', true);
+	request.open('GET', 'https://api.torn.com/' + part + '/' + factionid +'?selections=' + selection + '&key=' + key + '&comment=tornengine', true);
 
 	request.onload = function () {
 
