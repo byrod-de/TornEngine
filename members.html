@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>foxy - Torn Faction Tools</title>
+	<title>Torn Engine - A collection of more or less useful things</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="css/bootstrap.min.css">
@@ -9,16 +9,18 @@
 	<script src="script/scripts.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+	<script src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script>
+
 
 </head>
 <body onload="loadKeyFromSession()">
 
 <div class="container-fluid">
 	<br />
-	<h1>Torn Faction Tools <small>by byrod</small></h1>
+	<h1>Torn Engine <small>by byrod</small></h1>
 	<br />
 	<div class="row">
-	<div class="col-sm-4 badge-primary" ><b>Torn Faction Tools</b></div>
+	<div class="col-sm-4 badge-primary" ><b>Faction Tools</b></div>
 	<div class="col-sm-8 badge-secondary">Get Faction Members Status</div>
 	</div>
 	<br />
@@ -66,7 +68,7 @@
 		<div class="form-group col-sm-3">
 		<label for="trustedkey">API Key *</label>
 		<input type="input" class="form-control" id="trustedkey" name="trustedkey" placeholder="API Key"/>
-		<small id="hint" class="form-text text-muted">Public Only access is sufficient</small>
+		<small id="hint" class="form-text text-muted">API key with <i>Public Only</i> access is sufficient</small>
 		</div>
 	
 	

@@ -175,7 +175,9 @@ function parseMembers (statusData, selection, element, membersList) {
 		+ statusData.name 
 		+ ' [' + statusData.ID + ']'
 		+ '</b></div>';
-	table = table + '<table class="table table-hover"><thead><tr>'
+	
+	
+	table = table + '<table class="table table-hover" id="members"><thead><tr>'
 	+ '<th>Name</th>'
 	+ '<th>Link</th>'
 	+ '<th>Status</th>'
@@ -218,6 +220,10 @@ function parseMembers (statusData, selection, element, membersList) {
 		}
 
 		table = table + '</tr>';
+		
+		//$(document).ready(function() {
+		//    $('#members').DataTable();
+		//} );
 
 	}	
 	table = table + '</tbody></table>';
