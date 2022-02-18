@@ -167,6 +167,9 @@ function parseMembers (statusData, selection, element, membersList) {
 	if (document.getElementById('Traveling').checked) {
 		detailsList = document.getElementById('Traveling').value + ', ' + detailsList;
 	}
+	if (document.getElementById('Abroad').checked) {
+		detailsList = document.getElementById('Abroad').value + ', ' + detailsList;
+	}
 
 	//document.getElementById('summary').innerHTML = 'You are looking for members with the status ' + statusList + '.';
 
@@ -174,7 +177,7 @@ function parseMembers (statusData, selection, element, membersList) {
 		+ statusData.tag_image + '"> '
 		+ statusData.name 
 		+ ' [' + statusData.ID + ']'
-		+ '</b></div>';
+		+ '</b> <input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents( document.getElementById(\'members\') );"></div>';
 	
 	
 	table = table + '<table class="table table-hover" id="members"><thead><tr>'
@@ -203,13 +206,14 @@ function parseMembers (statusData, selection, element, membersList) {
 		if (member.status.state == 'Okay') 		detailFormat = 'badge-success';
 		if (member.status.state == 'Jail') 		detailFormat = 'badge-warning';
 		if (member.status.state == 'Traveling') detailFormat = 'badge-info';
+		if (member.status.state == 'Abroad')    detailFormat = 'badge-info';
 
 		if (statusList.includes(member.last_action.status)
 				&& detailsList.includes(member.status.state)) {
 
 			table = table + '<tr>'
 
-			+'<td><a href="https://www.torn.com/profiles.php?XID=' + id + '" target="_blank">' + member.name + '</a></td>'
+			+'<td><a href="https://www.torn.com/profiles.php?XID=' + id + '" target="_blank">' + member.name + ' [' + id + ']</a></td>'
 			+'<td><a href="https://www.torn.com/loader.php?sid=attack&user2ID=' + id + '" target="_blank">https://www.torn.com/loader.php?sid=attack&user2ID=' + id +  '</a></td>'
 			+'<td>' + '<span class="badge badge-pill ' + statusFormat + '">' + member.last_action.status + '</span>' + '</td>'
 			+'<td>' + '<span class="badge badge-pill ' + detailFormat + '">' + member.status.state + '</span>' + '</td>'
