@@ -1,0 +1,28 @@
+table.dataTable thead .sorting, table.dataTable thead .sorting_asc,
+	table.dataTable thead .sorting_desc, table.dataTable thead .sorting_asc_disabled,
+	table.dataTable thead .sorting_desc_disabled {
+	cursor: pointer;
+	*cursor: hand;
+	background-repeat: no-repeat;
+	background-position: center right 10px
+}
+
+table.dataTable thead .sorting {
+	background-image: url("../images/sort_both.png")
+}
+
+table.dataTable thead .sorting_asc {
+	background-image: url("../images/sort_asc.png") !important
+}
+
+table.dataTable thead .sorting_desc {
+	background-image: url("../images/sort_desc.png") !important
+}
+
+table.dataTable thead .sorting_asc_disabled {
+	background-image: url("../images/sort_asc_disabled.png")
+}
+
+table.dataTable thead .sorting_desc_disabled {
+	background-image: url("../images/sort_desc_disabled.png")
+}

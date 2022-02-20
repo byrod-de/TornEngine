@@ -43,8 +43,10 @@ function userSubmit(selection) {
 				category = 'territorynews';
 			}
 
-			callTornAPI(trustedApiKey, 'faction', category, 'news');;
+			callTornAPI(trustedApiKey, 'faction', category, 'news');
 		}
+		
+		document.getElementById('submit').innerHTML = 'Refresh';
 	}
 
 }
@@ -171,7 +173,12 @@ function parseMembers (statusData, selection, element, membersList) {
 		detailsList = document.getElementById('Abroad').value + ', ' + detailsList;
 	}
 
-	//document.getElementById('summary').innerHTML = 'You are looking for members with the status ' + statusList + '.';
+	var filterMinutes = false;
+	if (document.getElementById('Minutes').checked) {
+		filterMinutes = true;
+	}
+	
+	var printEntry = false;
 
 	var table = '<div class="col-sm-12 badge-primary" ><b>Members Status of <img src="https://factiontags.torn.com/'
 		+ statusData.tag_image + '"> '
@@ -180,7 +187,7 @@ function parseMembers (statusData, selection, element, membersList) {
 		+ '</b> <input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents( document.getElementById(\'members\') );"></div>';
 	
 	
-	table = table + '<table class="table table-hover" id="members"><thead><tr>'
+	table = table + '<br /><table class="table table-hover" id="members"><thead><tr>'
 	+ '<th>Name</th>'
 	+ '<th>Link</th>'
 	+ '<th>Status</th>'
@@ -193,9 +200,19 @@ function parseMembers (statusData, selection, element, membersList) {
 
 	var statusFormat = '';
 	var detailFormat = '';
+	var countMembers = 0;
+	var filteredMembers = 0;
+	var statusDescriptionText = '';
+	
+	
+	var timeStamp = Math.floor(Date.now() / 1000);
+	var timeDifference = 0;
 
 	for( var id in membersList ){
-
+		
+		printEntry = false;
+		statusDescriptionText = '';
+		
 		var member = membersList[id];
 
 		if (member.last_action.status == 'Online')	statusFormat = 'badge-success';
@@ -207,9 +224,45 @@ function parseMembers (statusData, selection, element, membersList) {
 		if (member.status.state == 'Jail') 		detailFormat = 'badge-warning';
 		if (member.status.state == 'Traveling') detailFormat = 'badge-info';
 		if (member.status.state == 'Abroad')    detailFormat = 'badge-info';
+		
+		if ((filterMinutes && member.status.state == 'Hospital')
+		     || (!filterMinutes && member.status.state == 'Hospital')
+		     || (member.status.state !== 'Hospital')) {
+			
+			if (filterMinutes && member.status.state == 'Hospital') {
+				timeDifference = (member.status.until - timeStamp) / 60;
+				if (timeDifference < 15) {
+					printEntry = true;
+				}
+			} else {
+				printEntry = true;
+			}
+		}
+		
+		if (member.status.state == 'Hospital') {
+			
+			timeDifference = (member.status.until - timeStamp);
+			
+			dateObj = new Date(timeDifference * 1000);
+			hours = dateObj.getUTCHours();
+			minutes = dateObj.getUTCMinutes();
+			seconds = dateObj.getSeconds();
+
+			timeString = hours.toString().padStart(2, '0') + ' hrs ' + 
+			    minutes.toString().padStart(2, '0') + ' min ' + 
+			    seconds.toString().padStart(2, '0') + ' sec';
+			statusDescriptionText = 'In hospital for ' + timeString;
+			
+			
+			
+		} else {
+			statusDescriptionText = member.status.description;
+		}
 
 		if (statusList.includes(member.last_action.status)
-				&& detailsList.includes(member.status.state)) {
+				&& detailsList.includes(member.status.state)
+				&& printEntry) {
+			
 
 			table = table + '<tr>'
 
@@ -217,21 +270,32 @@ function parseMembers (statusData, selection, element, membersList) {
 			+'<td><a href="https://www.torn.com/loader.php?sid=attack&user2ID=' + id + '" target="_blank">https://www.torn.com/loader.php?sid=attack&user2ID=' + id +  '</a></td>'
 			+'<td>' + '<span class="badge badge-pill ' + statusFormat + '">' + member.last_action.status + '</span>' + '</td>'
 			+'<td>' + '<span class="badge badge-pill ' + detailFormat + '">' + member.status.state + '</span>' + '</td>'
-			+'<td>' + member.status.description + '</td>'
+			+'<td>' + statusDescriptionText + '</td>'
 			+'<td>' + member.last_action.relative + '</td>'
 			+'<td>' + member.level + '</td>'
 			;
+			filteredMembers++;
 		}
 
 		table = table + '</tr>';
+		countMembers++;
 		
-		//$(document).ready(function() {
-		//    $('#members').DataTable();
-		//} );
+		
 
 	}	
 	table = table + '</tbody></table>';
+	
+	$(document).ready(function() {
+	    $('#members').DataTable( {
+	        "paging":   false,
+	        "order": [[ 4, "asc" ]],
+	        "info":     false
+	    } );
+	} );
+	
 	document.getElementById(element).innerHTML = table;
+	
+	document.getElementById('summary').innerHTML = filteredMembers  + ' members out of ' + countMembers + ' total members filtered.';
 
 }
 
@@ -240,7 +304,7 @@ function parseNews (newsData, selection, element, membersList) {
 	document.getElementById('summary').innerHTML = 'You are looking for ' + selection + '.';
 
 	var table = '<div class="col-sm-12 badge-primary" ><b> ' + selection + '</b></div>';
-	table = table + '<table class="table table-hover"><thead><tr>'
+	table = table + '<br /><table class="table table-hover" id="news"><thead><tr>'
 	+ '<th>Date</th>'
 	+ '<th>News</th>';
 
@@ -260,6 +324,13 @@ function parseNews (newsData, selection, element, membersList) {
 
 	}	
 	table = table + '</tbody></table>';
+	
+	$(document).ready(function() {
+	    $('#news').DataTable( {
+	        "paging":   false,
+	        "info":     false
+	    } );
+	} );
 	document.getElementById(element).innerHTML = table;
 
 }
@@ -568,8 +639,11 @@ function parsePayouts (crimeData, element, membersList) {
 	+'<td><span class="badge badge-pill '+badgeSuccess+'">'+ factionSuccess + '</span></td>'
 	+'</tr>';
 	summary = summary + '</tbody></table>';
+	
+
 
 	document.getElementById('summary').innerHTML = summary;
+
 }
 
 function parseOCs (crimeData, element, membersList) {
@@ -625,7 +699,7 @@ function parseOCs (crimeData, element, membersList) {
 	if (document.getElementById('Blackmailing').checked) {
 		crimeList = document.getElementById('Blackmailing').value + ',' + crimeList;
 	}
-	//console.log(crimeList);
+	//console.log(currentMonth);
 
 	var table = '<div class="col-sm-12 badge-primary" ><b>Organized Crime Overview for ' + monthToText(currentMonth) + '</b> <input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents( document.getElementById(\'totals\') );"></div>';
 	table = table + '<br />';
@@ -756,6 +830,7 @@ function sortObj(obj) {
 
 function monthToText(month) {
 	const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+	return monthNames[month-1];
 }
 
 function selectElementContents(el) {
@@ -790,5 +865,5 @@ function loadKeyFromSession() {
 }
 
 function disableElement(source, target) {
-	document.getElementById(target).disabled = document.getElementById(source).checked;
+	document.getElementById(target).disabled = !document.getElementById(source).checked;
 }

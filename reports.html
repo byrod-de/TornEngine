@@ -8,6 +8,7 @@
 	<link rel="stylesheet" href="css/bootstrap.css">
 	<script src="script/scripts.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
 </head>
@@ -94,11 +95,15 @@
 
 	</div>
 	</form>
-	<button onclick="userSubmit('reports')" class="btn btn-primary">Submit</button>  
-	<br/>
-	<br/>
-	<p id="alert"></p>
-	<p id="debug"></p> <br/>
+
+	<div class="row">
+		<div class="form-group col-sm-1">
+			<button onclick="userSubmit('reports')" class="btn btn-primary" id="submit">Submit</button>
+		</div>
+		<div class="form-group col-sm-7" id="alert">
+		</div>
+	</div>
+
 	<p id="summary"></p> <br/>
 	<p id="output"></p> <br/>
 
