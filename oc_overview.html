@@ -58,92 +58,96 @@
 	
 	<!-- Here comes the content *sings* -->
 	<form id="userForm">
-	<div class="row">
-	
-		<div class="form-group col-sm-3">
-		<label for="trustedkey">API Key *</label>
-		<input type="input" class="form-control" id="trustedkey" name="trustedkey" placeholder="API Key"/>
-		<small id="hint" class="form-text text-muted">API key with <i>Full Access</i> and faction AA permission required</small>
-		</div>
-	
-	
-		<div class="form-group col-sm-5">
+			<div class="row">
 
-		<legend>Select timeframe for Organized Crimes results</legend>
-		<div class="form-check">
-        <label class="form-check-label">
-          <input type="radio" class="form-check-input" name="optionsRadios" id="current" value="current">
-          Current month
-        </label>
-		</div>
-		<div class="form-check">
-		<label class="form-check-label">
-          <input type="radio" class="form-check-input" name="optionsRadios" id="last" value="last" checked="checked">
-          Last month
-        </label>
-		</div>
-		<div class="form-check">
-		<label class="form-check-label">
-          <input type="radio" class="form-check-input" name="optionsRadios" id="before" value="before">
-          The month before
-        </label>
-      </div>
-	  <br />
-	  <legend>Crime Type</legend>
-      <fieldset class="form-group">
-      <div class="form-check">
-        <input class="form-check-input" type="checkbox" value="1" id="Blackmailing">
-        <label class="form-check-label" for="Blackmailing">
-          Blackmailing
-        </label>
-      </div>
-	  <div class="form-check">
-        <input class="form-check-input" type="checkbox" value="2" id="Kidnapping">
-        <label class="form-check-label" for="Kidnapping">
-          Kidnapping
-        </label>
-      </div>
-      <div class="form-check">
-        <input class="form-check-input" type="checkbox" value="3" id="BombThreat">
-        <label class="form-check-label" for="BombThreat">
-          Bomb Threat
-        </label>
-      </div>
-	  <div class="form-check">
-        <input class="form-check-input" type="checkbox" value="4" id="PlannedRobbery" checked="">
-        <label class="form-check-label" for="PlannedRobbery">
-          Planned Robbery
-        </label>
-      </div>
-	  <div class="form-check">
-        <input class="form-check-input" type="checkbox" value="5" id="RobbingOfAMoneyTrain" checked="">
-        <label class="form-check-label" for="RobbingOfAMoneyTrain">
-          Robbing Of A Money Train
-        </label>
-      </div>
-	  <div class="form-check">
-        <input class="form-check-input" type="checkbox" value="6" id="TakeOverACruiseLiner" checked="">
-        <label class="form-check-label" for="TakeOverACruiseLiner">
-          Take Over A Cruise Liner
-        </label>
-      </div>
-	  <div class="form-check">
-        <input class="form-check-input" type="checkbox" value="7" id="PlaneHijacking" checked="">
-        <label class="form-check-label" for="PlaneHijacking">
-          Plane Hijacking
-        </label>
-      </div>
-	  <div class="form-check">
-        <input class="form-check-input" type="checkbox" value="8" id="PoliticalAssassination" checked="">
-        <label class="form-check-label" for="PoliticalAssassination">
-          Political Assassination
-        </label>
-      </div>
-    </fieldset>
-	</div>
+				<div class="form-group col-sm-3">
+					<label for="trustedkey">API Key *</label> <input type="input"
+						class="form-control" id="trustedkey" name="trustedkey"
+						placeholder="API Key" /> <small id="hint"
+						class="form-text text-muted">API key with <i>Full
+							Access</i> and faction AA permission required
+					</small>
+				</div>
 
-	</div>
-	</form>
+
+				<div class="form-group col-sm-5">
+
+					<legend>Select timeframe for Organized Crimes results</legend>
+					<div class="form-check">
+						<label class="form-check-label"> <input type="radio"
+							class="form-check-input" name="optionsRadios" id="current"
+							value="current"> Current month
+						</label>
+					</div>
+					<div class="form-check">
+						<label class="form-check-label"> <input type="radio"
+							class="form-check-input" name="optionsRadios" id="last"
+							value="last" checked="checked"> Last month
+						</label>
+					</div>
+					<div class="form-check">
+						<label class="form-check-label"> <input type="radio"
+							class="form-check-input" name="optionsRadios" id="before"
+							value="before"> The month before
+						</label>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="form-group col-sm-3" id="alert"></div>
+				<div class="form-group col-sm-2">
+					<legend>Crime Type</legend>
+					<fieldset class="form-group">
+						<div class="form-check">
+							<input class="form-check-input" type="checkbox" value="1"
+								id="Blackmailing"> <label class="form-check-label"
+								for="Blackmailing"> Blackmailing </label>
+						</div>
+						<div class="form-check">
+							<input class="form-check-input" type="checkbox" value="2"
+								id="Kidnapping"> <label class="form-check-label"
+								for="Kidnapping"> Kidnapping </label>
+						</div>
+						<div class="form-check">
+							<input class="form-check-input" type="checkbox" value="3"
+								id="BombThreat"> <label class="form-check-label"
+								for="BombThreat"> Bomb Threat </label>
+						</div>
+						<div class="form-check">
+							<input class="form-check-input" type="checkbox" value="4"
+								id="PlannedRobbery" checked=""> <label
+								class="form-check-label" for="PlannedRobbery"> Planned
+								Robbery </label>
+						</div>
+						<div class="form-check">
+							<input class="form-check-input" type="checkbox" value="5"
+								id="RobbingOfAMoneyTrain" checked=""> <label
+								class="form-check-label" for="RobbingOfAMoneyTrain">
+								Robbing Of A Money Train </label>
+						</div>
+						<div class="form-check">
+							<input class="form-check-input" type="checkbox" value="6"
+								id="TakeOverACruiseLiner" checked=""> <label
+								class="form-check-label" for="TakeOverACruiseLiner">
+								Take Over A Cruise Liner </label>
+						</div>
+						<div class="form-check">
+							<input class="form-check-input" type="checkbox" value="7"
+								id="PlaneHijacking" checked=""> <label
+								class="form-check-label" for="PlaneHijacking"> Plane
+								Hijacking </label>
+						</div>
+						<div class="form-check">
+							<input class="form-check-input" type="checkbox" value="8"
+								id="PoliticalAssassination" checked=""> <label
+								class="form-check-label" for="PoliticalAssassination">
+								Political Assassination </label>
+						</div>
+					</fieldset>
+				</div>
+
+			</div>
+		</form>
 
 	<div class="row">
 		<div class="form-group col-sm-1">

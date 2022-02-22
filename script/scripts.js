@@ -51,6 +51,38 @@ function userSubmit(selection) {
 
 }
 
+function callTornStatsAPI(key, id) {
+
+	var request = new XMLHttpRequest();
+
+	request.open('GET', 'https://www.tornstats.com/api/v2/' + key + '/spy/user/' + id, true);
+
+	request.onload = function () {
+
+		var jsonData = JSON.parse(this.response);
+
+		if (request.status >= 200 && request.status < 400) {
+
+			
+			var ts = new Date(jsonData.spy.timestamp * 1000);
+			var formatted_date =  ts.toISOString().replace('T',' ').replace('.000Z','');
+			
+			alert(  'Player: ' + jsonData.spy.player_name + ' [' + jsonData.spy.player_id + ']'
+					+ '\nStrengh: ' + jsonData.spy.strength.toLocaleString('en-US')
+					+ '\nDefense: ' + jsonData.spy.defense.toLocaleString('en-US')
+					+ '\nSpeed: ' + jsonData.spy.speed.toLocaleString('en-US')
+					+ '\nDexterity: ' + jsonData.spy.dexterity.toLocaleString('en-US')
+					+ '\nTotal: ' + jsonData.spy.total.toLocaleString('en-US')
+					+ '\nDate of spy: ' + formatted_date
+					+ '\nType: ' + jsonData.spy.type)
+
+
+		} else {
+			printAlert('#chedded', 'Torn Stats API is currently not available.');
+		}
+	}
+	request.send();
+}
 
 function callTornAPI(key, part, selection, source) {
 
@@ -69,7 +101,7 @@ function callTornAPI(key, part, selection, source) {
 		var jsonData = JSON.parse(this.response);
 
 		if (request.status >= 200 && request.status < 400) {
-
+			
 			if (jsonData.hasOwnProperty('error')){
 				if (jsonData['error'].code === 7) {
 					printAlert('Warning', 'You are trying to access sensible faction data, but are not allowed to. Ask your faction leader for faction API permissions.');
@@ -103,6 +135,7 @@ function callTornAPI(key, part, selection, source) {
 				if (selection === 'basic,reports' && source === 'reports') {
 					if (jsonData.hasOwnProperty('reports') && jsonData.hasOwnProperty('members')){
 						printAlert('Success', 'The API Call successful, find the results below.');
+						
 						parseReports(jsonData['reports'], 'output', jsonData['members']);
 					} else {
 						printAlert('Warning', 'Ask your faction leader for faction API permissions.');
@@ -144,6 +177,8 @@ function callTornAPI(key, part, selection, source) {
 }	
 
 function parseMembers (statusData, selection, element, membersList) {
+	
+	var trustedApiKey = document.getElementById("trustedkey").value;
 
 	var statusList = '';
 	if (document.getElementById('Online').checked) {
@@ -194,7 +229,8 @@ function parseMembers (statusData, selection, element, membersList) {
 	+ '<th>Details</th>'
 	+ '<th>Description</th>'
 	+ '<th>Last Action</th>'
-	+ '<th>Level</th>';
+	+ '<th>Level</th>'
+	+ '<th>Stats</th>';
 
 	table = table + '</tr></thead><tbody>';
 
@@ -273,6 +309,9 @@ function parseMembers (statusData, selection, element, membersList) {
 			+'<td>' + statusDescriptionText + '</td>'
 			+'<td>' + member.last_action.relative + '</td>'
 			+'<td>' + member.level + '</td>'
+			+'<td>' 
+			+'<button type="button" onclick="callTornStatsAPI(\'' + trustedApiKey + '\', ' + id + ')" class="btn btn-secondary">Show Stats</button>'
+			+'</td>'
 			;
 			filteredMembers++;
 		}
@@ -280,7 +319,7 @@ function parseMembers (statusData, selection, element, membersList) {
 		table = table + '</tr>';
 		countMembers++;
 		
-		
+		//callTornStatsAPI(trustedApiKey, 1132772);
 
 	}	
 	table = table + '</tbody></table>';
@@ -810,15 +849,25 @@ function parseOCs (crimeData, element, membersList) {
 
 }
 
+function showStats(id) {
+	var summary = '<div id="myModal" class="modal"><div class="modal-content"><span class="close">&times;</span><p>Some text in the Modal..</p></div></div>';
+	
+	document.getElementById('summary').innerHTML = summary;
+	
+	modal.style.display = "block";
+	
+}
+
 function printAlert(alertType, alertText) {
-	var alertClass;
-	if (alertType === 'Error')    { alertClass = 'alert-danger' };
-	if (alertType === 'Success')  { alertClass = 'alert-success' };
-	if (alertType === 'Info')     { alertClass = 'alert-info' };
-	if (alertType === 'Warning')  { alertClass = 'alert-warning' };
-	if (alertType === '#chedded') { alertClass = 'alert-danger' };
+	var alertClass, apiKeyForm;
+	if (alertType === 'Error')    { alertClass = 'alert-danger'; apiKeyForm = 'form-control is-invalid'; };
+	if (alertType === 'Success')  { alertClass = 'alert-success'; apiKeyForm = 'form-control is-valid';  };
+	if (alertType === 'Info')     { alertClass = 'alert-info'; apiKeyForm = 'form-control is-valid';  };
+	if (alertType === 'Warning')  { alertClass = 'alert-warning'; apiKeyForm = 'form-control is-invalid';  };
+	if (alertType === '#chedded') { alertClass = 'alert-danger'; apiKeyForm = 'form-control is-invalid';  };
 
 	document.getElementById('alert').innerHTML = '<div class="alert ' + alertClass + '"><strong>' + alertType + ':</strong> ' + alertText + '</div>';
+	document.getElementById('trustedkey').className  = apiKeyForm;
 }
 
 function sortObj(obj) {
