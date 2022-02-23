@@ -52,6 +52,8 @@ function userSubmit(selection) {
 }
 
 function callTornStatsAPI(key, id) {
+	document.getElementById('statsModalLabel').innerHTML = 'Calling TornStats API';
+	document.getElementById('statsModalBody').innerHTML =  'Please hold the line...';
 
 	var request = new XMLHttpRequest();
 
@@ -68,6 +70,11 @@ function callTornStatsAPI(key, id) {
 				document.getElementById('statsModalBody').innerHTML = '<div class="alert alert-warning"><strong>Warning: </strong>Calling TornStats failed.</div>'
 																		+ '<br />Please make sure to use the same API Key as confiured in <a href="https://beta.tornstats.com/settings/general" target="_blank">TornStats</a>.';
 			} else {
+				if (jsonData.spy.message.includes("Spy not found.")) {
+					document.getElementById('statsModalLabel').innerHTML = 'Spy not found';
+					document.getElementById('statsModalBody').innerHTML = '<div class="alert alert-info"><strong>Warning: </strong>Spy not found.</div>';
+					
+				} else {
 			
 			var ts = new Date(jsonData.spy.timestamp * 1000);
 			var formatted_date =  ts.toISOString().replace('T',' ').replace('.000Z','');
@@ -82,6 +89,7 @@ function callTornStatsAPI(key, id) {
 					+ '<div class="text-muted"><strong>Date of spy:</strong> ' + formatted_date + '</div>'
 					+ '<div class="text-muted"><strong>Type:</strong> ' + jsonData.spy.type + '</div>'
 					+ '<br /><br /><a href="https://www.torn.com/loader.php?sid=attack&user2ID=' + jsonData.spy.player_id + '" target="_blank">https://www.torn.com/loader.php?sid=attack&user2ID=' + jsonData.spy.player_id +  '</a>';
+			}
 			}
 
 		} else {
