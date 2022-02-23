@@ -63,19 +63,26 @@ function callTornStatsAPI(key, id) {
 
 		if (request.status >= 200 && request.status < 400) {
 
+			if (jsonData.message.includes("ERROR")) {
+				document.getElementById('statsModalLabel').innerHTML = 'Error Occurred';
+				document.getElementById('statsModalBody').innerHTML = '<div class="alert alert-warning"><strong>Warning: </strong>Calling TornStats failed.</div>'
+																		+ '<br />Please make sure to use the same API Key as confiured in <a href="https://beta.tornstats.com/settings/general" target="_blank">TornStats</a>.';
+			} else {
 			
 			var ts = new Date(jsonData.spy.timestamp * 1000);
 			var formatted_date =  ts.toISOString().replace('T',' ').replace('.000Z','');
 			
-			alert(  'Player: ' + jsonData.spy.player_name + ' [' + jsonData.spy.player_id + ']'
-					+ '\nStrengh: ' + jsonData.spy.strength.toLocaleString('en-US')
-					+ '\nDefense: ' + jsonData.spy.defense.toLocaleString('en-US')
-					+ '\nSpeed: ' + jsonData.spy.speed.toLocaleString('en-US')
-					+ '\nDexterity: ' + jsonData.spy.dexterity.toLocaleString('en-US')
-					+ '\nTotal: ' + jsonData.spy.total.toLocaleString('en-US')
-					+ '\nDate of spy: ' + formatted_date
-					+ '\nType: ' + jsonData.spy.type)
-
+			
+			document.getElementById('statsModalLabel').innerHTML = '<strong>Player:</strong> ' + jsonData.spy.player_name + ' [' + jsonData.spy.player_id + ']';
+			document.getElementById('statsModalBody').innerHTML = '<div class="text-muted"><strong>Strength:</strong> ' + jsonData.spy.strength.toLocaleString('en-US') + '</div>'
+					+ '<div class="text-muted"><strong>Defense:</strong> ' + jsonData.spy.defense.toLocaleString('en-US') + '</div>'
+					+ '<div class="text-muted"><strong>Speed:</strong> ' + jsonData.spy.speed.toLocaleString('en-US') + '</div>'
+					+ '<div class="text-muted"><strong>Dexterity:</strong> ' + jsonData.spy.dexterity.toLocaleString('en-US') + '</div>'
+					+ '<div class="text-primary"><strong>Total:</strong> ' + jsonData.spy.total.toLocaleString('en-US') + '</div>'
+					+ '<div class="text-muted"><strong>Date of spy:</strong> ' + formatted_date + '</div>'
+					+ '<div class="text-muted"><strong>Type:</strong> ' + jsonData.spy.type + '</div>'
+					+ '<br /><br /><a href="https://www.torn.com/loader.php?sid=attack&user2ID=' + jsonData.spy.player_id + '" target="_blank">https://www.torn.com/loader.php?sid=attack&user2ID=' + jsonData.spy.player_id +  '</a>';
+			}
 
 		} else {
 			printAlert('#chedded', 'Torn Stats API is currently not available.');
@@ -310,7 +317,8 @@ function parseMembers (statusData, selection, element, membersList) {
 			+'<td>' + member.last_action.relative + '</td>'
 			+'<td>' + member.level + '</td>'
 			+'<td>' 
-			+'<button type="button" onclick="callTornStatsAPI(\'' + trustedApiKey + '\', ' + id + ')" class="btn btn-secondary">Show Stats</button>'
+			//<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+			+'<button type="button" onclick="callTornStatsAPI(\'' + trustedApiKey + '\', ' + id + ')" class="btn btn-secondary" data-toggle="modal" data-target="#statsModal">Show Stats</button>'
 			+'</td>'
 			;
 			filteredMembers++;
