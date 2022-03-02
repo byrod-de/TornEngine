@@ -6,116 +6,132 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="css/bootstrap.min.css">
 	<link rel="stylesheet" href="css/bootstrap.css">
+	<link rel="stylesheet" href="css/dataTables.min.css">
+	
 	<script src="script/scripts.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-	<script src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-
+	<script src="script/jquery.min.js"></script>
+	<script src="script/bootstrap.bundle.min.js"></script>
+	<script src="script/custom.js"></script>
+	<script src="script/jquery.dataTables.min.js"></script>
 </head>
 <body onload="loadKeyFromSession()">
 
-<div class="container-fluid">
-	<br />
-	<h1>Torn Engine <small></small></h1>
-	<br />
-	<div class="row">
-	<div class="col-sm-4 badge-primary" ><b>Faction Tools</b></div>
-	<div class="col-sm-8 badge-secondary">Something about Reports</div>
-	</div>
-	<br />
-	
-	<!-- Navbar -->	
-	<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-	  <a class="navbar-brand" href="index.html">Home</a>
-	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
-		<span class="navbar-toggler-icon"></span>
-	  </button>
+	<div class="container-fluid">
+		<br />
+		<h1>
+			Torn Engine <small></small>
+		</h1>
+		<br />
+		<div class="row">
+			<div class="col-sm-4 badge-primary">
+				<b>Faction Tools</b>
+			</div>
+			<div class="col-sm-8 badge-secondary">Something about Reports</div>
+		</div>
+		<br />
 
-	  <div class="collapse navbar-collapse" id="navbarColor01">
-		<ul class="navbar-nav mr-auto">
-		
-		  <li class="nav-item">
-			<a class="nav-link" href="pa_payouts.html">PA Payouts</a>
-		  </li>
-		  
-		  <li class="nav-item">
-			<a class="nav-link" href="oc_overview.html">OC Overview</a>
-		  </li>
-		  
-		  <!--  li class="nav-item active">
+		<!-- Navbar -->
+		<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+			<a class="navbar-brand" href="index.html">Home</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse"
+				data-target="#navbarColor01" aria-controls="navbarColor01"
+				aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+
+			<div class="collapse navbar-collapse" id="navbarColor01">
+				<ul class="navbar-nav mr-auto">
+
+					<li class="nav-item"><a class="nav-link"
+						href="pa_payouts.html">PA Payouts</a></li>
+
+					<li class="nav-item"><a class="nav-link"
+						href="oc_overview.html">OC Overview</a></li>
+
+					<!--  li class="nav-item active">
 			<a class="nav-link" href="reports.html">Reports</a>
 		  </li -->
-		  
-		  <li class="nav-item">
-			<a class="nav-link" href="news.html">News</a>
-		  </li>
-		  
-		  <li class="nav-item">
-			<a class="nav-link" href="members.html">Member Status</a>
-		  </li>
-		</ul>
-	  </div>
-	</nav>
-	<br />
-	
-	<!-- Here comes the content *sings* -->
-	<form id="userForm">
-	<div class="row">
-	
-		<div class="form-group col-sm-3">
-		<label for="trustedkey">API Key *</label>
-		<input type="input" class="form-control" id="trustedkey" name="trustedkey" placeholder="API Key"/>
-		<small id="hint" class="form-text text-muted">API key with <i>Full Access</i> and faction AA permission required</small>
+
+					<li class="nav-item"><a class="nav-link" href="news.html">News</a>
+					</li>
+
+					<li class="nav-item"><a class="nav-link" href="members.html">Member
+							Status</a></li>
+				</ul>
+			</div>
+		</nav>
+		<br />
+
+		<!-- Here comes the content *sings* -->
+		<form id="userForm">
+			<div class="row">
+
+				<div class="form-group col-sm-3">
+					<label for="trustedkey">API Key *</label> <input type="input"
+						class="form-control" id="trustedkey" name="trustedkey"
+						placeholder="API Key" /> <small id="hint"
+						class="form-text text-muted">API key with <i>Full
+							Access</i> and faction AA permission required
+					</small>
+				</div>
+
+
+				<div class="form-group col-sm-5">
+					<legend>Select report category</legend>
+					<div class="form-check">
+						<label class="form-check-label"> <input type="radio"
+							class="form-check-input" name="optionsRadios" id="stats"
+							value="stats"> Stat Spies
+						</label>
+					</div>
+					<div class="form-check">
+						<label class="form-check-label"> <input type="radio"
+							class="form-check-input" name="optionsRadios" id="money"
+							value="money"> Money Spies
+						</label>
+					</div>
+					<div class="form-check">
+						<label class="form-check-label"> <input type="radio"
+							class="form-check-input" name="optionsRadios" id="friendorfoe"
+							value="friendorfoe"> Friend or Foe
+						</label>
+					</div>
+
+				</div>
+
+			</div>
+		</form>
+
+		<div class="row">
+			<div class="form-group col-sm-1">
+				<button onclick="userSubmit('reports')" class="btn btn-primary"
+					id="submit">Submit</button>
+			</div>
+			<div class="form-group col-sm-7" id="alert"></div>
 		</div>
-	
-	
-		<div class="form-group col-sm-5">
-		<legend>Select report category</legend>
-		<div class="form-check">
-        <label class="form-check-label">
-          <input type="radio" class="form-check-input" name="optionsRadios" id="stats" value="stats" >
-          Stat Spies
-        </label>
+
+		<p id="summary"></p>
+		<br />
+		<p id="output"></p>
+		<br />
+
+
+		<div class="card border-primary mb-3" style="max-width: 100%;">
+			<div class="card-header" id="contact">Fineprint</div>
+			<div class="card-body">
+				<p class="card-text">
+					Please note this is an early version, so it may or may not be a
+					little bit buggy. Let me (<a
+						href="https://www.torn.com/profiles.php?XID=1132772"
+						class="card-link" target="_blank"> byrod [1132772] </a>) know
+					about any issues. Thanks!<br /> * Your API key will not be stored
+					or logged, and is only used to call <a href="https://api.torn.com"
+						class="card-link" target="_blank">https://api.torn.com</a>.
+				</p>
+			</div>
 		</div>
-		<div class="form-check">
-		<label class="form-check-label">
-          <input type="radio" class="form-check-input" name="optionsRadios" id="money" value="money">
-          Money Spies
-        </label>
-		</div>
-		<div class="form-check">
-		<label class="form-check-label">
-          <input type="radio" class="form-check-input" name="optionsRadios" id="friendorfoe" value="friendorfoe">
-          Friend or Foe
-        </label>
-      </div>
 
 	</div>
-
-	</div>
-	</form>
-
-	<div class="row">
-		<div class="form-group col-sm-1">
-			<button onclick="userSubmit('reports')" class="btn btn-primary" id="submit">Submit</button>
-		</div>
-		<div class="form-group col-sm-7" id="alert">
-		</div>
-	</div>
-
-	<p id="summary"></p> <br/>
-	<p id="output"></p> <br/>
-
-
-<div class="card border-primary mb-3" style="max-width: 100%;">
-  <div class="card-header" id="contact">Fineprint</div>
-  <div class="card-body">
-    <p class="card-text">Please note this is an early version, so it may or may not be a little bit buggy. Let me (<a href="https://www.torn.com/profiles.php?XID=1132772" class="card-link" target="_blank"> byrod [1132772] </a>) know about any issues. Thanks!<br />
-	* Your API key will not be stored or logged, and is only used to call <a href="https://api.torn.com" class="card-link" target="_blank">https://api.torn.com</a>.</p>
-  </div>
-</div>
-
-</div>
 
 </body>
 </html>

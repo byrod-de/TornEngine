@@ -325,7 +325,6 @@ function parseMembers (statusData, selection, element, membersList) {
 			+'<td>' + member.last_action.relative + '</td>'
 			+'<td>' + member.level + '</td>'
 			+'<td>' 
-			//<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
 			+'<button type="button" onclick="callTornStatsAPI(\'' + trustedApiKey + '\', ' + id + ')" class="btn btn-secondary" data-toggle="modal" data-target="#statsModal">Show Stats</button>'
 			+'</td>'
 			;
@@ -334,9 +333,6 @@ function parseMembers (statusData, selection, element, membersList) {
 
 		table = table + '</tr>';
 		countMembers++;
-		
-		//callTornStatsAPI(trustedApiKey, 1132772);
-
 	}	
 	table = table + '</tbody></table>';
 	
@@ -443,7 +439,6 @@ function parseReports (reportData, element, membersList) {
 			table = table + '<tr>'
 			+'<td>' + formatted_date + '</td>'
 			+'<td><a href="https://www.torn.com/profiles.php?XID=' + report.user_id + '" target="_blank">' + membersList[report.user_id].name + '</a></td>'
-			//+'<td>' + header + '</td>'
 			+'<td>' + header + '</td>'
 			+'<td><a href="https://www.torn.com/profiles.php?XID=' + report.target + '" target="_blank">' + report.target + '</a></td>';
 
@@ -538,7 +533,8 @@ function parsePayouts (crimeData, element, membersList) {
 
 	for( var id in crimeData ){
 		var crime = crimeData[id];
-		if (crime.crime_id === 8) { //8 = PA
+		// 8 = PA
+		if (crime.crime_id === 8) { 
 			var ts = new Date(crime.time_completed * 1000);
 
 			if (crime.initiated === 1 && ts.getMonth()+1 === currentMonth) {
@@ -585,6 +581,16 @@ function parsePayouts (crimeData, element, membersList) {
 							}
 						} else {
 							memberName = memberID;
+							
+							if (memberName in memberMoney) {
+								memberMoney[memberName] = memberMoney[memberName] + (crime.money_gain / split);
+								memberSuccess[memberName] = memberSuccess[memberName] +success;
+								memberFailed[memberName] = memberFailed[memberName] + failed;
+							} else {
+								memberMoney[memberName] = (crime.money_gain / split);
+								memberSuccess[memberName] = success;
+								memberFailed[memberName] = failed;
+							}
 						}
 
 						if (participants === '') {
@@ -754,11 +760,11 @@ function parseOCs (crimeData, element, membersList) {
 	if (document.getElementById('Blackmailing').checked) {
 		crimeList = document.getElementById('Blackmailing').value + ',' + crimeList;
 	}
-	//console.log(currentMonth);
 
 	var table = '<div class="col-sm-12 badge-primary" ><b>Organized Crime Overview for ' + monthToText(currentMonth) + '</b> <input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents( document.getElementById(\'totals\') );"></div>';
 	table = table + '<br />';
-	table = table + '<table class="table table-hover" id="totals"><thead><tr>'
+
+	table = table + '<table class="table table-hover" id="members"><thead><tr>'
 	+ '<th>Date</th>'
 	+ '<th>Participants</th>'
 	+ '<th>Crime Type</th>'
@@ -771,16 +777,16 @@ function parseOCs (crimeData, element, membersList) {
 	for( var id in crimeData ){
 		var crime = crimeData[id];
 
-		//console.log(crime.crime_name);
+		// console.log(crime.crime_name);
 		if (crimeList.includes(crime.crime_id)) {
-			//8 = Political Assassination
-			//7 = Plane hijacking
-			//6 = Take over a cruise liner
-			//5 = Robbing of a money train
-			//4 = Planned robbery
-			//3 = Bomb Threat
-			//2 = Kidnapping
-			//1 = Blackmailing
+			// 8 = Political Assassination
+			// 7 = Plane hijacking
+			// 6 = Take over a cruise liner
+			// 5 = Robbing of a money train
+			// 4 = Planned robbery
+			// 3 = Bomb Threat
+			// 2 = Kidnapping
+			// 1 = Blackmailing
 			var ts = new Date(crime.time_completed * 1000);
 
 			if (crime.initiated === 1 && ts.getMonth()+1 === currentMonth) {
@@ -861,17 +867,10 @@ function parseOCs (crimeData, element, membersList) {
 	+'</tr>';
 
 	table = table + '</tbody></table>';
+	
 	document.getElementById(element).innerHTML = table;
+	
 
-}
-
-function showStats(id) {
-	var summary = '<div id="myModal" class="modal"><div class="modal-content"><span class="close">&times;</span><p>Some text in the Modal..</p></div></div>';
-	
-	document.getElementById('summary').innerHTML = summary;
-	
-	modal.style.display = "block";
-	
 }
 
 function printAlert(alertType, alertText) {
