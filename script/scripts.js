@@ -36,6 +36,9 @@ function userSubmit(selection) {
 			if (document.getElementById('fundsnews').checked) {
 				category = 'fundsnews';
 			}
+			if (document.getElementById('mainnews').checked) {
+				category = 'mainnews';
+			}
 			if (document.getElementById('membershipnews').checked) {
 				category = 'membershipnews';
 			}
@@ -379,6 +382,7 @@ function parseNews (newsData, selection, element, membersList) {
 	$(document).ready(function() {
 	    $('#news').DataTable( {
 	        "paging":   false,
+	        "order": [[ 0, "desc" ]],
 	        "info":     false
 	    } );
 	} );
