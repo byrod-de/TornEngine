@@ -49,6 +49,10 @@ function userSubmit(selection) {
 			callTornAPI(trustedApiKey, 'faction', category, 'news');
 		}
 		
+		if (selection == 'rankedwars')     {
+			callTornAPI(trustedApiKey, 'torn', 'rankedwars', 'rankedwars');
+		}
+		
 		document.getElementById('submit').innerHTML = 'Refresh';
 	}
 
@@ -94,6 +98,32 @@ function callTornStatsAPI(key, id) {
 					+ '<br /><br /><a href="https://www.torn.com/loader.php?sid=attack&user2ID=' + jsonData.spy.player_id + '" target="_blank">https://www.torn.com/loader.php?sid=attack&user2ID=' + jsonData.spy.player_id +  '</a>';
 			}
 			}
+
+		} else {
+			printAlert('#chedded', 'Torn Stats API is currently not available.');
+		}
+	}
+	request.send();
+}
+
+function callRankedWarDetails(key, id) {
+	document.getElementById('rankedWarModalLabel').innerHTML = 'Calling TornStats API';
+	document.getElementById('rankedWarModalBody').innerHTML =  'Please hold the line...';
+
+	var request = new XMLHttpRequest();
+
+	request.open('GET', 'https://api.torn.com/torn/' + id +'?selections=rankedwarreport&key=' + key + '&comment=tornengine', true);
+
+	request.onload = function () {
+
+		var jsonData = JSON.parse(this.response);
+
+		if (request.status >= 200 && request.status < 400) {
+			
+			document.getElementById('rankedWarModalLabel').innerHTML = 'Work in progress';
+			document.getElementById('rankedWarModalBody').innerHTML = '<div class="alert alert-info"><strong>Info: </strong>Nice try, but this feature is not active yet (-:</div>';
+
+			
 
 		} else {
 			printAlert('#chedded', 'Torn Stats API is currently not available.');
@@ -185,6 +215,11 @@ function callTornAPI(key, part, selection, source) {
 					printAlert('Success', 'The API Call successful, find the results below.');	
 					parseMembers(jsonData, selection, 'output', jsonData['members']);
 				}
+				
+				if (source === 'rankedwars') {
+					printAlert('Success', 'The API Call successful, find the results below.');	
+					parseRankedWars(jsonData, selection, 'output', jsonData['rankedwars']);
+				}
 			}
 
 		} else {
@@ -199,32 +234,18 @@ function parseMembers (statusData, selection, element, membersList) {
 	var trustedApiKey = document.getElementById("trustedkey").value;
 
 	var statusList = '';
-	if (document.getElementById('Online').checked) {
-		statusList = document.getElementById('Online').value + ', ' + statusList;
-	}
-	if (document.getElementById('Idle').checked) {
-		statusList = document.getElementById('Idle').value + ', ' + statusList;
-	}
-	if (document.getElementById('Offline').checked) {
-		statusList = document.getElementById('Offline').value + ', ' + statusList;
-	}
+	var markedCheckboxStatus = document.getElementsByName('status');  
+	  for (var checkbox of markedCheckboxStatus) {  
+	    if (checkbox.checked)  
+	    	statusList = statusList + checkbox.value + ',';  
+	  } 
 
 	var detailsList = '';
-	if (document.getElementById('Hospital').checked) {
-		detailsList = document.getElementById('Hospital').value + ', ' + detailsList;
-	}
-	if (document.getElementById('Okay').checked) {
-		detailsList = document.getElementById('Okay').value + ', ' + detailsList;
-	}
-	if (document.getElementById('Jail').checked) {
-		detailsList = document.getElementById('Jail').value + ', ' + detailsList;
-	}
-	if (document.getElementById('Traveling').checked) {
-		detailsList = document.getElementById('Traveling').value + ', ' + detailsList;
-	}
-	if (document.getElementById('Abroad').checked) {
-		detailsList = document.getElementById('Abroad').value + ', ' + detailsList;
-	}
+	var markedCheckboxDetails = document.getElementsByName('details');  
+	  for (var checkbox of markedCheckboxDetails) {  
+	    if (checkbox.checked)  
+	    	detailsList = detailsList + checkbox.value + ',';  
+	  } 
 
 	var filterMinutes = false;
 	if (document.getElementById('Minutes').checked) {
@@ -268,22 +289,13 @@ function parseMembers (statusData, selection, element, membersList) {
 		statusDescriptionText = '';
 		
 		var member = membersList[id];
-
-		if (member.last_action.status == 'Online')	statusFormat = 'badge-success';
-		if (member.last_action.status == 'Idle')	statusFormat = 'badge-warning';
-		if (member.last_action.status == 'Offline') statusFormat = 'badge-dark';
-
-		if (member.status.state == 'Hospital') 	detailFormat = 'badge-danger';
-		if (member.status.state == 'Okay') 		detailFormat = 'badge-success';
-		if (member.status.state == 'Jail') 		detailFormat = 'badge-warning';
-		if (member.status.state == 'Traveling') detailFormat = 'badge-info';
-		if (member.status.state == 'Abroad')    detailFormat = 'badge-info';
+		var memberStatusState = member.status.state;
 		
-		if ((filterMinutes && member.status.state == 'Hospital')
-		     || (!filterMinutes && member.status.state == 'Hospital')
+		if ((filterMinutes && memberStatusState == 'Hospital')
+		     || (!filterMinutes && memberStatusState == 'Hospital')
 		     || (member.status.state !== 'Hospital')) {
 			
-			if (filterMinutes && member.status.state == 'Hospital') {
+			if (filterMinutes && memberStatusState == 'Hospital') {
 				timeDifference = (member.status.until - timeStamp) / 60;
 				if (timeDifference < 15) {
 					printEntry = true;
@@ -293,7 +305,7 @@ function parseMembers (statusData, selection, element, membersList) {
 			}
 		}
 		
-		if (member.status.state == 'Hospital') {
+		if (memberStatusState == 'Hospital') {
 			
 			timeDifference = (member.status.until - timeStamp);
 			
@@ -312,9 +324,23 @@ function parseMembers (statusData, selection, element, membersList) {
 		} else {
 			statusDescriptionText = member.status.description;
 		}
+		
+		if (member.status.description.includes('In a ')) {
+			memberStatusState = 'Abroad';
+		}
+		
+		if (member.last_action.status == 'Online')	statusFormat = 'badge-success';
+		if (member.last_action.status == 'Idle')	statusFormat = 'badge-warning';
+		if (member.last_action.status == 'Offline') statusFormat = 'badge-dark';
+
+		if (memberStatusState == 'Hospital') 	detailFormat = 'badge-danger';
+		if (memberStatusState == 'Okay') 		detailFormat = 'badge-success';
+		if (memberStatusState == 'Jail') 		detailFormat = 'badge-warning';
+		if (memberStatusState == 'Traveling') detailFormat = 'badge-info';
+		if (memberStatusState == 'Abroad')    detailFormat = 'badge-info';
 
 		if (statusList.includes(member.last_action.status)
-				&& detailsList.includes(member.status.state)
+				&& detailsList.includes(memberStatusState)
 				&& printEntry) {
 			
 
@@ -323,7 +349,7 @@ function parseMembers (statusData, selection, element, membersList) {
 			+'<td><a href="https://www.torn.com/profiles.php?XID=' + id + '" target="_blank">' + member.name + ' [' + id + ']</a></td>'
 			+'<td><a href="https://www.torn.com/loader.php?sid=attack&user2ID=' + id + '" target="_blank">https://www.torn.com/loader.php?sid=attack&user2ID=' + id +  '</a></td>'
 			+'<td>' + '<span class="badge badge-pill ' + statusFormat + '">' + member.last_action.status + '</span>' + '</td>'
-			+'<td>' + '<span class="badge badge-pill ' + detailFormat + '">' + member.status.state + '</span>' + '</td>'
+			+'<td>' + '<span class="badge badge-pill ' + detailFormat + '">' + memberStatusState + '</span>' + '</td>'
 			+'<td>' + statusDescriptionText + '</td>'
 			+'<td>' + member.last_action.relative + '</td>'
 			+'<td>' + member.level + '</td>'
@@ -381,6 +407,144 @@ function parseNews (newsData, selection, element, membersList) {
 	
 	$(document).ready(function() {
 	    $('#news').DataTable( {
+	        "paging":   false,
+	        "order": [[ 0, "desc" ]],
+	        "info":     false
+	    } );
+	} );
+	document.getElementById(element).innerHTML = table;
+
+}
+
+function parseRankedWars (rankedWarData, selection, element, rankedWars) {
+	
+	var trustedApiKey = document.getElementById("trustedkey").value;
+	
+	var warStatusList = '';
+	
+	var markedCheckbox = document.getElementsByName('warStatus');  
+	  for (var checkbox of markedCheckbox) {  
+	    if (checkbox.checked)  
+	    	warStatusList = warStatusList + checkbox.value + ',';  
+	  } 
+	
+
+
+	var table = '<div class="col-sm-12 badge-primary" ><b> Ranked War Details </b></div>';
+	table = table + '<br /><table class="table table-hover text-center" id="wars"><thead><tr>'
+	+ '<th class="align-middle">Start Time</th>'
+	//+ '<th>Duration</th>'
+	+ '<th class="align-middle">Status<br />Progress</th>'
+	+ '<th class="align-middle">Target</th>'
+	//+ '<th>Progress</th>'
+	+ '<th class="align-middle">Lead</th>'
+	+ '<th class="align-middle">Faction 1<br />(Member Status)</th>'
+	+ '<th class="align-middle">Score #1</th>'
+	+ '<th class="align-middle">Score #2</th>'
+	+ '<th class="align-middle">Faction 2<br />(Member Status)</th>'
+	+ '<th class="align-middle">Details</th>'
+	
+	;
+
+	table = table + '</tr></thead><tbody>';
+
+	for( var id in rankedWars ){
+
+		var rankedWar = rankedWars[id];
+		var ts = new Date(rankedWar.war.start * 1000);
+		var formatted_date =  ts.toISOString().replace('T',' ').replace('.000Z','');
+		var faction1Name = '', faction2Name  = '';
+		var faction1ID = '', faction2ID  = '';
+		var faction1Score = '', faction2Score  = '';
+		var faction1StyleClass = '', faction2StyleClass  = '';
+		var counter = 0;
+		var warStatus = '', warStatusStyleClass = '', duration = 0, durationString = '', progressBarStyleClass, detailsButton = '';
+		var currentTimeStamp = Math.floor(Date.now() / 1000);
+		
+		if (rankedWar.war.end == 0) {
+			if (currentTimeStamp < rankedWar.war.start) {
+				warStatusStyleClass = '<span class="badge badge-pill badge-secondary">Scheduled</span>';
+				warStatus = 'scheduled';
+				progressBarStyleClass = 'class="progress-bar progress-bar-striped progress-bar-animated bg-warning"';
+			} else {
+				warStatusStyleClass = '<span class="badge badge-pill badge-danger">Ongoing</span>';
+				warStatus = 'ongoing';
+				progressBarStyleClass = 'class="progress-bar progress-bar-striped progress-bar-animated bg-danger"';
+				duration = currentTimeStamp - rankedWar.war.start;
+			}
+		} else {
+			warStatusStyleClass = '<span class="badge badge-pill badge-success">Ended</span>';
+			warStatus = 'ended';
+			progressBarStyleClass = 'class="progress-bar bg-success"';
+			detailsButton = '<button type="button" onclick="callRankedWarDetails(\'' + trustedApiKey + '\', ' + id + ')" class="btn btn-secondary" data-toggle="modal" data-target="#rankedWarModal">Show Details</button>';
+			duration = rankedWar.war.end - rankedWar.war.start;
+		}
+		
+		dateObj = new Date(duration * 1000);
+		
+		hours = dateObj.getUTCHours();
+		minutes = dateObj.getUTCMinutes();
+		seconds = dateObj.getSeconds();
+		
+		durationString = hours.toString().padStart(2, '0') + ':' + 
+	    minutes.toString().padStart(2, '0') + ':' + 
+	    seconds.toString().padStart(2, '0');
+		
+		if (warStatusList.includes(warStatus)) {
+		
+		for( var factionID in rankedWar.factions ){
+			
+			var faction = rankedWar.factions[factionID];
+			
+			if (counter == 0) {
+				faction1Name = faction.name;
+				faction1Score = faction.score;
+				faction1ID = factionID;
+				counter = 1;
+			} else {
+				faction2Name = faction.name;
+				faction2Score = faction.score;
+				faction2ID = factionID;
+			}
+		}
+		
+		
+			if ((faction1ID === rankedWar.war.winner) || (faction1Score > faction2Score)) {
+				faction1StyleClass = ' class="text-success"';
+				faction2StyleClass = ' class="text-danger"';
+			}
+			if ((faction2ID === rankedWar.war.winner) || (faction1Score < faction2Score)) {
+				faction1StyleClass = ' class="text-danger"';
+				faction2StyleClass = ' class="text-success"';
+			}
+			
+		var percentage = Math.abs(faction1Score - faction2Score) / rankedWar.war.target * 100;
+		
+		table = table + '<tr>'
+			+ '<td class="align-middle">' + formatted_date + '</td>'
+			+ '<td class="align-middle">' + warStatusStyleClass + ''
+			+ '<br /><div class="progress"><div ' + progressBarStyleClass + ' role="progressbar" aria-valuenow="' + percentage + '" aria-valuemin="0" aria-valuemax="100" style="width: ' + percentage + '%;"></div></div></td>'
+
+			+ '<td class="align-middle">' + rankedWar.war.target + '</td>'
+			+ '<td class="align-middle">' + Math.abs(faction1Score - faction2Score) + '</td>'
+			+ '<td class="align-middle"><a href="https://www.torn.com/factions.php?step=profile&ID=' + faction1ID + '" target="_blank" ' + faction1StyleClass + '>' + faction1Name + '</a>'
+			+ '<br /><a href="members.html?factionID=' + faction1ID + '"><button type="button" class="btn btn-secondary btn-sm">Show Members</button></a></td>'
+			+ '<td class="align-middle">' + faction1Score + '</td>'
+			+ '<td class="align-middle">' + faction2Score + '</td>'
+			+ '<td class="align-middle"><a href="https://www.torn.com/factions.php?step=profile&ID=' + faction2ID + '" target="_blank" ' + faction2StyleClass + '>' + faction2Name + '</a>'
+			+ '<br /><a href="members.html?factionID=' + faction2ID + '"><button type="button" class="btn btn-secondary btn-sm">Show Members</button></a></td>'
+			+ '<td class="align-middle">' + detailsButton + '</td>'
+
+			;
+
+		table = table + '</tr>';
+
+	}
+	}
+	table = table + '</tbody></table>';
+	
+	$(document).ready(function() {
+	    $('#wars').DataTable( {
 	        "paging":   false,
 	        "order": [[ 0, "desc" ]],
 	        "info":     false
@@ -781,7 +945,6 @@ function parseOCs (crimeData, element, membersList) {
 	for( var id in crimeData ){
 		var crime = crimeData[id];
 
-		// console.log(crime.crime_name);
 		if (crimeList.includes(crime.crime_id)) {
 			// 8 = Political Assassination
 			// 7 = Plane hijacking
@@ -921,17 +1084,50 @@ function selectElementContents(el) {
 	}
 }
 
-function loadKeyFromSession() {
+function loadKeyFromSession(selection) {
+	
+	var paramFactionID = getUrlParam('factionID','NOT_SET');
+	
+	if (paramFactionID != 'NOT_SET') {
+		sessionStorage.factionid = paramFactionID;
+	}
+	
 	if (typeof(Storage) !== "undefined") {
 		if (sessionStorage.factionid) {
-			document.getElementById("factionid").value = sessionStorage.factionid;
+			if(document.getElementById("factionid")) {
+				document.getElementById("factionid").value = sessionStorage.factionid;
+			}
 		}
 		if (sessionStorage.trustedApiKey) {
-			document.getElementById("trustedkey").value = sessionStorage.trustedApiKey;
+			if(document.getElementById("trustedkey")) {
+				document.getElementById("trustedkey").value = sessionStorage.trustedApiKey;
+			}
+		}
+	}
+	
+	if (selection == 'members') {
+		if (paramFactionID != 'NOT_SET') {
+			userSubmit('members');
 		}
 	}
 }
 
 function disableElement(source, target) {
 	document.getElementById(target).disabled = !document.getElementById(source).checked;
+}
+
+function getUrlVars() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    return vars;
+}
+
+function getUrlParam(parameter, defaultvalue){
+    var urlparameter = defaultvalue;
+    if(window.location.href.indexOf(parameter) > -1){
+        urlparameter = getUrlVars()[parameter];
+        }
+    return urlparameter;
 }

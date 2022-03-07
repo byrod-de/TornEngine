@@ -14,7 +14,7 @@
 	<script src="script/custom.js"></script>
 	<script src="script/jquery.dataTables.min.js"></script>
 </head>
-<body onload="loadKeyFromSession()">
+<body onload="loadKeyFromSession('members');">
 
 	<div class="container-fluid">
 		<br />
@@ -58,6 +58,7 @@
 
 					<li class="nav-item active"><a class="nav-link"
 						href="members.html">Member Status</a></li>
+						<li class="nav-item"><a class="nav-link" href="rankedwars.html">Ranked Wars <sup class="badge badge-pill badge-secondary">BETA</sup></a></li>
 
 				</ul>
 			</div>
@@ -90,17 +91,17 @@
 					<legend>Status</legend>
 					<fieldset class="form-group">
 						<div class="form-check">
-							<input class="form-check-input" type="checkbox" value="Online"
+							<input class="form-check-input" type="checkbox" value="Online" name="status"
 								id="Online"> <label class="form-check-label"
 								for="Online"> Online </label>
 						</div>
 						<div class="form-check">
-							<input class="form-check-input" type="checkbox" value="Idle"
+							<input class="form-check-input" type="checkbox" value="Idle" name="status"
 								id="Idle"> <label class="form-check-label" for="Idle">
 								Idle </label>
 						</div>
 						<div class="form-check">
-							<input class="form-check-input" type="checkbox" value="Offline"
+							<input class="form-check-input" type="checkbox" value="Offline" name="status"
 								id="Offline" checked=""> <label class="form-check-label"
 								for="Offline"> Offline </label>
 						</div>
@@ -112,12 +113,12 @@
 					<legend>Details</legend>
 					<fieldset class="form-group">
 						<div class="form-check">
-							<input class="form-check-input" type="checkbox" value="Okay"
+							<input class="form-check-input" type="checkbox" value="Okay" name="details"
 								id="Okay" checked=""> <label class="form-check-label"
 								for="Okay"> Okay </label>
 						</div>
 						<div class="form-check">
-							<input class="form-check-input" type="checkbox" value="Hospital"
+							<input class="form-check-input" type="checkbox" value="Hospital" name="details"
 								id="Hospital" checked=""
 								onclick="disableElement('Hospital', 'Minutes');"> <label
 								class="form-check-label" for="Hospital"> Hospital </label>
@@ -130,17 +131,17 @@
 						</div>
 
 						<div class="form-check">
-							<input class="form-check-input" type="checkbox" value="Jail"
+							<input class="form-check-input" type="checkbox" value="Jail" name="details"
 								id="Jail" checked=""> <label class="form-check-label"
 								for="Jail"> Jail </label>
 						</div>
 						<div class="form-check">
-							<input class="form-check-input" type="checkbox" value="Traveling"
+							<input class="form-check-input" type="checkbox" value="Traveling" name="details"
 								id="Traveling" checked=""> <label
 								class="form-check-label" for="Traveling"> Traveling </label>
 						</div>
 						<div class="form-check">
-							<input class="form-check-input" type="checkbox" value="Abroad"
+							<input class="form-check-input" type="checkbox" value="Abroad" name="details"
 								id="Abroad" checked=""> <label class="form-check-label"
 								for="Abroad"> Abroad </label>
 						</div>
