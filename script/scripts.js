@@ -463,13 +463,13 @@ function parseRankedWars (rankedWarData, selection, element, rankedWars) {
 		
 		if (rankedWar.war.end == 0) {
 			if (currentTimeStamp < rankedWar.war.start) {
-				warStatusStyleClass = '<span class="badge badge-pill badge-secondary">Scheduled</span>';
+				warStatusStyleClass = '<span class="badge badge-pill badge-info">Scheduled</span>';
 				warStatus = 'scheduled';
-				progressBarStyleClass = 'class="progress-bar progress-bar-striped progress-bar-animated bg-warning"';
+				progressBarStyleClass = 'class="progress-bar progress-bar-striped progress-bar-animated bg-info"';
 			} else {
-				warStatusStyleClass = '<span class="badge badge-pill badge-danger">Ongoing</span>';
+				warStatusStyleClass = '<span class="badge badge-pill badge-primary">Ongoing</span>';
 				warStatus = 'ongoing';
-				progressBarStyleClass = 'class="progress-bar progress-bar-striped progress-bar-animated bg-danger"';
+				progressBarStyleClass = 'class="progress-bar progress-bar-striped progress-bar-animated bg-primary"';
 				duration = currentTimeStamp - rankedWar.war.start;
 			}
 		} else {
