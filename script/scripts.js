@@ -433,10 +433,10 @@ function parseRankedWars (rankedWarData, selection, element, rankedWars) {
 	var table = '<div class="col-sm-12 badge-primary" ><b> Ranked War Details </b></div>';
 	table = table + '<br /><table class="table table-hover text-center" id="wars"><thead><tr>'
 	+ '<th class="align-middle">Start Time</th>'
-	//+ '<th>Duration</th>'
+	// + '<th>Duration</th>'
 	+ '<th class="align-middle">Status<br />Progress</th>'
 	+ '<th class="align-middle">Target</th>'
-	//+ '<th>Progress</th>'
+	// + '<th>Progress</th>'
 	+ '<th class="align-middle">Lead</th>'
 	+ '<th class="align-middle">Faction 1<br />(Member Status)</th>'
 	+ '<th class="align-middle">Score #1</th>'
