@@ -143,9 +143,20 @@
 	</form>
 	
 	<div class="container">
-  <h3>Popover Example</h3>
-    <button type="button" class="btn btn-secondary" data-toggle="popover" data-placement="right" title="Tooltip on left">Left</button>
-</div>
+  <button type="button" class="btn btn-secondary" title="" data-container="body" data-toggle="popover" data-placement="left" data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus." data-original-title="Popover Title" aria-describedby="popover56793">Left</button>
+
+
+
+  <div class="form-group">
+    <div class="custom-control custom-switch">
+      <input type="checkbox" class="custom-control-input" id="customSwitch1" checked="">
+      <label class="custom-control-label" for="customSwitch1">Toggle this switch element</label>
+    </div>
+    <div class="custom-control custom-switch">
+      <input type="checkbox" class="custom-control-input" disabled="" id="customSwitch2">
+      <label class="custom-control-label" for="customSwitch2">Disabled switch element</label>
+    </div>
+  </div>
 </div>
 
 <button type="button" class="btn btn-primary" id="toastbtn">Show Toast</button>

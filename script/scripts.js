@@ -120,9 +120,32 @@ function callRankedWarDetails(key, id) {
 
 		if (request.status >= 200 && request.status < 400) {
 			
-			document.getElementById('rankedWarModalLabel').innerHTML = 'Work in progress';
-			document.getElementById('rankedWarModalBody').innerHTML = '<div class="alert alert-info"><strong>Info: </strong>Nice try, but this feature is not active yet (-:</div>';
+			if (jsonData.hasOwnProperty('error')){
+				if (jsonData['error'].code === 7) {
+					printAlert('Warning', 'You are trying to access sensible faction data, but are not allowed to. Ask your faction leader for faction API permissions.');
+				} else if (jsonData['error'].code === 2) {
+					printAlert('Error', 'You are using an incorrect API key.');
+				} else {
+					printAlert('Error', 'Torn API returned the following error: ' + jsonData['error'].error);
+				}
+			} else {
 
+				document.getElementById('rankedWarModalLabel').innerHTML = 'Work in progress';
+				document.getElementById('rankedWarModalBody').innerHTML = '<div class="alert alert-info"><strong>Info: </strong>Nice try, but this feature is not active yet (-:</div>';
+
+				
+				
+					if (jsonData.hasOwnProperty('rankedwarreport') ){
+						printAlert('Success', 'The API Call successful, find the results below.');
+
+						parseRankedWarDetails(jsonData['rankedwarreport'], 'output');
+					} else {
+						printAlert('Warning', 'Ask your faction leader for faction API permissions.');
+					}
+				
+			}
+			
+			
 			
 
 		} else {
@@ -550,7 +573,110 @@ function parseRankedWars (rankedWarData, selection, element, rankedWars) {
 	        "info":     false
 	    } );
 	} );
+	
 	document.getElementById(element).innerHTML = table;
+
+}
+
+function parseRankedWarDetails (rankedWarDetails, element) {
+	
+	var counter = 0;
+	var faction1ID, faction1Name, faction1Score;
+	var faction2ID, faction2Name, faction2Score;
+	var faction1StyleClass, faction2StyleClass;
+	
+
+	for( var id in rankedWarDetails.factions ){
+		
+		if (counter == 0) {
+			faction1ID = id;
+			faction1Name = rankedWarDetails.factions[id].name;
+			faction1Score = rankedWarDetails.factions[id].score;
+			counter = 1;
+		} else {
+			faction2ID = id;
+			faction2Name = rankedWarDetails.factions[id].name;
+			faction2Score = rankedWarDetails.factions[id].score;
+			counter = 2;
+		}
+		
+	}
+	
+	
+	if (faction1Score > faction2Score) {
+		faction1StyleClass = ' class="text-success"';
+		faction2StyleClass = ' class="text-danger"';
+	}
+	if (faction1Score < faction2Score) {
+		faction1StyleClass = ' class="text-danger"';
+		faction2StyleClass = ' class="text-success"';
+	}
+	
+	var table = '';
+	table = table + '<br /><table class="table table-hover text-center" id="warfactions"><thead>'
+	+ '<tr>'
+	+ '<th class="align-middle" colspan="2"><a href="https://www.torn.com/factions.php?step=profile&ID=' + faction1ID + '" target="_blank" ' + faction1StyleClass + '>' + faction1Name + '</a></th>'
+	+ '<th class="align-middle">' + faction1Score + '</th>'
+	+ '<th class="align-middle">' + faction2Score + '</th>'
+	+ '<th class="align-middle" colspan="2"><a href="https://www.torn.com/factions.php?step=profile&ID=' + faction2ID + '" target="_blank" ' + faction2StyleClass + '>' + faction2Name + '</a></th>'
+	+ '</tr>'
+	;
+	
+	table = table + '</thead><tbody>';
+	table = table + '</tbody></table><br/>';
+	
+	table = table + '<br /><table class="table table-hover text-center" id="wardetails"><thead>'
+	+ '<tr>'
+	+ '<th class="align-middle">Name</th>'
+	+ '<th class="align-middle">Faction</th>'
+	+ '<th class="align-middle">Hits</th>'
+	+ '<th class="align-middle">Score</th>'
+	+ '</tr>'
+	;
+	
+	table = table + '</thead><tbody>';
+	
+	var factionName, factionStyleClass;
+	
+	for( var id in rankedWarDetails.members ){
+		
+		if (rankedWarDetails.members[id].faction_id == faction1ID) {
+			factionName = faction1Name;
+			factionStyleClass = faction1StyleClass;
+		}
+		
+		if (rankedWarDetails.members[id].faction_id == faction2ID) {
+			factionName = faction2Name;
+			factionStyleClass = faction2StyleClass;
+		}
+		
+		table = table + '<tr>'
+		+ '<td class="align-middle"><a href="https://www.torn.com/profiles.php?XID=' + id + '" target="_blank">' + rankedWarDetails.members[id].name + ' [' + id + ']</a></td>'
+		+ '<td class="align-middle"><a href="https://www.torn.com/factions.php?step=profile&ID=' + rankedWarDetails.members[id].faction_id + '" target="_blank" ' + factionStyleClass + '>' + factionName + '</a></td>'
+		+ '<td class="align-middle">' + rankedWarDetails.members[id].attacks + '</td>'
+		+ '<td class="align-middle">' + rankedWarDetails.members[id].score + '</td>'
+		+ '</tr>';
+		
+		
+	}
+	
+	
+	
+	table = table + '</tbody></table>';
+	
+	$(document).ready(function() {
+	    $('#wardetails').DataTable( {
+	        "paging":   false,
+	        "order": [[ 3, "desc" ]],
+	        "info":     false
+	    } );
+	} );
+	
+	document.getElementById('rankedWarModalLabel').innerHTML = 'War Details';
+	document.getElementById('rankedWarModalBody').innerHTML = table;
+	
+
+
 
 }
 
