@@ -293,7 +293,7 @@ function parseMembers (statusData, selection, element, membersList) {
 	+ '<th>Last Action</th>'
 	+ '<th>Level</th>'
 	+ '<th>Stats</th>'
-	+ '<th></th>';
+	+ '<th>Copy Link</th>';
 
 	table = table + '</tr></thead><tbody>';
 
@@ -385,8 +385,8 @@ function parseMembers (statusData, selection, element, membersList) {
 			+'</td>'
 			+'<td>'
 			+ '<input type="hidden" class="form-control" value="' + copyableText + '" placeholder="..." id="copy-input-' + id + '">'
-			+ '<button type="button" onclick="copyButton(' + id + ')" class="btn btn-outline-primary btn-sm" id="copy-button' + id + '" data-toggle="tooltip" data-placement="button" title="Copy for Faction Chat">'
-			+ 'Copy for Faction</button>'
+			+ '<button type="button" onclick="copyButton(' + id + ')" class="btn btn-outline-primary" id="copy-button' + id + '" data-toggle="tooltip" data-placement="button" title="Copy for Faction Chat">'
+			+ 'Copy</button>'
 			+'</td>'
 			;
 			filteredMembers++;
