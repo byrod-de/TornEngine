@@ -292,7 +292,8 @@ function parseMembers (statusData, selection, element, membersList) {
 	+ '<th>Description</th>'
 	+ '<th>Last Action</th>'
 	+ '<th>Level</th>'
-	+ '<th>Stats</th>';
+	+ '<th>Stats</th>'
+	+ '<th></th>';
 
 	table = table + '</tr></thead><tbody>';
 
@@ -313,6 +314,7 @@ function parseMembers (statusData, selection, element, membersList) {
 		
 		var member = membersList[id];
 		var memberStatusState = member.status.state;
+		var hospitalTime = '';
 		
 		if ((filterMinutes && memberStatusState == 'Hospital')
 		     || (!filterMinutes && memberStatusState == 'Hospital')
@@ -341,7 +343,7 @@ function parseMembers (statusData, selection, element, membersList) {
 			    minutes.toString().padStart(2, '0') + ' min ' + 
 			    seconds.toString().padStart(2, '0') + ' sec';
 			statusDescriptionText = 'In hospital for ' + timeString;
-			
+			hospitalTime = ' out in ' + minutes.toString().padStart(2, '0') + ' min ' + seconds.toString().padStart(2, '0') + ' sec';
 			
 			
 		} else {
@@ -367,17 +369,24 @@ function parseMembers (statusData, selection, element, membersList) {
 				&& printEntry) {
 			
 
+			var copyableText = member.name + ' ' + '[https://www.torn.com/loader.php?sid=attack&user2ID=' + id +  ']' + hospitalTime;
+			
 			table = table + '<tr>'
 
 			+'<td><a href="https://www.torn.com/profiles.php?XID=' + id + '" target="_blank">' + member.name + ' [' + id + ']</a></td>'
 			+'<td><a href="https://www.torn.com/loader.php?sid=attack&user2ID=' + id + '" target="_blank">https://www.torn.com/loader.php?sid=attack&user2ID=' + id +  '</a></td>'
-			+'<td>' + '<span class="badge badge-pill ' + statusFormat + '">' + member.last_action.status + '</span>' + '</td>'
+				+'<td>' + '<span class="badge badge-pill ' + statusFormat + '">' + member.last_action.status + '</span>' + '</td>'
 			+'<td>' + '<span class="badge badge-pill ' + detailFormat + '">' + memberStatusState + '</span>' + '</td>'
 			+'<td>' + statusDescriptionText + '</td>'
 			+'<td>' + member.last_action.relative + '</td>'
 			+'<td>' + member.level + '</td>'
 			+'<td>' 
 			+'<button type="button" onclick="callTornStatsAPI(\'' + trustedApiKey + '\', ' + id + ')" class="btn btn-secondary" data-toggle="modal" data-target="#statsModal">Show Stats</button>'
+			+'</td>'
+			+'<td>'
+			+ '<input type="hidden" class="form-control" value="' + copyableText + '" placeholder="..." id="copy-input-' + id + '">'
+			+ '<button type="button" onclick="copyButton(' + id + ')" class="btn btn-outline-primary btn-sm" id="copy-button' + id + '" data-toggle="tooltip" data-placement="button" title="Copy for Faction Chat">'
+			+ 'Copy for Faction</button>'
 			+'</td>'
 			;
 			filteredMembers++;
@@ -675,9 +684,6 @@ function parseRankedWarDetails (rankedWarDetails, element) {
 	document.getElementById('rankedWarModalLabel').innerHTML = 'War Details';
 	document.getElementById('rankedWarModalBody').innerHTML = table;
 	
-
-
-
 }
 
 function parseReports (reportData, element, membersList) {
@@ -1236,6 +1242,12 @@ function loadKeyFromSession(selection) {
 			userSubmit('members');
 		}
 	}
+}
+
+function copyButton(memberID) {
+
+  var copyText = document.getElementById('copy-input-' + memberID);
+  navigator.clipboard.writeText(copyText.value);
 }
 
 function disableElement(source, target) {
