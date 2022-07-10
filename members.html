@@ -52,16 +52,26 @@
 
 			<div class="navbar-collapse" id="navbarColor01">
 				<ul class="navbar-nav mr-auto">
-					<li class="nav-item dropdown show">
-						<a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="true">Faction Tools</a>
+					<li class="nav-item dropdown show"><a
+						class="nav-link dropdown-toggle" data-toggle="dropdown" href="#"
+						role="button" aria-haspopup="true" aria-expanded="true">Faction
+							Tools</a>
 						<div class="dropdown-menu ">
-							<a class="dropdown-item" href="pa_payouts.html">PA Payouts</a>
-							<a class="dropdown-item" href="oc_overview.html">OC Overview</a>
-							<a class="dropdown-item" href="news.html">News</a>
-							<a class="dropdown-item active" href="members.html">Member Status</a>
-							<a class="dropdown-item" href="rankedwars.html">Ranked Wars <sup class="badge badge-pill badge-primary">BETA</sup></a>
-						</div>
-					</li>
+							<a class="dropdown-item" href="pa_payouts.html">PA Payouts</a> <a
+								class="dropdown-item" href="oc_overview.html">OC Overview</a> <a
+								class="dropdown-item" href="news.html">News</a>
+						</div></li>
+
+					<li class="nav-item dropdown show"><a
+						class="nav-link dropdown-toggle" data-toggle="dropdown" href="#"
+						role="button" aria-haspopup="true" aria-expanded="true">Warring
+							Tools</a>
+						<div class="dropdown-menu ">
+							<a
+								class="dropdown-item active" href="members.html">Member Status</a> <a
+								class="dropdown-item" href="rankedwars.html">Ranked Wars <sup
+								class="badge badge-pill badge-primary">BETA</sup></a>
+						</div></li>
 				</ul>
 			</div>
 		</nav>
@@ -87,7 +97,9 @@
 						placeholder="Faction ID (if empty, your own faction is used)" />
 				</div>
 			</div>
-			<div class="row">
+			
+			<div class="row" id="filter">
+
 				<div class="form-group col-sm-3" id="alert"></div>
 				<div class="form-group col-sm-2">
 					<legend>Status</legend>
@@ -150,12 +162,17 @@
 					</fieldset>
 
 				</div>
+			
 			</div>
 		</form>
 		<div class="row">
-			<div class="form-group col-sm-1">
+			<div class="form-group col-sm-3">
 				<button onclick="userSubmit('members')" class="btn btn-primary"
 					id="submit">Submit</button>
+			</div>
+			<div class="form-group col-sm-2">
+				<button onclick="hideElementByID('filter')" class="btn btn-secondary"
+					id="btnHideFilter">Hide Filter</button>
 			</div>
 
 		</div>

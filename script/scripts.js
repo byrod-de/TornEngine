@@ -1172,6 +1172,17 @@ function parseOCs (crimeData, element, membersList) {
 
 }
 
+function hideElementByID(element) {
+	//document.getElementById(element).hidden = "true";
+	if (document.getElementById('btnHideFilter').innerHTML == 'Hide Filter') {
+		document.getElementById('btnHideFilter').innerHTML = 'Show Filter';
+		document.getElementById(element).hidden = true;
+	} else {
+		document.getElementById('btnHideFilter').innerHTML = 'Hide Filter';
+		document.getElementById(element).hidden = false;
+	}
+}
+
 function printAlert(alertType, alertText) {
 	var alertClass, apiKeyForm;
 	if (alertType === 'Error')    { alertClass = 'alert-danger'; apiKeyForm = 'form-control is-invalid'; };
