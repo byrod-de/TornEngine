@@ -239,9 +239,14 @@ function callTornAPI(key, part, selection, source) {
 					parseMembers(jsonData, selection, 'output', jsonData['members']);
 				}
 				
-				if (source === 'rankedwars') {
-					printAlert('Success', 'The API Call successful, find the results below.');	
-					parseRankedWars(jsonData, selection, 'output', jsonData['rankedwars']);
+				if (selection === 'rankedwars') {
+					printAlert('Success', 'The API Call successful, find the results below.');
+					if (source === 'rankedwars') {
+						parseRankedWars(jsonData, selection, 'output', jsonData['rankedwars']);
+					}
+					if (source === 'getWarringFactions') {
+						getWarringFactions(jsonData, selection, 'output', jsonData['rankedwars']);
+					}
 				}
 			}
 
@@ -446,6 +451,32 @@ function parseNews (newsData, selection, element, membersList) {
 	} );
 	document.getElementById(element).innerHTML = table;
 
+}
+
+function getWarringFactions (rankedWarData, selection, element, rankedWars) {
+	
+	var datalist = '';
+	
+	for( var id in rankedWars ){
+		
+		var rankedWar = rankedWars[id];
+		
+		for( var factionID in rankedWar.factions ){
+			
+			var faction = rankedWar.factions[factionID];
+			
+			if (!datalist.includes(faction.name)) {
+				datalist = datalist + '<option value="' + factionID + '">' + faction.name + '</option>';
+			}
+			
+		
+		}
+	}
+	
+	document.getElementById("hint2").innerHTML = 'Factions in a ranked war can be searched for.';
+	document.getElementById("factions").innerHTML = datalist;
+	
+		
 }
 
 function parseRankedWars (rankedWarData, selection, element, rankedWars) {
@@ -1170,6 +1201,16 @@ function parseOCs (crimeData, element, membersList) {
 	document.getElementById(element).innerHTML = table;
 	
 
+}
+
+function checkAPIKey() {
+	var trustedApiKey = document.getElementById("trustedkey").value;
+	
+	if (trustedApiKey.length == 16) {
+		
+		callTornAPI(trustedApiKey, 'torn', 'rankedwars', 'getWarringFactions');
+		
+	}
 }
 
 function hideElementByID(element) {
