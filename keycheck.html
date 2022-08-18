@@ -22,7 +22,7 @@
 <script src="script/jquery.dataTables.min.js"></script>
 
 </head>
-<body onload="loadKeyFromSession('rankedwars')">
+<body onload="loadKeyFromSession('keycheck');">
 
 	<div class="container-fluid">
 		<br />
@@ -42,7 +42,8 @@
 			<div class="col-sm-4 badge-primary">
 				<b>Faction Tools</b>
 			</div>
-			<div class="col-sm-8 badge-secondary">Ranked war overwiev</div>
+			<div class="col-sm-8 badge-secondary">Get Faction Members
+				Status</div>
 		</div>
 		<br />
 
@@ -67,10 +68,10 @@
 						role="button" aria-haspopup="true" aria-expanded="true">Warring
 							Tools</a>
 						<div class="dropdown-menu ">
-							<a
-								class="dropdown-item" href="members.html">Member Status</a> <a
-								class="dropdown-item active" href="rankedwars.html">Ranked Wars <sup
-								class="badge badge-pill badge-secondary">BETA</sup></a>
+							<a class="dropdown-item" href="members.html">Member
+								Status</a> <a class="dropdown-item" href="rankedwars.html">Ranked
+								Wars <sup class="badge badge-pill badge-primary">BETA</sup>
+							</a>
 						</div></li>
 
 						<li class="nav-item dropdown show"><a
@@ -78,7 +79,7 @@
 							role="button" aria-haspopup="true" aria-expanded="true">API
 								Tools</a>
 							<div class="dropdown-menu ">
-								<a class="dropdown-item" href="keycheck.html">Check Access Level</a>
+								<a class="dropdown-item active" href="keycheck.html">Check Access Level</a>
 							</div></li>
 				</ul>
 			</div>
@@ -92,77 +93,39 @@
 				<div class="form-group col-sm-3">
 					<label for="trustedkey">API Key *</label> <input type="input"
 						class="form-control" id="trustedkey" name="trustedkey"
-						placeholder="API Key" maxlength="16"/> <small id="hint"
-						class="form-text text-muted">API key with <i>Public
-							Only</i> access is sufficient
+						placeholder="API Key" /> <small id="hint"
+						class="form-text text-muted">Enter any API key to see details about the access level
 					</small>
 				</div>
 
+				<div class="form-group col-sm-5">
+					<br/>
+					Here you can check the access level of your API key. Enter the key, and see to which sections of the API it has access to.
+				</div>
 
-				<div class="form-group col-sm-2">
-					<legend>Select ranked war status</legend>
-					<div class="form-check">
-						<label class="form-check-label"> <input type="checkbox"
-							class="form-check-input" id="scheduled" name="warStatus"
-							value="scheduled"> Scheduled
-						</label>
-					</div>
-					<div class="form-check">
-						<label class="form-check-label"> <input type="checkbox"
-							class="form-check-input" id="ongoing" name="warStatus"
-							value="ongoing" checked=""> Ongoing
-						</label>
-					</div>
-					<div class="form-check">
-						<label class="form-check-label"> <input type="checkbox"
-							class="form-check-input" id="ended" name="warStatus"
-							value="ended"> Ended
-						</label>
-					</div>
+				<div class="form-group col-sm-5">
+
 				</div>
 			</div>
+
 			<div class="row">
 				<div class="form-group col-sm-3" id="alert"></div>
 				<div class="form-group col-sm-2"></div>
-
 			</div>
 		</form>
-
 		<div class="row">
-			<div class="form-group col-sm-1">
-				<button onclick="userSubmit('rankedwars')" class="btn btn-primary"
+			<div class="form-group col-sm-3">
+				<button onclick="userSubmit('keycheck')" class="btn btn-primary"
 					id="submit">Submit</button>
 			</div>
-			<div class="form-group col-sm-7" id="alert"></div>
+
+
 		</div>
 
 		<p id="summary"></p>
 		<br />
 		<p id="output"></p>
 		<br />
-
-		<!-- Modal -->
-		<div class="modal fade" id="rankedWarModal" tabindex="-1"
-			role="dialog" aria-labelledby="rankedWarModal" aria-hidden="true">
-			<div
-				class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title" id="rankedWarModalLabel">Calling
-							TornStats API</h5>
-						<button type="button" class="close" data-dismiss="modal"
-							aria-label="Close">
-							<span aria-hidden="true">&times;</span>
-						</button>
-					</div>
-					<div class="modal-body" id="rankedWarModalBody">Please hold
-						the line...</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
-					</div>
-				</div>
-			</div>
-		</div>
 
 		<div class="card border-primary mb-3" style="max-width: 100%;">
 			<div class="card-header" id="contact">Fineprint</div>
@@ -180,6 +143,7 @@
 		</div>
 
 	</div>
+
 
 </body>
 </html>

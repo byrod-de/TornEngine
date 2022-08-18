@@ -11,15 +11,19 @@ function userSubmit(selection) {
 		}
 
 		if (selection == 'oc_overview') {
-			callTornAPI(trustedApiKey, 'faction', 'basic,crimes', 'oc_overview'); 
+			callTornAPI(trustedApiKey, 'faction', 'basic,crimes', 'oc_overview');
 		}
 
 		if (selection == 'reports')     {
-			callTornAPI(trustedApiKey, 'faction', 'basic,reports', 'reports'); 
+			callTornAPI(trustedApiKey, 'faction', 'basic,reports', 'reports');
 		}
 
 		if (selection == 'members')     {
 			callTornAPI(trustedApiKey, 'faction', 'basic', 'members');
+		}
+
+		if (selection == 'keycheck')     {
+			callTornAPI(trustedApiKey, 'key', 'info', 'keycheck');
 		}
 
 		if (selection == 'news')        {
@@ -48,11 +52,11 @@ function userSubmit(selection) {
 
 			callTornAPI(trustedApiKey, 'faction', category, 'news');
 		}
-		
+
 		if (selection == 'rankedwars')     {
 			callTornAPI(trustedApiKey, 'torn', 'rankedwars', 'rankedwars');
 		}
-		
+
 		document.getElementById('submit').innerHTML = 'Refresh';
 	}
 
@@ -80,13 +84,13 @@ function callTornStatsAPI(key, id) {
 				if (jsonData.spy.message.includes("Spy not found.")) {
 					document.getElementById('statsModalLabel').innerHTML = 'Spy not found';
 					document.getElementById('statsModalBody').innerHTML = '<div class="alert alert-info"><strong>Warning: </strong>Spy not found.</div>';
-					
+
 				} else {
-			
+
 			var ts = new Date(jsonData.spy.timestamp * 1000);
 			var formatted_date =  ts.toISOString().replace('T',' ').replace('.000Z','');
-			
-			
+
+
 			document.getElementById('statsModalLabel').innerHTML = '<strong>Player:</strong> ' + jsonData.spy.player_name + ' [' + jsonData.spy.player_id + ']';
 			document.getElementById('statsModalBody').innerHTML = '<div class="text-muted"><strong>Strength:</strong> ' + jsonData.spy.strength.toLocaleString('en-US') + '</div>'
 					+ '<div class="text-muted"><strong>Defense:</strong> ' + jsonData.spy.defense.toLocaleString('en-US') + '</div>'
@@ -119,7 +123,7 @@ function callRankedWarDetails(key, id) {
 		var jsonData = JSON.parse(this.response);
 
 		if (request.status >= 200 && request.status < 400) {
-			
+
 			if (jsonData.hasOwnProperty('error')){
 				if (jsonData['error'].code === 7) {
 					printAlert('Warning', 'You are trying to access sensible faction data, but are not allowed to. Ask your faction leader for faction API permissions.');
@@ -133,8 +137,8 @@ function callRankedWarDetails(key, id) {
 				document.getElementById('rankedWarModalLabel').innerHTML = 'Work in progress';
 				document.getElementById('rankedWarModalBody').innerHTML = '<div class="alert alert-info"><strong>Info: </strong>Nice try, but this feature is not active yet (-:</div>';
 
-				
-				
+
+
 					if (jsonData.hasOwnProperty('rankedwarreport') ){
 						printAlert('Success', 'The API Call successful, find the results below.');
 
@@ -142,11 +146,11 @@ function callRankedWarDetails(key, id) {
 					} else {
 						printAlert('Warning', 'Ask your faction leader for faction API permissions.');
 					}
-				
+
 			}
-			
-			
-			
+
+
+
 
 		} else {
 			printAlert('#chedded', 'Torn Stats API is currently not available.');
@@ -160,7 +164,7 @@ function callTornAPI(key, part, selection, source) {
 	var factionid = '';
 
 	if (source == 'members') factionid = document.getElementById("factionid").value;
-	
+
 	sessionStorage.factionid = factionid;
 
 	var request = new XMLHttpRequest();
@@ -172,7 +176,7 @@ function callTornAPI(key, part, selection, source) {
 		var jsonData = JSON.parse(this.response);
 
 		if (request.status >= 200 && request.status < 400) {
-			
+
 			if (jsonData.hasOwnProperty('error')){
 				if (jsonData['error'].code === 7) {
 					printAlert('Warning', 'You are trying to access sensible faction data, but are not allowed to. Ask your faction leader for faction API permissions.');
@@ -206,7 +210,7 @@ function callTornAPI(key, part, selection, source) {
 				if (selection === 'basic,reports' && source === 'reports') {
 					if (jsonData.hasOwnProperty('reports') && jsonData.hasOwnProperty('members')){
 						printAlert('Success', 'The API Call successful, find the results below.');
-						
+
 						parseReports(jsonData['reports'], 'output', jsonData['members']);
 					} else {
 						printAlert('Warning', 'Ask your faction leader for faction API permissions.');
@@ -230,21 +234,28 @@ function callTornAPI(key, part, selection, source) {
 				}
 
 				if (source === 'news') {
-					printAlert('Success', 'The API Call successful, find the results below.');	
+					printAlert('Success', 'The API Call successful, find the results below.');
 					parseNews(jsonData[selection], selection, 'output', jsonData.name);
 				}
 
 				if (source === 'members') {
-					printAlert('Success', 'The API Call successful, find the results below.');	
+					printAlert('Success', 'The API Call successful, find the results below.');
 					parseMembers(jsonData, selection, 'output', jsonData['members']);
 				}
-				
-				if (selection === 'rankedwars') {
+
+				if (source === 'keycheck') {
 					printAlert('Success', 'The API Call successful, find the results below.');
+					parseKeyInfo(jsonData, selection, 'output', jsonData['selections']);
+				}
+
+				if (selection === 'rankedwars') {
+
 					if (source === 'rankedwars') {
+						printAlert('Success', 'The API Call successful, find the results below.');
 						parseRankedWars(jsonData, selection, 'output', jsonData['rankedwars']);
 					}
 					if (source === 'getWarringFactions') {
+						printAlert('Success', 'The API Call successful, faction list preloaded.');
 						getWarringFactions(jsonData, selection, 'output', jsonData['rankedwars']);
 					}
 				}
@@ -255,42 +266,207 @@ function callTornAPI(key, part, selection, source) {
 		}
 	}
 	request.send();
-}	
+}
+
+function parseKeyInfo (keyInfoData, selection, element, keyInfo) {
+	var trustedApiKey = document.getElementById("trustedkey").value;
+
+	var accessLevelInformation = keyInfoData.access_level + ': ' + keyInfoData.access_type;
+	var accessClass = '';
+
+	switch(keyInfoData.access_level) {
+		case 1: accessClass = 'badge-light'; break;
+		case 2: accessClass = 'badge-success'; break;
+		case 3: accessClass = 'badge-warning'; break;
+		case 4: accessClass = 'badge-danger'; break;
+		case 0: accessClass = 'badge-info'; break;
+	}
+
+	var table = '<div class="col-sm-12 ' + accessClass + '" >Your key has the following access level - '
+		+ accessLevelInformation
+		+ '</div>';
+
+
+		table = table + '<br /><table class="table table-hover" id="selections"><thead><tr>'
+		+ '<th>Selection</th>'
+		+ '<th>Element</th>'
+		+ '<th>Access Level</th>';
+
+		table = table + '</tr></thead><tbody>';
+
+		var accessLevel = '';
+		var tableClass = '';
+
+	for( var selectionsEntry in keyInfo ){
+			var selectionData = keyInfo[selectionsEntry];
+
+			for (var selectionName in selectionData) {
+
+				switch (selectionsEntry) {
+					case 'torn'    : tableClass = 'table-dark'; accessLevel = 'Public';
+													 break;
+					case 'market'  : tableClass = 'table-dark'; accessLevel = 'Public';
+													 break;
+					case 'properties': tableClass = 'table-success'; accessLevel = 'Minimal Access';
+													 break;
+					case 'property': tableClass = 'table-dark'; accessLevel = 'Public';
+													 break;
+					case 'key'     : tableClass = 'table-dark'; accessLevel = 'Public';
+													 break;
+					case 'company' : switch (selectionData[selectionName]) {
+												   	case 'profile': tableClass = 'table-dark'; accessLevel = 'Public';
+												  							    break;
+														case 'timestamp': tableClass = 'table-dark'; accessLevel = 'Public';
+																				  	break;
+														case 'lookup': tableClass = 'table-dark'; accessLevel = 'Public';
+																						break;
+												   	default: tableClass = 'table-warning'; accessLevel = 'Limited Access';
+
+												   }
+													 break;
+					case 'faction' : switch (selectionData[selectionName]) {
+												   	case 'attacknews': tableClass = 'table-warning'; accessLevel = 'Limited Access';
+												  							    break;
+														case 'attacks': tableClass = 'table-warning'; accessLevel = 'Limited Access';
+																				  	break;
+														case 'attacksfull': tableClass = 'table-warning'; accessLevel = 'Limited Access';
+																						break;
+														case 'basic': tableClass = 'table-dark'; accessLevel = 'Public';
+																				  	break;
+														case 'cesium': tableClass = 'table-warning'; accessLevel = 'Limited Access';
+																						break;
+														case 'chain': tableClass = 'table-warning'; accessLevel = 'Limited Access';
+																						break;
+														case 'contributors': tableClass = 'table-warning'; accessLevel = 'Limited Access';
+																						break;
+														case 'currency': tableClass = 'table-warning'; accessLevel = 'Limited Access';
+																						break;
+														case 'donations': tableClass = 'table-warning'; accessLevel = 'Limited Access';
+																						break;
+														case 'reports': tableClass = 'table-warning'; accessLevel = 'Limited Access';
+																						break;
+														case 'fundsnews': tableClass = 'table-warning'; accessLevel = 'Limited Access';
+																						break;
+														case 'timestamp': tableClass = 'table-dark'; accessLevel = 'Public';
+																						break;
+														case 'lookup': tableClass = 'table-dark'; accessLevel = 'Public';
+																						break;
+														default: tableClass = 'table-success'; accessLevel = 'Minimal Access';
+
+												   }
+													 break;
+					case 'user'    : switch (selectionData[selectionName]) {
+												   	case 'attacks': tableClass = 'table-warning'; accessLevel = 'Limited Access';
+												  							    break;
+														case 'attacksfull': tableClass = 'table-warning'; accessLevel = 'Limited Access';
+																				  	break;
+														case 'basic': tableClass = 'table-dark'; accessLevel = 'Public';
+																						break;
+														case 'battlestats': tableClass = 'table-warning'; accessLevel = 'Limited Access';
+																				  	break;
+														case 'bazaar': tableClass = 'table-dark'; accessLevel = 'Public';
+																						break;
+														case 'crimes': tableClass = 'table-dark'; accessLevel = 'Public';
+																						break;
+														case 'discord': tableClass = 'table-dark'; accessLevel = 'Public';
+																						break;
+														case 'display': tableClass = 'table-dark'; accessLevel = 'Public';
+																						break;
+														case 'events': tableClass = 'table-warning'; accessLevel = 'Limited Access';
+																						break;
+														case 'hof': tableClass = 'table-warning'; accessLevel = 'Limited Access';
+																						break;
+														case 'log': tableClass = 'table-danger'; accessLevel = 'Full Access';
+																						break;
+														case 'messages': tableClass = 'table-warning'; accessLevel = 'Limited Access';
+																						break;
+														case 'money': tableClass = 'table-warning'; accessLevel = 'Limited Access';
+																						break;
+														case 'networth': tableClass = 'table-warning'; accessLevel = 'Limited Access';
+																						break;
+														case 'personalstats': tableClass = 'table-dark'; accessLevel = 'Public';
+																						break;
+														case 'profile': tableClass = 'table-dark'; accessLevel = 'Public';
+																						break;
+														case 'receivedevents': tableClass = 'table-warning'; accessLevel = 'Limited Access';
+																						break;
+														case 'reports': tableClass = 'table-warning'; accessLevel = 'Limited Access';
+																						break;
+														case 'stocks': tableClass = 'table-warning'; accessLevel = 'Limited Access';
+																						break;
+														case 'timestamp': tableClass = 'table-dark'; accessLevel = 'Public';
+																						break;
+														case 'lookup': tableClass = 'table-dark'; accessLevel = 'Public';
+																						break;
+														default: tableClass = 'table-success'; accessLevel = 'Minimal Access';
+												   }
+													 break;
+					default        : tableClass = ''; accessLevel = '';
+
+				}
+
+				table = table + '<tr class="' + tableClass + '">'
+				+ '<td>' + selectionsEntry + '</td>'
+				+ '<td>' + selectionData[selectionName] + '</td>'
+				+ '<td>' + accessLevel + '</td>'
+				+ '</tr>';
+			}
+		//}
+	}
+
+	table = table + '</tbody></table>';
+
+		$(document).ready(function() {
+				$('#selections').DataTable( {
+						"paging":   false,
+						"order": [[ 0, "asc" ], [ 1, "asc" ]],
+						"info":     false
+				} );
+		} );
+
+	document.getElementById(element).innerHTML = table;
+
+	//document.getElementById('summary').innerHTML = accessLevelInformation;
+
+
+}
+
 
 function parseMembers (statusData, selection, element, membersList) {
-	
+
 	var trustedApiKey = document.getElementById("trustedkey").value;
 
 	var statusList = '';
-	var markedCheckboxStatus = document.getElementsByName('status');  
-	  for (var checkbox of markedCheckboxStatus) {  
-	    if (checkbox.checked)  
-	    	statusList = statusList + checkbox.value + ',';  
-	  } 
+	var markedCheckboxStatus = document.getElementsByName('status');
+	  for (var checkbox of markedCheckboxStatus) {
+	    if (checkbox.checked)
+	    	statusList = statusList + checkbox.value + ',';
+	  }
 
 	var detailsList = '';
-	var markedCheckboxDetails = document.getElementsByName('details');  
-	  for (var checkbox of markedCheckboxDetails) {  
-	    if (checkbox.checked)  
-	    	detailsList = detailsList + checkbox.value + ',';  
-	  } 
+	var markedCheckboxDetails = document.getElementsByName('details');
+	  for (var checkbox of markedCheckboxDetails) {
+	    if (checkbox.checked)
+	    	detailsList = detailsList + checkbox.value + ',';
+	  }
 
 	var filterMinutes = false;
 	if (document.getElementById('Minutes').checked) {
 		filterMinutes = true;
 	}
-	
+
 	var printEntry = false;
 
 	var table = '<div class="col-sm-12 badge-primary" ><b>Members Status of <img src="https://factiontags.torn.com/'
 		+ statusData.tag_image + '"> '
-		+ statusData.name 
+		+ statusData.name
 		+ ' [' + statusData.ID + ']'
 		+ '</b> <input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents( document.getElementById(\'members\') );"></div>';
-	
-	
+
+
 	table = table + '<br /><table class="table table-hover" id="members"><thead><tr>'
 	+ '<th>Name</th>'
+	+ '<!-- th>Icons</th -->'
 	+ '<th>Link</th>'
 	+ '<th>Status</th>'
 	+ '<th>Details</th>'
@@ -307,24 +483,24 @@ function parseMembers (statusData, selection, element, membersList) {
 	var countMembers = 0;
 	var filteredMembers = 0;
 	var statusDescriptionText = '';
-	
-	
+
+
 	var timeStamp = Math.floor(Date.now() / 1000);
 	var timeDifference = 0;
 
 	for( var id in membersList ){
-		
+
 		printEntry = false;
 		statusDescriptionText = '';
-		
+
 		var member = membersList[id];
 		var memberStatusState = member.status.state;
 		var hospitalTime = '';
-		
+
 		if ((filterMinutes && memberStatusState == 'Hospital')
 		     || (!filterMinutes && memberStatusState == 'Hospital')
 		     || (member.status.state !== 'Hospital')) {
-			
+
 			if (filterMinutes && memberStatusState == 'Hospital') {
 				timeDifference = (member.status.until - timeStamp) / 60;
 				if (timeDifference < 15) {
@@ -334,58 +510,80 @@ function parseMembers (statusData, selection, element, membersList) {
 				printEntry = true;
 			}
 		}
-		
+
 		if (memberStatusState == 'Hospital') {
-			
+
 			timeDifference = (member.status.until - timeStamp);
-			
+
 			dateObj = new Date(timeDifference * 1000);
 			hours = dateObj.getUTCHours();
 			minutes = dateObj.getUTCMinutes();
 			seconds = dateObj.getSeconds();
 
-			timeString = hours.toString().padStart(2, '0') + ' hrs ' + 
-			    minutes.toString().padStart(2, '0') + ' min ' + 
+			timeString = hours.toString().padStart(2, '0') + ' hrs ' +
+			    minutes.toString().padStart(2, '0') + ' min ' +
 			    seconds.toString().padStart(2, '0') + ' sec';
 			statusDescriptionText = 'In hospital for ' + timeString;
 			hospitalTime = ' out in ' + minutes.toString().padStart(2, '0') + ' min ' + seconds.toString().padStart(2, '0') + ' sec';
-			
-			
+
+
 		} else {
 			statusDescriptionText = member.status.description;
 		}
-		
-		if (member.status.description.includes('In a ')) {
-			memberStatusState = 'Abroad';
-		}
-		
+
+		var icon1 = '<img src="images/empty_icon.png" alt="" width="18" height="18"/>';
+		var icon2 = '<img src="images/empty_icon.png" alt="" width="18" height="18"/>';
+		var detail = '';
 		if (member.last_action.status == 'Online')	statusFormat = 'badge-success';
 		if (member.last_action.status == 'Idle')	statusFormat = 'badge-warning';
 		if (member.last_action.status == 'Offline') statusFormat = 'badge-dark';
 
-		if (memberStatusState == 'Hospital') 	detailFormat = 'badge-danger';
-		if (memberStatusState == 'Okay') 		detailFormat = 'badge-success';
-		if (memberStatusState == 'Jail') 		detailFormat = 'badge-warning';
-		if (memberStatusState == 'Traveling') detailFormat = 'badge-info';
-		if (memberStatusState == 'Abroad')    detailFormat = 'badge-info';
+		if (memberStatusState == 'Hospital') {
+			detailFormat = 'badge-danger';
+			icon1 = '<img src="images/hosp_icon.png" alt="Hospital" width="18" height="18"/>';
+			detail = '<span class="badge badge-pill ' + detailFormat + '">' + memberStatusState + '</span>';
+			if (member.status.description.includes('In a ')) {
+				memberStatusState = 'Abroad';
+			}
+		}
+		if (memberStatusState == 'Okay')  {
+			detailFormat = 'badge-success';
+			detail = '<span class="badge badge-pill ' + detailFormat + '">' + memberStatusState + '</span>';
+		}
+		if (memberStatusState == 'Jail') {
+			detailFormat = 'badge-warning';
+			icon1 = '<img src="images/jail_icon.png" alt="Jail" width="18" height="18"/>';
+			detail = '<span class="badge badge-pill ' + detailFormat + '">' + memberStatusState + '</span>';
+		}
+		if (memberStatusState == 'Traveling') {
+			detailFormat = 'badge-info';
+			icon2 = '<img src="images/travel_icon.png" alt="Traveling" width="18" height="18"/>';
+			detail = '<span class="badge badge-pill ' + detailFormat + '">' + memberStatusState + '</span>';
+		}
+		if (memberStatusState == 'Abroad') {
+			detailFormat = 'badge-info';
+			icon2 = '<img src="images/abroad_icon.png" alt="Abroad" width="18" height="18"/>';
+			detail = detail + '<span class="badge badge-pill ' + detailFormat + '">' + memberStatusState + '</span>';
+		}
 
 		if (statusList.includes(member.last_action.status)
 				&& detailsList.includes(memberStatusState)
 				&& printEntry) {
-			
+
 
 			var copyableText = member.name + ' ' + '[https://www.torn.com/loader.php?sid=attack&user2ID=' + id +  ']' + hospitalTime;
-			
+
 			table = table + '<tr>'
 
 			+'<td><a href="https://www.torn.com/profiles.php?XID=' + id + '" target="_blank">' + member.name + ' [' + id + ']</a></td>'
+			+'<!-- td>' + icon1 + '&nbsp;' + icon2 + '</td -->'
 			+'<td><a href="https://www.torn.com/loader.php?sid=attack&user2ID=' + id + '" target="_blank">https://www.torn.com/loader.php?sid=attack&user2ID=' + id +  '</a></td>'
 				+'<td>' + '<span class="badge badge-pill ' + statusFormat + '">' + member.last_action.status + '</span>' + '</td>'
-			+'<td>' + '<span class="badge badge-pill ' + detailFormat + '">' + memberStatusState + '</span>' + '</td>'
+			+'<td>' + detail + '</td>'
 			+'<td>' + statusDescriptionText + '</td>'
 			+'<td>' + member.last_action.relative + '</td>'
 			+'<td>' + member.level + '</td>'
-			+'<td>' 
+			+'<td>'
 			+'<button type="button" onclick="callTornStatsAPI(\'' + trustedApiKey + '\', ' + id + ')" class="btn btn-secondary" data-toggle="modal" data-target="#statsModal">Show Stats</button>'
 			+'</td>'
 			+'<td>'
@@ -399,9 +597,9 @@ function parseMembers (statusData, selection, element, membersList) {
 
 		table = table + '</tr>';
 		countMembers++;
-	}	
+	}
 	table = table + '</tbody></table>';
-	
+
 	$(document).ready(function() {
 	    $('#members').DataTable( {
 	        "paging":   false,
@@ -409,9 +607,9 @@ function parseMembers (statusData, selection, element, membersList) {
 	        "info":     false
 	    } );
 	} );
-	
+
 	document.getElementById(element).innerHTML = table;
-	
+
 	document.getElementById('summary').innerHTML = filteredMembers  + ' members out of ' + countMembers + ' total members filtered.';
 
 }
@@ -439,9 +637,9 @@ function parseNews (newsData, selection, element, membersList) {
 
 		table = table + '</tr>';
 
-	}	
+	}
 	table = table + '</tbody></table>';
-	
+
 	$(document).ready(function() {
 	    $('#news').DataTable( {
 	        "paging":   false,
@@ -454,43 +652,45 @@ function parseNews (newsData, selection, element, membersList) {
 }
 
 function getWarringFactions (rankedWarData, selection, element, rankedWars) {
-	
+
 	var datalist = '';
-	
+
 	for( var id in rankedWars ){
-		
+
 		var rankedWar = rankedWars[id];
-		
+
 		for( var factionID in rankedWar.factions ){
-			
+
 			var faction = rankedWar.factions[factionID];
-			
+
 			if (!datalist.includes(faction.name)) {
 				datalist = datalist + '<option value="' + factionID + '">' + faction.name + '</option>';
 			}
-			
-		
+
+
 		}
 	}
-	
+
 	document.getElementById("hint2").innerHTML = 'Factions in a ranked war can be searched for.';
 	document.getElementById("factions").innerHTML = datalist;
-	
-		
+
+
 }
 
 function parseRankedWars (rankedWarData, selection, element, rankedWars) {
-	
+
+	checkAPIKey();
+
 	var trustedApiKey = document.getElementById("trustedkey").value;
-	
+
 	var warStatusList = '';
-	
-	var markedCheckbox = document.getElementsByName('warStatus');  
-	  for (var checkbox of markedCheckbox) {  
-	    if (checkbox.checked)  
-	    	warStatusList = warStatusList + checkbox.value + ',';  
-	  } 
-	
+
+	var markedCheckbox = document.getElementsByName('warStatus');
+	  for (var checkbox of markedCheckbox) {
+	    if (checkbox.checked)
+	    	warStatusList = warStatusList + checkbox.value + ',';
+	  }
+
 
 
 	var table = '<div class="col-sm-12 badge-primary" ><b> Ranked War Details </b></div>';
@@ -506,7 +706,7 @@ function parseRankedWars (rankedWarData, selection, element, rankedWars) {
 	+ '<th class="align-middle">Score #2</th>'
 	+ '<th class="align-middle">Faction 2<br />(Member Status)</th>'
 	+ '<th class="align-middle">Details</th>'
-	
+
 	;
 
 	table = table + '</tr></thead><tbody>';
@@ -523,7 +723,7 @@ function parseRankedWars (rankedWarData, selection, element, rankedWars) {
 		var counter = 0;
 		var warStatus = '', warStatusStyleClass = '', duration = 0, durationString = '', progressBarStyleClass, detailsButton = '';
 		var currentTimeStamp = Math.floor(Date.now() / 1000);
-		
+
 		if (rankedWar.war.end == 0) {
 			if (currentTimeStamp < rankedWar.war.start) {
 				warStatusStyleClass = '<span class="badge badge-pill badge-info">Scheduled</span>';
@@ -542,23 +742,23 @@ function parseRankedWars (rankedWarData, selection, element, rankedWars) {
 			detailsButton = '<button type="button" onclick="callRankedWarDetails(\'' + trustedApiKey + '\', ' + id + ')" class="btn btn-secondary" data-toggle="modal" data-target="#rankedWarModal">Show Details</button>';
 			duration = rankedWar.war.end - rankedWar.war.start;
 		}
-		
+
 		dateObj = new Date(duration * 1000);
-		
+
 		hours = dateObj.getUTCHours();
 		minutes = dateObj.getUTCMinutes();
 		seconds = dateObj.getSeconds();
-		
-		durationString = hours.toString().padStart(2, '0') + ':' + 
-	    minutes.toString().padStart(2, '0') + ':' + 
+
+		durationString = hours.toString().padStart(2, '0') + ':' +
+	    minutes.toString().padStart(2, '0') + ':' +
 	    seconds.toString().padStart(2, '0');
-		
+
 		if (warStatusList.includes(warStatus)) {
-		
+
 		for( var factionID in rankedWar.factions ){
-			
+
 			var faction = rankedWar.factions[factionID];
-			
+
 			if (counter == 0) {
 				faction1Name = faction.name;
 				faction1Score = faction.score;
@@ -570,8 +770,8 @@ function parseRankedWars (rankedWarData, selection, element, rankedWars) {
 				faction2ID = factionID;
 			}
 		}
-		
-		
+
+
 			if ((faction1ID === rankedWar.war.winner) || (faction1Score > faction2Score)) {
 				faction1StyleClass = ' class="text-success"';
 				faction2StyleClass = ' class="text-danger"';
@@ -580,9 +780,9 @@ function parseRankedWars (rankedWarData, selection, element, rankedWars) {
 				faction1StyleClass = ' class="text-danger"';
 				faction2StyleClass = ' class="text-success"';
 			}
-			
+
 		var percentage = Math.abs(faction1Score - faction2Score) / rankedWar.war.target * 100;
-		
+
 		table = table + '<tr>'
 			+ '<td class="align-middle">' + formatted_date + '</td>'
 			+ '<td class="align-middle">' + warStatusStyleClass + ''
@@ -605,7 +805,7 @@ function parseRankedWars (rankedWarData, selection, element, rankedWars) {
 	}
 	}
 	table = table + '</tbody></table>';
-	
+
 	$(document).ready(function() {
 	    $('#wars').DataTable( {
 	        "paging":   false,
@@ -613,21 +813,23 @@ function parseRankedWars (rankedWarData, selection, element, rankedWars) {
 	        "info":     false
 	    } );
 	} );
-	
+
 	document.getElementById(element).innerHTML = table;
+
+
 
 }
 
 function parseRankedWarDetails (rankedWarDetails, element) {
-	
+
 	var counter = 0;
 	var faction1ID, faction1Name, faction1Score;
 	var faction2ID, faction2Name, faction2Score;
 	var faction1StyleClass, faction2StyleClass;
-	
+
 
 	for( var id in rankedWarDetails.factions ){
-		
+
 		if (counter == 0) {
 			faction1ID = id;
 			faction1Name = rankedWarDetails.factions[id].name;
@@ -639,10 +841,10 @@ function parseRankedWarDetails (rankedWarDetails, element) {
 			faction2Score = rankedWarDetails.factions[id].score;
 			counter = 2;
 		}
-		
+
 	}
-	
-	
+
+
 	if (faction1Score > faction2Score) {
 		faction1StyleClass = ' class="text-success"';
 		faction2StyleClass = ' class="text-danger"';
@@ -651,7 +853,7 @@ function parseRankedWarDetails (rankedWarDetails, element) {
 		faction1StyleClass = ' class="text-danger"';
 		faction2StyleClass = ' class="text-success"';
 	}
-	
+
 	var table = '';
 	table = table + '<br /><table class="table table-hover text-center" id="warfactions"><thead>'
 	+ '<tr>'
@@ -661,10 +863,10 @@ function parseRankedWarDetails (rankedWarDetails, element) {
 	+ '<th class="align-middle" colspan="2"><a href="https://www.torn.com/factions.php?step=profile&ID=' + faction2ID + '" target="_blank" ' + faction2StyleClass + '>' + faction2Name + '</a></th>'
 	+ '</tr>'
 	;
-	
+
 	table = table + '</thead><tbody>';
 	table = table + '</tbody></table><br/>';
-	
+
 	table = table + '<br /><table class="table table-hover text-center" id="wardetails"><thead>'
 	+ '<tr>'
 	+ '<th class="align-middle">Name</th>'
@@ -673,37 +875,37 @@ function parseRankedWarDetails (rankedWarDetails, element) {
 	+ '<th class="align-middle">Score</th>'
 	+ '</tr>'
 	;
-	
+
 	table = table + '</thead><tbody>';
-	
+
 	var factionName, factionStyleClass;
-	
+
 	for( var id in rankedWarDetails.members ){
-		
+
 		if (rankedWarDetails.members[id].faction_id == faction1ID) {
 			factionName = faction1Name;
 			factionStyleClass = faction1StyleClass;
 		}
-		
+
 		if (rankedWarDetails.members[id].faction_id == faction2ID) {
 			factionName = faction2Name;
 			factionStyleClass = faction2StyleClass;
 		}
-		
+
 		table = table + '<tr>'
 		+ '<td class="align-middle"><a href="https://www.torn.com/profiles.php?XID=' + id + '" target="_blank">' + rankedWarDetails.members[id].name + ' [' + id + ']</a></td>'
 		+ '<td class="align-middle"><a href="https://www.torn.com/factions.php?step=profile&ID=' + rankedWarDetails.members[id].faction_id + '" target="_blank" ' + factionStyleClass + '>' + factionName + '</a></td>'
 		+ '<td class="align-middle">' + rankedWarDetails.members[id].attacks + '</td>'
 		+ '<td class="align-middle">' + rankedWarDetails.members[id].score + '</td>'
 		+ '</tr>';
-		
-		
+
+
 	}
-	
-	
-	
+
+
+
 	table = table + '</tbody></table>';
-	
+
 	$(document).ready(function() {
 	    $('#wardetails').DataTable( {
 	        "paging":   false,
@@ -711,10 +913,10 @@ function parseRankedWarDetails (rankedWarDetails, element) {
 	        "info":     false
 	    } );
 	} );
-	
+
 	document.getElementById('rankedWarModalLabel').innerHTML = 'War Details';
 	document.getElementById('rankedWarModalBody').innerHTML = table;
-	
+
 }
 
 function parseReports (reportData, element, membersList) {
@@ -812,7 +1014,7 @@ function parseReports (reportData, element, membersList) {
 
 			table = table + '</tr>';
 		}
-	}	
+	}
 	table = table + '</tbody></table>';
 	document.getElementById(element).innerHTML = table;
 
@@ -865,7 +1067,7 @@ function parsePayouts (crimeData, element, membersList) {
 	for( var id in crimeData ){
 		var crime = crimeData[id];
 		// 8 = PA
-		if (crime.crime_id === 8) { 
+		if (crime.crime_id === 8) {
 			var ts = new Date(crime.time_completed * 1000);
 
 			if (crime.initiated === 1 && ts.getMonth()+1 === currentMonth) {
@@ -912,7 +1114,7 @@ function parsePayouts (crimeData, element, membersList) {
 							}
 						} else {
 							memberName = memberID;
-							
+
 							if (memberName in memberMoney) {
 								memberMoney[memberName] = memberMoney[memberName] + (crime.money_gain / split);
 								memberSuccess[memberName] = memberSuccess[memberName] +success;
@@ -963,9 +1165,9 @@ function parsePayouts (crimeData, element, membersList) {
 	if (factionFailed > 0) {badgeFailed = 'badge-danger';}
 	if (factionSuccess > 0) {badgeSuccess = 'badge-success';}
 
-	table = table + '<tr class="table-dark">' 
+	table = table + '<tr class="table-dark">'
 	+'<td colspan = "3">Totals</td>'
-	+'<td>' 
+	+'<td>'
 	+ '<span class="badge badge-pill '+badgeFailed+'">'+ factionFailed + '</span>-'
 	+ '<span class="badge badge-pill '+badgeSuccess+'">'+ factionSuccess + '</span>'
 	+'</td>'
@@ -1005,7 +1207,7 @@ function parsePayouts (crimeData, element, membersList) {
 		if (name.startsWith('3|')) multiplier = 0.2 / numberOfTeams;
 		if (name.startsWith('4|')) multiplier = 0.1 / numberOfTeams;
 
-		summary = summary + '<tr>' 
+		summary = summary + '<tr>'
 		+'<td>' + name + '</td>';
 
 		if (!weighted) {
@@ -1024,14 +1226,14 @@ function parsePayouts (crimeData, element, membersList) {
 	badgeFailed = 'badge-dark';
 	if (factionFailed > 0) {badgeFailed = 'badge-danger';}
 	if (factionSuccess > 0) {badgeSuccess = 'badge-success';}
-	summary = summary + '<tr class="table-dark">' 
+	summary = summary + '<tr class="table-dark">'
 	+'<td>Faction totals</td>'
 	+'<td>' +' $' + factionMoney.toLocaleString('en-US') + '</td>'
 	+'<td><span class="badge badge-pill '+badgeFailed+'">'+ factionFailed + '</span></td>'
 	+'<td><span class="badge badge-pill '+badgeSuccess+'">'+ factionSuccess + '</span></td>'
 	+'</tr>';
 	summary = summary + '</tbody></table>';
-	
+
 
 
 	document.getElementById('summary').innerHTML = summary;
@@ -1186,9 +1388,9 @@ function parseOCs (crimeData, element, membersList) {
 	if (factionFailed > 0) {badgeFailed = 'badge-danger';}
 	if (factionSuccess > 0) {badgeSuccess = 'badge-success';}
 
-	table = table + '<tr class="table-dark">' 
+	table = table + '<tr class="table-dark">'
 	+'<td colspan = "3">Totals</td>'
-	+'<td>' 
+	+'<td>'
 	+ '<span class="badge badge-pill '+badgeFailed+'">'+ factionFailed + '</span>-'
 	+ '<span class="badge badge-pill '+badgeSuccess+'">'+ factionSuccess + '</span>'
 	+'</td>'
@@ -1197,19 +1399,19 @@ function parseOCs (crimeData, element, membersList) {
 	+'</tr>';
 
 	table = table + '</tbody></table>';
-	
+
 	document.getElementById(element).innerHTML = table;
-	
+
 
 }
 
 function checkAPIKey() {
 	var trustedApiKey = document.getElementById("trustedkey").value;
-	
+
 	if (trustedApiKey.length == 16) {
-		
+
 		callTornAPI(trustedApiKey, 'torn', 'rankedwars', 'getWarringFactions');
-		
+
 	}
 }
 
@@ -1269,13 +1471,13 @@ function selectElementContents(el) {
 }
 
 function loadKeyFromSession(selection) {
-	
+
 	var paramFactionID = getUrlParam('factionID','NOT_SET');
-	
+
 	if (paramFactionID != 'NOT_SET') {
 		sessionStorage.factionid = paramFactionID;
 	}
-	
+
 	if (typeof(Storage) !== "undefined") {
 		if (sessionStorage.factionid) {
 			if(document.getElementById("factionid")) {
@@ -1288,7 +1490,7 @@ function loadKeyFromSession(selection) {
 			}
 		}
 	}
-	
+
 	if (selection == 'members') {
 		if (paramFactionID != 'NOT_SET') {
 			userSubmit('members');
