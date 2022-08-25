@@ -1508,7 +1508,7 @@ function selectElementContents(el) {
 
 function loadKeyFromLocalStorage() {
 	if (storageAvailable('localStorage') && typeof(Storage) !== "undefined") {
-		let localStorageApiKey = localStorage.getItem('api_key');
+		let localStorageApiKey = localStorage.getItem('api_key') || "";
 		if (sessionStorage.trustedApiKey === '' || !sessionStorage.trustedApiKey) {
 			sessionStorage.trustedApiKey = localStorageApiKey;
 		}
