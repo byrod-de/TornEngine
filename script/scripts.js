@@ -1,7 +1,43 @@
-function userSubmit(selection) {
-	var trustedApiKey = document.getElementById("trustedkey").value;
+function storageAvailable(type) {
+    let storage;
+    try {
+        storage = window[type];
+        const x = '__storage_test__';
+        storage.setItem(x, x);
+        storage.removeItem(x);
+        return true;
+    }
+    catch (e) {
+        return e instanceof DOMException && (
+            // everything except Firefox
+            e.code === 22 ||
+            // Firefox
+            e.code === 1014 ||
+            // test name field too, because code might not be present
+            // everything except Firefox
+            e.name === 'QuotaExceededError' ||
+            // Firefox
+            e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
+            // acknowledge QuotaExceededError only if there's something already stored
+            (storage && storage.length !== 0);
+    }
+}
+
+function getApiKey() {
+	let localStorageApiKey = "";
+	if (storageAvailable('localStorage')) {
+		localStorageApiKey = localStorage.getItem('api_key');
+	}
+	let trustedApiKey = document.getElementById("trustedkey").value || localStorageApiKey;
 
 	sessionStorage.trustedApiKey = trustedApiKey;
+	localStorage.setItem('api_key', trustedApiKey);
+
+	return trustedApiKey;
+}
+
+function userSubmit(selection) {
+	var trustedApiKey = getApiKey();
 
 	if (trustedApiKey === '') {
 		printAlert('Warning', 'You might want to enter your API key if you expect this to work...');
@@ -1470,8 +1506,17 @@ function selectElementContents(el) {
 	}
 }
 
-function loadKeyFromSession(selection) {
+function loadKeyFromLocalStorage() {
+	if (storageAvailable('localStorage') && typeof(Storage) !== "undefined") {
+		let localStorageApiKey = localStorage.getItem('api_key');
+		if (sessionStorage.trustedApiKey === '' || !sessionStorage.trustedApiKey) {
+			sessionStorage.trustedApiKey = localStorageApiKey;
+		}
+	}
+}
 
+function loadKeyFromSession(selection) {
+	loadKeyFromLocalStorage();
 	var paramFactionID = getUrlParam('factionID','NOT_SET');
 
 	if (paramFactionID != 'NOT_SET') {
@@ -1485,7 +1530,7 @@ function loadKeyFromSession(selection) {
 			}
 		}
 		if (sessionStorage.trustedApiKey) {
-			if(document.getElementById("trustedkey")) {
+			if (document.getElementById("trustedkey")) {
 				document.getElementById("trustedkey").value = sessionStorage.trustedApiKey;
 			}
 		}
@@ -1523,3 +1568,7 @@ function getUrlParam(parameter, defaultvalue){
         }
     return urlparameter;
 }
+
+(function () {
+	loadKeyFromSession();
+})();
