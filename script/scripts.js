@@ -462,9 +462,7 @@ function parseKeyInfo (keyInfoData, selection, element, keyInfo) {
 
 	document.getElementById(element).innerHTML = table;
 
-	//document.getElementById('summary').innerHTML = accessLevelInformation;
-
-
+	//document.getElementById('summary').innerHTML = accessLevelInformation
 }
 
 
@@ -486,9 +484,14 @@ function parseMembers (statusData, selection, element, membersList) {
 	    	detailsList = detailsList + checkbox.value + ',';
 	  }
 
-	var filterMinutes = false;
-	if (document.getElementById('Minutes').checked) {
-		filterMinutes = true;
+	var filterMinutesHosp = false;
+	if (document.getElementById('MinutesHosp').checked) {
+		filterMinutesHosp = true;
+	}
+
+  var filterMinutesAction = 0;
+  if (document.getElementById('FilterActive').checked) {
+		filterMinutesAction = document.getElementById('TimeActive').value;
 	}
 
 	var printEntry = false;
@@ -501,16 +504,16 @@ function parseMembers (statusData, selection, element, membersList) {
 
 
 	table = table + '<br /><table class="table table-hover" id="members"><thead><tr>'
-	+ '<th>Name</th>'
-	+ '<!-- th>Icons</th -->'
-	+ '<th>Link</th>'
-	+ '<th>Status</th>'
-	+ '<th>Details</th>'
-	+ '<th>Description</th>'
-	+ '<th>Last Action</th>'
-	+ '<th>Level</th>'
-	+ '<th>Stats</th>'
-	+ '<th>Copy Link</th>';
+	+ '<th>Name&nbsp;&nbsp;</th>'
+	+ '<th>Icons&nbsp;&nbsp;</th>'
+	+ '<th>Link&nbsp;&nbsp;</th>'
+	+ '<th>Status&nbsp;&nbsp;</th>'
+	+ '<th>Details&nbsp;&nbsp;</th>'
+	+ '<th>Description&nbsp;&nbsp;</th>'
+	+ '<th>Last Action&nbsp;&nbsp;</th>'
+	+ '<th>Level&nbsp;&nbsp;</th>'
+	+ '<th>Stats&nbsp;&nbsp;</th>'
+	+ '<th>Copy Link&nbsp;&nbsp;</th>';
 
 	table = table + '</tr></thead><tbody>';
 
@@ -533,11 +536,11 @@ function parseMembers (statusData, selection, element, membersList) {
 		var memberStatusState = member.status.state;
 		var hospitalTime = '';
 
-		if ((filterMinutes && memberStatusState == 'Hospital')
-		     || (!filterMinutes && memberStatusState == 'Hospital')
+		if ((filterMinutesHosp && memberStatusState == 'Hospital')
+		     || (!filterMinutesHosp && memberStatusState == 'Hospital')
 		     || (member.status.state !== 'Hospital')) {
 
-			if (filterMinutes && memberStatusState == 'Hospital') {
+			if (filterMinutesHosp && memberStatusState == 'Hospital') {
 				timeDifference = (member.status.until - timeStamp) / 60;
 				if (timeDifference < 15) {
 					printEntry = true;
@@ -548,7 +551,6 @@ function parseMembers (statusData, selection, element, membersList) {
 		}
 
 		if (memberStatusState == 'Hospital') {
-
 			timeDifference = (member.status.until - timeStamp);
 
 			dateObj = new Date(timeDifference * 1000);
@@ -567,8 +569,45 @@ function parseMembers (statusData, selection, element, membersList) {
 			statusDescriptionText = member.status.description;
 		}
 
-		var icon1 = '<img src="images/empty_icon.png" alt="" width="18" height="18"/>';
-		var icon2 = '<img src="images/empty_icon.png" alt="" width="18" height="18"/>';
+    var memberLastActionTimestamp = (timeStamp - member.last_action.timestamp);
+    var memberLastAction = '';
+
+    if (filterMinutesAction > memberLastActionTimestamp / 60) {
+      printEntry = false;
+    }
+
+
+      dateObj = new Date(memberLastActionTimestamp * 1000);
+			hours = dateObj.getUTCHours();
+			minutes = dateObj.getUTCMinutes();
+			seconds = dateObj.getSeconds();
+
+      if (member.last_action.relative.includes('day')) {
+        memberLastAction = 'Days ago: ' + member.last_action.relative.split(" ")[0];
+      } else {
+
+      if (hours.toString() == 0) {
+        hours = '<span class="text-secondary">' + hours.toString().padStart(2, '0') + ' hrs </span>';
+      } else {
+        hours = hours.toString().padStart(2, '0') + ' hrs ';
+      }
+
+      if (minutes.toString() == 0) {
+        minutes = '<span class="text-secondary">' + minutes.toString().padStart(2, '0') + ' min </span>';
+      } else {
+        minutes = minutes.toString().padStart(2, '0') + ' min ';
+      }
+
+      if (seconds.toString() == 0) {
+        seconds = '<span class="text-secondary">' + seconds.toString().padStart(2, '0') + ' sec </span>';
+      } else {
+        seconds = seconds.toString().padStart(2, '0') + ' sec ';
+      }
+
+			memberLastAction = hours + minutes + seconds;
+    }
+
+		var icon = '';
 		var detail = '';
 		if (member.last_action.status == 'Online')	statusFormat = 'badge-success';
 		if (member.last_action.status == 'Idle')	statusFormat = 'badge-warning';
@@ -576,7 +615,7 @@ function parseMembers (statusData, selection, element, membersList) {
 
 		if (memberStatusState == 'Hospital') {
 			detailFormat = 'badge-danger';
-			icon1 = '<img src="images/hosp_icon.png" alt="Hospital" width="18" height="18"/>';
+			icon = icon + '<img src="images/icon_hosp.png" alt="Hospital" title="Hospital" width="20" height="20"/>&nbsp;';
 			detail = '<span class="badge badge-pill ' + detailFormat + '">' + memberStatusState + '</span>';
 			if (member.status.description.includes('In a ')) {
 				memberStatusState = 'Abroad';
@@ -588,17 +627,17 @@ function parseMembers (statusData, selection, element, membersList) {
 		}
 		if (memberStatusState == 'Jail') {
 			detailFormat = 'badge-warning';
-			icon1 = '<img src="images/jail_icon.png" alt="Jail" width="18" height="18"/>';
+			icon = icon + '<img src="images/icon_jail.png" alt="Jail" title="Jail" width="20" height="20"/>&nbsp;';
 			detail = '<span class="badge badge-pill ' + detailFormat + '">' + memberStatusState + '</span>';
 		}
 		if (memberStatusState == 'Traveling') {
-			detailFormat = 'badge-info';
-			icon2 = '<img src="images/travel_icon.png" alt="Traveling" width="18" height="18"/>';
+			detailFormat = 'badge-dark';
+			icon = icon + '<img src="images/icon_travel.png" alt="Traveling" title="Traveling" width="20" height="20"/>&nbsp;';
 			detail = '<span class="badge badge-pill ' + detailFormat + '">' + memberStatusState + '</span>';
 		}
 		if (memberStatusState == 'Abroad') {
 			detailFormat = 'badge-info';
-			icon2 = '<img src="images/abroad_icon.png" alt="Abroad" width="18" height="18"/>';
+			icon = icon + '<img src="images/icon_abroad.png" alt="Abroad" title="Abroad" width="20" height="20"/>&nbsp;';
 			detail = detail + '<span class="badge badge-pill ' + detailFormat + '">' + memberStatusState + '</span>';
 		}
 
@@ -606,18 +645,17 @@ function parseMembers (statusData, selection, element, membersList) {
 				&& detailsList.includes(memberStatusState)
 				&& printEntry) {
 
-
 			var copyableText = member.name + ' ' + '[https://www.torn.com/loader.php?sid=attack&user2ID=' + id +  ']' + hospitalTime;
 
 			table = table + '<tr>'
 
 			+'<td><a href="https://www.torn.com/profiles.php?XID=' + id + '" target="_blank">' + member.name + ' [' + id + ']</a></td>'
-			+'<!-- td>' + icon1 + '&nbsp;' + icon2 + '</td -->'
+			+'<td>' + icon + '</td>'
 			+'<td><a href="https://www.torn.com/loader.php?sid=attack&user2ID=' + id + '" target="_blank">https://www.torn.com/loader.php?sid=attack&user2ID=' + id +  '</a></td>'
 				+'<td>' + '<span class="badge badge-pill ' + statusFormat + '">' + member.last_action.status + '</span>' + '</td>'
 			+'<td>' + detail + '</td>'
 			+'<td>' + statusDescriptionText + '</td>'
-			+'<td>' + member.last_action.relative + '</td>'
+			+'<td>' + memberLastAction + '</td>'
 			+'<td>' + member.level + '</td>'
 			+'<td>'
 			+'<button type="button" onclick="callTornStatsAPI(\'' + trustedApiKey + '\', ' + id + ')" class="btn btn-secondary" data-toggle="modal" data-target="#statsModal">Show Stats</button>'
@@ -639,7 +677,7 @@ function parseMembers (statusData, selection, element, membersList) {
 	$(document).ready(function() {
 	    $('#members').DataTable( {
 	        "paging":   false,
-	        "order": [[ 4, "asc" ]],
+	        "order": [[ 5, "asc" ]],
 	        "info":     false
 	    } );
 	} );
