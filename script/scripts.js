@@ -617,7 +617,7 @@ function parseMembers (statusData, selection, element, membersList) {
 			detailFormat = 'badge-danger';
 			icon = icon + '<img src="images/icon_hosp.png" alt="Hospital" title="Hospital" width="20" height="20"/>&nbsp;';
 			detail = '<span class="badge badge-pill ' + detailFormat + '">' + memberStatusState + '</span>';
-			if (member.status.description.includes('In a ')) {
+			if (member.status.description.includes('In a')) {
 				memberStatusState = 'Abroad';
 			}
 		}
