@@ -645,13 +645,13 @@ function parseMembers (statusData, selection, element, membersList) {
 				&& detailsList.includes(memberStatusState)
 				&& printEntry) {
 
-			var copyableText = member.name + ' ' + '[https://www.torn.com/loader.php?sid=attack&user2ID=' + id +  ']' + hospitalTime;
+			var copyableText = ' >> ' + member.name + ' << ' + hospitalTime + ' || https://www.torn.com/loader.php?sid=attack&user2ID=' + id;
 
 			table = table + '<tr>'
 
 			+'<td><a href="https://www.torn.com/profiles.php?XID=' + id + '" target="_blank">' + member.name + ' [' + id + ']</a></td>'
 			+'<td>' + icon + '</td>'
-			+'<td><a href="https://www.torn.com/loader.php?sid=attack&user2ID=' + id + '" target="_blank">https://www.torn.com/loader.php?sid=attack&user2ID=' + id +  '</a></td>'
+			+'<td><a href="https://www.torn.com/loader.php?sid=attack&user2ID=' + id + '" target="_blank">Attack Link</a></td>'
 				+'<td>' + '<span class="badge badge-pill ' + statusFormat + '">' + member.last_action.status + '</span>' + '</td>'
 			+'<td>' + detail + '</td>'
 			+'<td>' + statusDescriptionText + '</td>'
