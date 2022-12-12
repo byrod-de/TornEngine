@@ -1628,7 +1628,7 @@ function loadFiltersFromSession() {
 			if (sessionStorage.detailsList) {
 				if (sessionStorage.detailsList.includes(checkbox.value)) document.getElementById(checkbox.value).checked = true;
 			} else {
-				document.getElementById(checkbox.value).checked = true;
+				if (checkbox.value !== 'MinutesHosp') document.getElementById(checkbox.value).checked = true;
 			}
 		}
 		
@@ -1637,7 +1637,7 @@ function loadFiltersFromSession() {
 			if (sessionStorage.statusList) {
 				if (sessionStorage.statusList.includes(checkbox.value)) document.getElementById(checkbox.value).checked = true;
 			} else {
-				document.getElementById(checkbox.value).checked = true;
+				if (checkbox.value !== 'FilterActive') document.getElementById(checkbox.value).checked = true;
 			}
 		}
 	}
