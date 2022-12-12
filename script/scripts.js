@@ -36,6 +36,36 @@ function getApiKey() {
 	return trustedApiKey;
 }
 
+function getMembersFilters() {
+	let localStorageDetailsList = '';
+	let defaultDetailsList = '';
+	let localStorageStatusList = '';
+	let defaultStatusList = '';
+	if (storageAvailable('localStorage')) {
+		localStorageDetailsList = localStorage.getItem('detailsList');
+		localStorageStatusList = localStorage.getItem('statusList');
+	}
+	
+	let markedCheckboxDetails = document.getElementsByName('details');
+	for (let checkbox of markedCheckboxDetails) {
+		if (checkbox.checked) defaultDetailsList = defaultDetailsList + checkbox.value + ',';
+	}
+
+	let markedCheckboxStatus = document.getElementsByName('status');
+	for (let checkbox of markedCheckboxStatus) {
+		if (checkbox.checked) defaultStatusList = defaultStatusList + checkbox.value + ',';
+	}
+	let detailsList = defaultDetailsList || localStorageDetailsList;
+	let statusList = defaultStatusList || localStorageStatusList;
+
+	sessionStorage.detailsList = detailsList;
+	sessionStorage.statusList = statusList;
+	localStorage.setItem('detailsList', detailsList);
+	localStorage.setItem('statusList', statusList);
+
+	return detailsList + '#' + statusList;
+}
+
 function userSubmit(selection) {
 	var trustedApiKey = getApiKey();
 
@@ -469,6 +499,7 @@ function parseKeyInfo (keyInfoData, selection, element, keyInfo) {
 function parseMembers (statusData, selection, element, membersList) {
 
 	var trustedApiKey = document.getElementById("trustedkey").value;
+	console.log(getMembersFilters());
 
 	var statusList = '';
 	var markedCheckboxStatus = document.getElementsByName('status');
@@ -476,14 +507,14 @@ function parseMembers (statusData, selection, element, membersList) {
 	    if (checkbox.checked)
 	    	statusList = statusList + checkbox.value + ',';
 	  }
-
+	
 	var detailsList = '';
 	var markedCheckboxDetails = document.getElementsByName('details');
 	  for (var checkbox of markedCheckboxDetails) {
 	    if (checkbox.checked)
 	    	detailsList = detailsList + checkbox.value + ',';
 	  }
-
+	  
 	var filterMinutesHosp = false;
 	if (document.getElementById('MinutesHosp').checked) {
 		filterMinutesHosp = true;
@@ -1569,6 +1600,48 @@ function loadKeyFromLocalStorage() {
 			sessionStorage.trustedApiKey = localStorageApiKey;
 		}
 	}
+}
+
+function loadFiltersFromLocalStorage() {
+	if (storageAvailable('localStorage') && typeof(Storage) !== "undefined") {
+		let localStorageDetailsList = localStorage.getItem('detailsList') || "";
+		if (sessionStorage.detailsList === '' || !sessionStorage.detailsList) {
+			sessionStorage.detailsList = localStorageDetailsList;
+		}
+
+		let localStorageStatusList = localStorage.getItem('statusList') || "";
+		if (sessionStorage.statusList === '' || !sessionStorage.statusList) {
+			sessionStorage.statusList = localStorageStatusList;
+		}
+
+		console.log(sessionStorage.detailsList + '#' + sessionStorage.statusList)
+	}
+}
+
+function loadFiltersFromSession() {
+	loadFiltersFromLocalStorage();
+
+	if (typeof(Storage) !== "undefined") {
+		
+		let markedCheckboxDetails = document.getElementsByName('details');
+		for (let checkbox of markedCheckboxDetails) {
+			if (sessionStorage.detailsList) {
+				if (sessionStorage.detailsList.includes(checkbox.value)) document.getElementById(checkbox.value).checked = true;
+			} else {
+				document.getElementById(checkbox.value).checked = true;
+			}
+		}
+		
+		let markedCheckboxStatus = document.getElementsByName('status');
+		for (let checkbox of markedCheckboxStatus) {
+			if (sessionStorage.statusList) {
+				if (sessionStorage.statusList.includes(checkbox.value)) document.getElementById(checkbox.value).checked = true;
+			} else {
+				document.getElementById(checkbox.value).checked = true;
+			}
+		}
+	}
+	
 }
 
 function loadKeyFromSession(selection) {

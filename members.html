@@ -21,7 +21,7 @@
 <script src="script/jquery.dataTables.min.js"></script>
 
 </head>
-<body onload="loadKeyFromSession('members'); checkAPIKey()">
+<body onload="loadKeyFromSession('members'); checkAPIKey(), loadFiltersFromSession()">
 
   <div class="container-fluid">
 		<br />
@@ -114,14 +114,14 @@
             <label class="form-check-label"	for="Idle"> Idle </label>
           </div>
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="Offline"	name="status" id="Offline" checked="" />
+            <input class="form-check-input" type="checkbox" value="Offline"	name="status" id="Offline" />
             <label	class="form-check-label" for="Offline"> Offline </label>
           </div>
         </fieldset>
         <legend>Last Active</legend>
         <fieldset class="form-group">
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="FilterActive"	name="details" id="FilterActive"	onclick="disableElement('FilterActive', 'TimeActive');" />
+            <input class="form-check-input" type="checkbox" value="FilterActive" id="FilterActive"	onclick="disableElement('FilterActive', 'TimeActive');" />
             <label	class="form-check-label" for="FilterActive"> Filter last active time </label>
           </div>
           <div class="form-check">
@@ -143,24 +143,24 @@
         <legend>Details</legend>
         <fieldset class="form-group">
         <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="Okay"	name="details" id="Okay" checked="" />
+          <input class="form-check-input" type="checkbox" value="Okay"	name="details" id="Okay" />
           <label	class="form-check-label" for="Okay"> Okay </label>
         </div>
         <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="Hospital"	name="details" id="Hospital" checked=""	onclick="disableElement('Hospital', 'MinutesHosp');" />
+          <input class="form-check-input" type="checkbox" value="Hospital"	name="details" id="Hospital"	onclick="disableElement('Hospital', 'MinutesHosp');" />
           <label	class="form-check-label" for="Hospital"> Hospital </label>
         </div>
         <div class="form-check">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input	class="form-check-input" type="checkbox" value="MinutesHosp"	id="MinutesHosp" /> less than 15 minutes	</div>
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="Jail"	name="details" id="Jail" checked="" />
+            <input class="form-check-input" type="checkbox" value="Jail"	name="details" id="Jail" />
             <label	class="form-check-label" for="Jail"> Jail </label>
           </div>
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="Traveling"	name="details" id="Traveling" checked="" />
+            <input class="form-check-input" type="checkbox" value="Traveling"	name="details" id="Traveling" />
             <label	class="form-check-label" for="Traveling"> Traveling </label>
           </div>
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="Abroad"	name="details" id="Abroad" checked="" />
+            <input class="form-check-input" type="checkbox" value="Abroad"	name="details" id="Abroad" />
             <label	class="form-check-label" for="Abroad"> Abroad </label>
           </div>
         </fieldset>
