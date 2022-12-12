@@ -489,8 +489,8 @@ function parseMembers (statusData, selection, element, membersList) {
 		filterMinutesHosp = true;
 	}
 
-  var filterMinutesAction = 0;
-  if (document.getElementById('FilterActive').checked) {
+	var filterMinutesAction = 0;
+	if (document.getElementById('FilterActive').checked) {
 		filterMinutesAction = document.getElementById('TimeActive').value;
 	}
 
@@ -506,14 +506,14 @@ function parseMembers (statusData, selection, element, membersList) {
 	table = table + '<br /><table class="table table-hover" id="members"><thead><tr>'
 	+ '<th>Name&nbsp;&nbsp;</th>'
 	+ '<th>Icons&nbsp;&nbsp;</th>'
-	+ '<th>Link&nbsp;&nbsp;</th>'
+	+ '<th>Attack Link&nbsp;&nbsp;</th>'
 	+ '<th>Status&nbsp;&nbsp;</th>'
 	+ '<th>Details&nbsp;&nbsp;</th>'
 	+ '<th>Description&nbsp;&nbsp;</th>'
 	+ '<th>Last Action&nbsp;&nbsp;</th>'
 	+ '<th>Level&nbsp;&nbsp;</th>'
-	+ '<th>Stats&nbsp;&nbsp;</th>'
-	+ '<th>Copy Link&nbsp;&nbsp;</th>';
+	+ '<th>TornStats&nbsp;&nbsp;</th>'
+	;
 
 	table = table + '</tr></thead><tbody>';
 
@@ -558,15 +558,35 @@ function parseMembers (statusData, selection, element, membersList) {
 			minutes = dateObj.getUTCMinutes();
 			seconds = dateObj.getSeconds();
 
-			timeString = hours.toString().padStart(2, '0') + ' hrs ' +
-			    minutes.toString().padStart(2, '0') + ' min ' +
-			    seconds.toString().padStart(2, '0') + ' sec';
+			//timeString = hours.toString().padStart(2, '0') + ' hrs ' +
+			//    minutes.toString().padStart(2, '0') + ' min ' +
+			//    seconds.toString().padStart(2, '0') + ' sec';
+			if (hours.toString() == 0) {
+				hours = '<span class="text-secondary">' + hours.toString().padStart(2, '0') + ' hrs </span>';
+			  } else {
+				hours = hours.toString().padStart(2, '0') + ' hrs ';
+			  }
+	
+			if (minutes.toString() == 0) {
+				minutes = '<span class="text-secondary">' + minutes.toString().padStart(2, '0') + ' min </span>';
+			  } else {
+				minutes = minutes.toString().padStart(2, '0') + ' min ';
+			  }
+	
+			  if (seconds.toString() == 0) {
+				seconds = '<span class="text-secondary">' + seconds.toString().padStart(2, '0') + ' sec </span>';
+			  } else {
+				seconds = seconds.toString().padStart(2, '0') + ' sec ';
+			  }
+			  timeString = hours + minutes + seconds;
+
+			
 			statusDescriptionText = 'In hospital for ' + timeString;
 			hospitalTime = ' out in ' + minutes.toString().padStart(2, '0') + ' min ' + seconds.toString().padStart(2, '0') + ' sec';
 
 
 		} else {
-			statusDescriptionText = member.status.description;
+			statusDescriptionText = member.status.description.replace('to Torn ', '');
 		}
 
     var memberLastActionTimestamp = (timeStamp - member.last_action.timestamp);
@@ -577,34 +597,32 @@ function parseMembers (statusData, selection, element, membersList) {
     }
 
 
-      dateObj = new Date(memberLastActionTimestamp * 1000);
-			hours = dateObj.getUTCHours();
-			minutes = dateObj.getUTCMinutes();
-			seconds = dateObj.getSeconds();
+    dateObj = new Date(memberLastActionTimestamp * 1000);
+	hours = dateObj.getUTCHours();
+	minutes = dateObj.getUTCMinutes();
+	seconds = dateObj.getSeconds();
 
-      if (member.last_action.relative.includes('day')) {
-        memberLastAction = 'Days ago: ' + member.last_action.relative.split(" ")[0];
-      } else {
+    if (member.last_action.relative.includes('day')) {
+    	memberLastAction = 'Days ago: ' + member.last_action.relative.split(" ")[0];
+    } else {
+    	if (hours.toString() == 0) {
+        	hours = '<span class="text-secondary">' + hours.toString().padStart(2, '0') + ' hrs </span>';
+      	} else {
+        	hours = hours.toString().padStart(2, '0') + ' hrs ';
+      	}
 
-      if (hours.toString() == 0) {
-        hours = '<span class="text-secondary">' + hours.toString().padStart(2, '0') + ' hrs </span>';
-      } else {
-        hours = hours.toString().padStart(2, '0') + ' hrs ';
-      }
+    	if (minutes.toString() == 0) {
+        	minutes = '<span class="text-secondary">' + minutes.toString().padStart(2, '0') + ' min </span>';
+      	} else {
+        	minutes = minutes.toString().padStart(2, '0') + ' min ';
+      	}
 
-      if (minutes.toString() == 0) {
-        minutes = '<span class="text-secondary">' + minutes.toString().padStart(2, '0') + ' min </span>';
-      } else {
-        minutes = minutes.toString().padStart(2, '0') + ' min ';
-      }
-
-      if (seconds.toString() == 0) {
-        seconds = '<span class="text-secondary">' + seconds.toString().padStart(2, '0') + ' sec </span>';
-      } else {
-        seconds = seconds.toString().padStart(2, '0') + ' sec ';
-      }
-
-			memberLastAction = hours + minutes + seconds;
+      	if (seconds.toString() == 0) {
+        	seconds = '<span class="text-secondary">' + seconds.toString().padStart(2, '0') + ' sec </span>';
+      	} else {
+        	seconds = seconds.toString().padStart(2, '0') + ' sec ';
+      	}
+		memberLastAction = hours + minutes + seconds;
     }
 
 		var icon = '';
@@ -649,21 +667,21 @@ function parseMembers (statusData, selection, element, membersList) {
 
 			table = table + '<tr>'
 
-			+'<td><a href="https://www.torn.com/profiles.php?XID=' + id + '" target="_blank">' + member.name + ' [' + id + ']</a></td>'
-			+'<td>' + icon + '</td>'
-			+'<td><a href="https://www.torn.com/loader.php?sid=attack&user2ID=' + id + '" target="_blank">Attack Link</a></td>'
-				+'<td>' + '<span class="badge badge-pill ' + statusFormat + '">' + member.last_action.status + '</span>' + '</td>'
-			+'<td>' + detail + '</td>'
-			+'<td>' + statusDescriptionText + '</td>'
-			+'<td>' + memberLastAction + '</td>'
-			+'<td>' + member.level + '</td>'
-			+'<td>'
-			+'<button type="button" onclick="callTornStatsAPI(\'' + trustedApiKey + '\', ' + id + ')" class="btn btn-secondary" data-toggle="modal" data-target="#statsModal">Show Stats</button>'
-			+'</td>'
-			+'<td>'
+			+'<td class="align-middle"><a href="https://www.torn.com/profiles.php?XID=' + id + '" target="_blank">' + member.name + ' [' + id + ']</a></td>'
+			+'<td class="align-middle">' + icon + '</td>'
+			+'<td class="align-middle">'
+			+'<a class="btn btn-link  btn-sm" role="button" href="https://www.torn.com/loader.php?sid=attack&user2ID=' + id + '" target="_blank">Attack Link</a>&nbsp; &nbsp;'
 			+ '<input type="hidden" class="form-control" value="' + copyableText + '" placeholder="..." id="copy-input-' + id + '">'
-			+ '<button type="button" onclick="copyButton(' + id + ')" class="btn btn-outline-primary" id="copy-button' + id + '" data-toggle="tooltip" data-placement="button" title="Copy for Faction Chat">'
+			+ '<button type="button" onclick="copyButton(' + id + ')" class="btn btn-secondary btn-sm" id="copy-button' + id + '" data-toggle="tooltip" data-placement="button" title="Copy for Faction Chat">'
 			+ 'Copy</button>'
+			+'</td>'
+			+'<td class="align-middle">' + '<span class="badge badge-pill ' + statusFormat + '">' + member.last_action.status + '</span>' + '</td>'
+			+'<td class="align-middle">' + detail + '</td>'
+			+'<td class="align-middle">' + statusDescriptionText + '</td>'
+			+'<td class="align-middle">' + memberLastAction + '</td>'
+			+'<td class="align-middle">' + member.level + '</td>'
+			+'<td class="align-middle">'
+			+'<button type="button" onclick="callTornStatsAPI(\'' + trustedApiKey + '\', ' + id + ')" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#statsModal">Show Stats</button>'
 			+'</td>'
 			;
 			filteredMembers++;
@@ -1610,3 +1628,11 @@ function getUrlParam(parameter, defaultvalue){
 (function () {
 	loadKeyFromSession();
 })();
+
+function dec2bin(dec) {
+	return (dec >>> 0).toString(2);
+}
+
+function bin2dec(bin) {
+	return parseInt(bin, 2);
+}
