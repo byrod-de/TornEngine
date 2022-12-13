@@ -613,7 +613,7 @@ function parseMembers (statusData, selection, element, membersList) {
 
 			
 			statusDescriptionText = 'In hospital for ' + timeString;
-			hospitalTime = ' out in ' + minutes.toString().padStart(2, '0') + ' min ' + seconds.toString().padStart(2, '0') + ' sec';
+			hospitalTime = ' out in ' + timeString;
 
 
 		} else {
@@ -1674,8 +1674,12 @@ function loadKeyFromSession(selection) {
 
 function copyButton(memberID) {
 
-  var copyText = document.getElementById('copy-input-' + memberID);
-  navigator.clipboard.writeText(copyText.value);
+	userSubmit('members');
+
+	setTimeout(function() {
+		var copyText = document.getElementById('copy-input-' + memberID);
+		navigator.clipboard.writeText(copyText.value);
+	}, 1000);
 }
 
 function disableElement(source, target) {
@@ -1701,11 +1705,3 @@ function getUrlParam(parameter, defaultvalue){
 (function () {
 	loadKeyFromSession();
 })();
-
-function dec2bin(dec) {
-	return (dec >>> 0).toString(2);
-}
-
-function bin2dec(bin) {
-	return parseInt(bin, 2);
-}
