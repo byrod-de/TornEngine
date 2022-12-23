@@ -694,7 +694,7 @@ function parseMembers (statusData, selection, element, membersList) {
 				&& detailsList.includes(memberStatusState)
 				&& printEntry) {
 
-			var copyableText = ' >> ' + member.name + ' << ' + hospitalTime + ' || https://www.torn.com/loader.php?sid=attack&user2ID=' + id;
+			var copyableText = ' >> ' + member.name + ' << ' + hospitalTime.replace('<span class="text-secondary">', '').replace('</span>', '') + ' || https://www.torn.com/loader.php?sid=attack&user2ID=' + id;
 
 			table = table + '<tr>'
 
