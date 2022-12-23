@@ -593,19 +593,19 @@ function parseMembers (statusData, selection, element, membersList) {
 			//    minutes.toString().padStart(2, '0') + ' min ' +
 			//    seconds.toString().padStart(2, '0') + ' sec';
 			if (hours.toString() == 0) {
-				hours = '<span class="text-secondary">' + hours.toString().padStart(2, '0') + ' hrs </span>';
+				hours = hours.toString().padStart(2, '0') + ' hrs ';
 			  } else {
 				hours = hours.toString().padStart(2, '0') + ' hrs ';
 			  }
 	
 			if (minutes.toString() == 0) {
-				minutes = '<span class="text-secondary">' + minutes.toString().padStart(2, '0') + ' min </span>';
+				minutes = minutes.toString().padStart(2, '0') + ' min ';
 			  } else {
 				minutes = minutes.toString().padStart(2, '0') + ' min ';
 			  }
 	
 			  if (seconds.toString() == 0) {
-				seconds = '<span class="text-secondary">' + seconds.toString().padStart(2, '0') + ' sec </span>';
+				seconds = seconds.toString().padStart(2, '0') + ' sec ';
 			  } else {
 				seconds = seconds.toString().padStart(2, '0') + ' sec ';
 			  }
@@ -694,7 +694,7 @@ function parseMembers (statusData, selection, element, membersList) {
 				&& detailsList.includes(memberStatusState)
 				&& printEntry) {
 
-			var copyableText = ' >> ' + member.name + ' << ' + hospitalTime.replace('<span class="text-secondary">', '').replace('</span>', '') + ' || https://www.torn.com/loader.php?sid=attack&user2ID=' + id;
+			var copyableText = ' >> ' + member.name + ' << ' + hospitalTime + ' || https://www.torn.com/loader.php?sid=attack&user2ID=' + id;
 
 			table = table + '<tr>'
 
