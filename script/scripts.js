@@ -581,17 +581,18 @@ function storageAvailable(type) {
         if('spy' in membersList[id]) {
 
           var ts = new Date(membersList[id].spy.timestamp * 1000);
-        
-          var title = ' Dex = ' + membersList[id].spy.dexterity.toLocaleString('en-US') 
-                    + ' Def = ' + membersList[id].spy.defense.toLocaleString('en-US')
-                    + ' Str = ' + membersList[id].spy.strength.toLocaleString('en-US') 
-                    + ' Spd = ' + membersList[id].spy.speed.toLocaleString('en-US') ;
+
+
+          var stats = '&nbsp;Dex:&nbsp;' + abbreviateNumber(membersList[id].spy.dexterity).toLocaleString('en-US') 
+          + ',&nbsp;Def:&nbsp;' + abbreviateNumber(membersList[id].spy.defense).toLocaleString('en-US')
+          + ',&nbsp;Str:&nbsp;' + abbreviateNumber(membersList[id].spy.strength).toLocaleString('en-US') 
+          + ',&nbsp;Spd:&nbsp;' + abbreviateNumber(membersList[id].spy.speed).toLocaleString('en-US') ;
+  
+  
           document.getElementById('stats_' + id).innerHTML = 
-            '<a id="stats_a_' + id 
-            +'" title="' + title 
-            + '" data-html="true" rel="tooltip" href="#">' 
-            + membersList[id].spy.total.toLocaleString('en-US') + '</a>'
-            + '<div class="text-muted">' + ts.toISOString().substring(0, ts.toISOString().indexOf('T')) + '</div>'
+            abbreviateNumber(membersList[id].spy.total).toLocaleString('en-US')
+            + '&nbsp;<span class="text-muted">' + stats + '</div>'
+            + '<div class="text-secondary">' + ts.toISOString().substring(0, ts.toISOString().indexOf('T')) + '</div>'
             ;
         
           if (cacheStats) {
@@ -1877,7 +1878,7 @@ function storageAvailable(type) {
   function abbreviateNumber(value) {
     var newValue = value;
     if (value >= 1000) {
-        var suffixes = ["", "k", "m", "b", "t", "WTF!"];
+        var suffixes = ["", "k", "m", "b", "t", "wtf"];
         var suffixNum = Math.floor( (""+value).length/3 );
         var shortValue = '';
         for (var precision = 2; precision >= 1; precision--) {
@@ -1978,18 +1979,16 @@ function getPlayerById(request, object, id) {
 
         var ts = new Date(result.timestamp * 1000);
 			            
-
-        var title = ' Dex = ' + result.dexterity.toLocaleString('en-US') 
-        + ' Def = ' + result.defense.toLocaleString('en-US')
-        + ' Str = ' + result.strength.toLocaleString('en-US') 
-        + ' Spd = ' + result.speed.toLocaleString('en-US') ;
+        var stats = '&nbsp;Dex:&nbsp;' + abbreviateNumber(result.dexterity).toLocaleString('en-US') 
+        + ',&nbsp;Def:&nbsp;' + abbreviateNumber(result.defense).toLocaleString('en-US')
+        + ',&nbsp;Str:&nbsp;' + abbreviateNumber(result.strength).toLocaleString('en-US') 
+        + ',&nbsp;Spd:&nbsp;' + abbreviateNumber(result.speed).toLocaleString('en-US') ;
 
 
         document.getElementById('stats_' + id).innerHTML = 
-          '<a id="stats_a_' + id +'" title="' 
-          + title + '" data-html="true" rel="tooltip" href="#">' 
-          + result.total.toLocaleString('en-US') + '</a>'
-          + '<div class="text-muted">' + ts.toISOString().substring(0, ts.toISOString().indexOf('T')) + '</div>'
+          abbreviateNumber(result.total).toLocaleString('en-US')
+          + '&nbsp;<span class="text-muted">' + stats + '</div>'
+          + '<div class="text-secondary">' + ts.toISOString().substring(0, ts.toISOString().indexOf('T')) + '</div>'
           ;
 
       }
