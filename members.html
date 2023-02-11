@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <title>Torn Engine - A collection of more or less useful things</title>
@@ -100,9 +100,10 @@
       </div>
     </div>
 
-    <div class="row" id="filter">
+    <div class="row">
       <div class="form-group col-sm-3" id="alert"></div>
-      <div class="form-group col-sm-2">
+      <div class="row" id="filter">
+      <div class="form-group col-sm-5">
         <legend>Status</legend>
         <fieldset class="form-group">
           <div class="form-check">
@@ -139,7 +140,7 @@
         </script>
       </div>
 
-      <div class="form-group col-sm-2">
+      <div class="form-group col-sm-5">
         <legend>Details</legend>
         <fieldset class="form-group">
         <div class="form-check">
@@ -164,8 +165,14 @@
             <label	class="form-check-label" for="Abroad"> Abroad </label>
           </div>
         </fieldset>
+        <legend>Enable Experimental Features</legend>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="FactionStats" name="FactionStats" id="FactionStats" checked="checked"/>
+          <label	class="form-check-label" for="FactionStats"> Faction Stats integration <sup class="badge badge-pill badge-primary">Experimental</sup> </label>
+        </div>
       </div>
     </div>
+  </div>
   </form>
 
   <div class="row">
@@ -174,6 +181,7 @@
     </div>
     <div class="form-group col-sm-2">
       <button onclick="hideElementByID('filter')"class="btn btn-secondary" id="btnHideFilter">Hide Filter</button>
+
     </div>
   </div>
 

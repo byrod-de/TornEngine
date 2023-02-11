@@ -128,7 +128,8 @@ function storageAvailable(type) {
 
   }
 
-  function callTornStatsAPI(apiKey, id) {
+  function callTornStatsAPI(apiKey, id, selection, cacheStats) {
+     if (selection == 'user') {
     document.getElementById('statsModalLabel').innerHTML = 'Calling TornStats API';
     document.getElementById('statsModalBody').innerHTML =  'Please hold the line...';
 
@@ -159,7 +160,7 @@ function storageAvailable(type) {
             innerRequest.open('GET', 'https://api.torn.com/user/' + id +'?selections=personalstats,profile&key=' + apiKey + '&comment=tornengine', true);
 
             innerRequest.onload = function () {
-              console.log(1);
+              
               var innerJsonData = JSON.parse(this.response);
 
               if (innerRequest.status >= 200 && innerRequest.status < 400) {
@@ -180,13 +181,12 @@ function storageAvailable(type) {
 
             }
             innerRequest.send();
-            console.log(3);
+            
             document.getElementById('statsModalBody').innerHTML = statsModalBody;
 
           } else {
 
             var ts = new Date(jsonData.spy.timestamp * 1000);
-            var formatted_date =  ts.toISOString().replace('T',' ').replace('.000Z','');
             let statsModalBody = '';
             let compareList = 'Xanax Taken, Refills';
 
@@ -196,7 +196,7 @@ function storageAvailable(type) {
             + '<div class="text-muted"><strong>Speed:</strong> ' + jsonData.spy.speed.toLocaleString('en-US') + '</div>'
             + '<div class="text-muted"><strong>Dexterity:</strong> ' + jsonData.spy.dexterity.toLocaleString('en-US') + '</div>'
             + '<div class="text-primary"><strong>Total:</strong> ' + jsonData.spy.total.toLocaleString('en-US') + '</div>'
-            + '<div class="text-muted"><strong>Date of spy:</strong> ' + formatted_date + '</div>'
+            + '<<div class="text-muted"><strong>Update:</strong> ' + ts.toISOString().substring(0, ts.toISOString().indexOf('T')) + '</div>'
             + '<div class="text-muted"><strong>Type:</strong> ' + jsonData.spy.type + '</div>'
             + '<br />';
 
@@ -208,6 +208,7 @@ function storageAvailable(type) {
 
             document.getElementById('statsModalBody').innerHTML = statsModalBody;
 
+
           }
         }
 
@@ -216,6 +217,39 @@ function storageAvailable(type) {
       }
     }
     request.send();
+  }
+
+  if (selection == 'faction') {
+
+    var request = new XMLHttpRequest();
+
+    request.open('GET', 'https://www.tornstats.com/api/v2/' + apiKey + '/spy/faction/' + id, true);
+
+    printAlert('Info', 'Calling <a href="https://beta.tornstats.com/settings/general" target="_blank">TornStats</a>...');
+
+    request.onload = function () {
+
+      var jsonData = JSON.parse(this.response);
+
+      if (request.status >= 200 && request.status < 400) {
+
+        if (jsonData.message.includes("ERROR")) {
+          printAlert('Error', 'Please make sure to use the same API Key as confiured in <a href="https://beta.tornstats.com/settings/general" target="_blank">TornStats</a>.');
+        } else {
+          parseFactionSpies(jsonData['faction'], cacheStats);
+
+          printAlert('Success', 'Stats pulled from <a href="https://beta.tornstats.com/settings/general" target="_blank">TornStats</a>.');
+        }
+      }
+
+      
+
+    }
+    request.send();
+
+    
+  }
+
   }
 
   function callRankedWarDetails(key, id) {
@@ -528,33 +562,74 @@ function storageAvailable(type) {
       $('#selections').DataTable( {
         "paging":   false,
         "order": [[ 0, "asc" ], [ 1, "asc" ]],
-        "info":     false
+        "info":     false,
+        "stateSave": true
       } );
     } );
 
     document.getElementById(element).innerHTML = table;
+  }
 
-    //document.getElementById('summary').innerHTML = accessLevelInformation
+
+  function parseFactionSpies (faction, cacheStats) {
+    var membersList = faction['members'];
+    
+
+    for( var id in faction['members'] ){
+
+      if (membersList[id].status.description != 'Fallen') {
+        if('spy' in membersList[id]) {
+
+          var ts = new Date(membersList[id].spy.timestamp * 1000);
+        
+          var title = ' Dex = ' + membersList[id].spy.dexterity.toLocaleString('en-US') 
+                    + ' Def = ' + membersList[id].spy.defense.toLocaleString('en-US')
+                    + ' Str = ' + membersList[id].spy.strength.toLocaleString('en-US') 
+                    + ' Spd = ' + membersList[id].spy.speed.toLocaleString('en-US') ;
+          document.getElementById('stats_' + id).innerHTML = 
+            '<a id="stats_a_' + id 
+            +'" title="' + title 
+            + '" data-html="true" rel="tooltip" href="#">' 
+            + membersList[id].spy.total.toLocaleString('en-US') + '</a>'
+            + '<div class="text-muted">' + ts.toISOString().substring(0, ts.toISOString().indexOf('T')) + '</div>'
+            ;
+        
+          if (cacheStats) {
+
+            indexedDBRequest = openIndexedDB('TornEngine_pst', 1);
+        
+            initializeIndexedDB(indexedDBRequest, 'Stats');
+  
+            insertPlayer(indexedDBRequest, 'Stats', {
+              playerID : id,
+              defense : membersList[id].spy.defense,
+              speed : membersList[id].spy.speed,
+              dexterity : membersList[id].spy.dexterity,
+              strength : membersList[id].spy.strength,
+              total : membersList[id].spy.total,
+              timestamp : membersList[id].spy.timestamp
+            });
+          }
+        }
+      }
+    }
   }
 
 
   function parseMembers (statusData, selection, element, membersList) {
 
     var trustedApiKey = document.getElementById("trustedkey").value;
-    //console.log(getMembersFilters());
 
     var statusList = '';
     var markedCheckboxStatus = document.getElementsByName('status');
     for (var checkbox of markedCheckboxStatus) {
-      if (checkbox.checked)
-      statusList = statusList + checkbox.value + ',';
+      if (checkbox.checked) statusList = statusList + checkbox.value + ',';
     }
 
     var detailsList = '';
     var markedCheckboxDetails = document.getElementsByName('details');
     for (var checkbox of markedCheckboxDetails) {
-      if (checkbox.checked)
-      detailsList = detailsList + checkbox.value + ',';
+      if (checkbox.checked) detailsList = detailsList + checkbox.value + ',';
     }
 
     var filterMinutesHosp = false;
@@ -567,13 +642,28 @@ function storageAvailable(type) {
       filterMinutesAction = document.getElementById('TimeActive').value;
     }
 
+    var integrateFactionStats = false;
+    if (document.getElementById('FactionStats').checked) {
+      integrateFactionStats = document.getElementById('FactionStats').checked;
+    }
+
+    var cacheStats = false;
+    if (integrateFactionStats) {
+      cacheStats = checkIndexedDBSupport();
+    }
+
+
     var printEntry = false;
 
     var table = '<div class="col-sm-12 badge-primary" ><b>Members Status of <img src="https://factiontags.torn.com/'
     + statusData.tag_image + '"> '
     + statusData.name
     + ' [' + statusData.ID + ']'
-    + '</b> <input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents( document.getElementById(\'members\') );"></div>';
+    + '</b>&nbsp;&nbsp;<input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents( document.getElementById(\'members\') );">';
+    table = table + '</div><br />';
+
+    if (integrateFactionStats) table = table + '<div class="float-right"><button type="button" onclick="callTornStatsAPI(\'' + trustedApiKey + '\', ' + statusData.ID + ', \'faction\', ' + cacheStats + ')" class="btn btn-primary btn-sm">Get Faction Stats</button></div>';
+
 
 
     table = table + '<br /><table class="table table-hover" id="members"><thead><tr>'
@@ -584,9 +674,9 @@ function storageAvailable(type) {
     + '<th>Details&nbsp;&nbsp;</th>'
     + '<th>Description&nbsp;&nbsp;</th>'
     + '<th>Last Action&nbsp;&nbsp;</th>'
-    + '<th>Level&nbsp;&nbsp;</th>'
-    + '<th>TornStats&nbsp;&nbsp;</th>'
-    ;
+    + '<th>Level&nbsp;&nbsp;</th>';
+    if (integrateFactionStats) table = table + '<th>Torn Stats&nbsp;&nbsp;</th>';
+    table = table + '<th>Stats Popup&nbsp;&nbsp;</th>'
 
     table = table + '</tr></thead><tbody>';
 
@@ -736,14 +826,14 @@ function storageAvailable(type) {
       && detailsList.includes(memberStatusState)
       && printEntry) {
 
-        var copyableText = ' >> ' + member.name + ' << ' + hospitalTime + ' || https://www.torn.com/loader.php?sid=attack&user2ID=' + id;
+        var copyableText = ' >> ' + member.name + ' << ' + hospitalTime.replace(' hrs ' , ':').replace(' min ' , ':').replace(' sec ' , '') + ' || https://www.torn.com/loader.php?sid=attack&user2ID=' + id;
 
         table = table + '<tr>'
 
         +'<td class="align-middle"><a href="https://www.torn.com/profiles.php?XID=' + id + '" target="_blank">' + member.name + ' [' + id + ']</a></td>'
         +'<td class="align-middle">' + icon + '</td>'
         +'<td class="align-middle">'
-        +'<a class="btn btn-link  btn-sm" role="button" href="https://www.torn.com/loader.php?sid=attack&user2ID=' + id + '" target="_blank">Attack Link</a>&nbsp; &nbsp;'
+        +'<a class="btn btn-link btn-sm" role="button" href="https://www.torn.com/loader.php?sid=attack&user2ID=' + id + '" target="_blank">Attack Link</a>&nbsp;'
         + '<input type="hidden" class="form-control" value="' + copyableText + '" placeholder="..." id="copy-input-' + id + '">'
         + '<button type="button" onclick="copyButton(' + id + ')" class="btn btn-secondary btn-sm" id="copy-button' + id + '" data-toggle="tooltip" data-placement="button" title="Copy for Faction Chat">'
         + 'Copy</button>'
@@ -753,10 +843,23 @@ function storageAvailable(type) {
         +'<td class="align-middle">' + statusDescriptionText + '</td>'
         +'<td class="align-middle">' + memberLastAction + '</td>'
         +'<td class="align-middle">' + member.level + '</td>'
-        +'<td class="align-middle">'
-        +'<button type="button" onclick="callTornStatsAPI(\'' + trustedApiKey + '\', ' + id + ')" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#statsModal">Show Stats</button>'
+      
+
+        if (integrateFactionStats) {
+          var stat = '';
+          if (cacheStats) {
+            indexedDBRequest = openIndexedDB('TornEngine_pst', 1);
+      
+            initializeIndexedDB(indexedDBRequest, 'Stats');
+            stat = getPlayerById(indexedDBRequest, 'Stats', id);
+          }
+          table = table + '<td class="align-middle" id="stats_' + id + '" >' + stat + '</td>';
+        }
+
+        table = table +'<td class="align-middle">'
+        +'<button type="button" onclick="callTornStatsAPI(\'' + trustedApiKey + '\', ' + id + ', \'user\', false)" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#statsModal">Show Stats</button>'
         +'</td>'
-        ;
+        
         filteredMembers++;
       }
 
@@ -769,19 +872,23 @@ function storageAvailable(type) {
       $('#members').DataTable( {
         "paging":   false,
         "order": [[ 5, "asc" ]],
-        "info":     false
+        "info":     false,
+        "stateSave": true
       } );
     } );
 
     document.getElementById(element).innerHTML = table;
 
-    document.getElementById('summary').innerHTML = filteredMembers  + ' members out of ' + countMembers + ' total members filtered.';
+    var ts = new Date(timeStamp * 1000);
+    var formatted_date =  ts.toISOString().replace('T',' ').replace('.000Z','');
+
+    document.getElementById('summary').innerHTML = `<span class="text-primary">${filteredMembers} members out of ${countMembers} total members filtered.</span> <span class="text-muted">Last refreshed: ${formatted_date}</span>`;
 
   }
 
   function parseNews (newsData, selection, element, membersList) {
 
-    document.getElementById('summary').innerHTML = 'You are looking for ' + selection + '.';
+    document.getElementById('summary').innerHTML = `You are looking for ${selection}.`;
 
     var table = '<div class="col-sm-12 badge-primary" ><b> ' + selection + '</b></div>';
     table = table + '<br /><table class="table table-hover" id="news"><thead><tr>'
@@ -809,7 +916,8 @@ function storageAvailable(type) {
       $('#news').DataTable( {
         "paging":   false,
         "order": [[ 0, "desc" ]],
-        "info":     false
+        "info":     false,
+        "stateSave": true
       } );
     } );
     document.getElementById(element).innerHTML = table;
@@ -975,7 +1083,8 @@ function storageAvailable(type) {
       $('#wars').DataTable( {
         "paging":   false,
         "order": [[ 0, "desc" ]],
-        "info":     false
+        "info":     false,
+        "stateSave": true
       } );
     } );
 
@@ -1075,7 +1184,8 @@ function storageAvailable(type) {
       $('#wardetails').DataTable( {
         "paging":   false,
         "order": [[ 3, "desc" ]],
-        "info":     false
+        "info":     false,
+        "stateSave": true
       } );
     } );
 
@@ -1462,7 +1572,7 @@ function storageAvailable(type) {
     var table = '<div class="col-sm-12 badge-primary" ><b>Organized Crime Overview for ' + monthToText(currentMonth) + '</b> <input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents( document.getElementById(\'totals\') );"></div>';
     table = table + '<br />';
 
-    table = table + '<table class="table table-hover" id="members"><thead><tr>'
+    table = table + '<table class="table table-hover" id="organizedcrimes"><thead><tr>'
     + '<th>Date</th>'
     + '<th>Participants</th>'
     + '<th>Crime Type</th>'
@@ -1553,8 +1663,8 @@ function storageAvailable(type) {
     if (factionFailed > 0) {badgeFailed = 'badge-danger';}
     if (factionSuccess > 0) {badgeSuccess = 'badge-success';}
 
-    table = table + '<tr class="table-dark">'
-    +'<td colspan = "3">Totals</td>'
+    table = table + '</tbody><tfoot><tr class="table-dark">'
+    +'<td colspan="3">Totals</td>'
     +'<td>'
     + '<span class="badge badge-pill '+badgeFailed+'">'+ factionFailed + '</span>-'
     + '<span class="badge badge-pill '+badgeSuccess+'">'+ factionSuccess + '</span>'
@@ -1563,10 +1673,18 @@ function storageAvailable(type) {
     +'<td>' + totalRespect + '</td>'
     +'</tr>';
 
-    table = table + '</tbody></table>';
+    table = table + '</tfoot></table>';
+
+    $(document).ready(function() {
+      $('#organizedcrimes').DataTable( {
+        "paging":   false,
+        "order": [[ 1, "asc" ]],
+        "info":     false,
+        "stateSave": true
+      } );
+    } );
 
     document.getElementById(element).innerHTML = table;
-
 
   }
 
@@ -1655,8 +1773,6 @@ function storageAvailable(type) {
       if (sessionStorage.statusList === '' || !sessionStorage.statusList) {
         sessionStorage.statusList = localStorageStatusList;
       }
-
-      //console.log(sessionStorage.detailsList + '#' + sessionStorage.statusList)
     }
   }
 
@@ -1714,13 +1830,22 @@ function storageAvailable(type) {
     }
   }
 
-  function copyButton(memberID) {
+  function copyButton(memberID, factionID = '') {
+
+    var statsElement = document.getElementById('stats_a_' + memberID);
+    var stats = '';
+
+    if (statsElement) {
+      stats = document.getElementById('stats_a_' + memberID).innerHTML.replaceAll(',','');
+      stats = ' || ' + abbreviateNumber(stats);
+    }
+
 
     userSubmit('members');
 
     setTimeout(function() {
       var copyText = document.getElementById('copy-input-' + memberID);
-      navigator.clipboard.writeText(copyText.value);
+      navigator.clipboard.writeText(copyText.value + stats);
     }, 1000);
   }
 
@@ -1747,3 +1872,135 @@ function storageAvailable(type) {
   (function () {
     loadKeyFromSession();
   })();
+
+
+  function abbreviateNumber(value) {
+    var newValue = value;
+    if (value >= 1000) {
+        var suffixes = ["", "k", "m", "b", "t", "WTF!"];
+        var suffixNum = Math.floor( (""+value).length/3 );
+        var shortValue = '';
+        for (var precision = 2; precision >= 1; precision--) {
+            shortValue = parseFloat( (suffixNum != 0 ? (value / Math.pow(1000,suffixNum) ) : value).toPrecision(precision));
+            var dotLessShortValue = (shortValue + '').replace(/[^a-zA-Z 0-9]+/g,'');
+            if (dotLessShortValue.length <= 2) { break; }
+        }
+        if (shortValue % 1 != 0)  shortValue = shortValue.toFixed(1);
+        newValue = shortValue+suffixes[suffixNum];
+    }
+    return newValue;
+}
+
+
+//IndexedDB shenanigans
+function checkIndexedDBSupport () {
+  if (!window.indexedDB) {
+    console.log(`Your browser doesn't support IndexedDB`);
+    return false;
+  } else {
+    //console.log(`Your browser does support IndexedDB`);
+    return true;
+  }
+}
+
+
+function openIndexedDB (dbName, version) {
+  var idbRequest = indexedDB.open(dbName, version);
+  return idbRequest;
+}
+
+function initializeIndexedDB (request, object) { 
+  // create the object store and indexes
+  request.onupgradeneeded = (event) => {
+    let db = event.target.result;
+
+    // create the object store 
+    // with auto-increment id
+    let store = db.createObjectStore(object, {
+        autoIncrement: true
+    });
+
+    // create an index on the playerID property
+    let index = store.createIndex('playerID', 'playerID', {
+       unique: true
+    });
+  };
+}
+
+function insertPlayer(request, object, player) { 
+  request.onsuccess = (event) => {
+    const db = event.target.result;
+
+    // create a new transaction
+    const txn = db.transaction(object, 'readwrite');
+
+    // get the player object store
+    const store = txn.objectStore(object);
+    //
+    let query = store.put(player);
+
+    // handle success case
+    query.onsuccess = function (event) {
+        console.log(event);
+    };
+
+    // handle the error case
+    query.onerror = function (event) {
+        console.log(event.target.errorCode);
+    }
+
+    // close the database once the 
+    // transaction completes
+    txn.oncomplete = function () {
+        db.close();
+    };
+  }
+
+}
+
+
+function getPlayerById(request, object, id) {
+  request.onsuccess = (event) => {
+    const db = event.target.result;
+    const txn = db.transaction(object, 'readonly');
+    const store = txn.objectStore(object);
+
+    let player = store.index("playerID");
+
+    let query = player.get(id);
+
+    query.onsuccess = (event) => {
+      if (!event.target.result) {
+          console.log(`The ${object} with ${id} not found`);
+      } else { 
+        let result = event.target.result
+        
+
+        var ts = new Date(result.timestamp * 1000);
+			            
+
+        var title = ' Dex = ' + result.dexterity.toLocaleString('en-US') 
+        + ' Def = ' + result.defense.toLocaleString('en-US')
+        + ' Str = ' + result.strength.toLocaleString('en-US') 
+        + ' Spd = ' + result.speed.toLocaleString('en-US') ;
+
+
+        document.getElementById('stats_' + id).innerHTML = 
+          '<a id="stats_a_' + id +'" title="' 
+          + title + '" data-html="true" rel="tooltip" href="#">' 
+          + result.total.toLocaleString('en-US') + '</a>'
+          + '<div class="text-muted">' + ts.toISOString().substring(0, ts.toISOString().indexOf('T')) + '</div>'
+          ;
+
+      }
+  };
+
+  query.onerror = (event) => {
+      console.log(event.target.errorCode);
+  }
+
+  txn.oncomplete = function () {
+      db.close();
+  };
+};
+}
