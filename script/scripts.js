@@ -1373,7 +1373,7 @@ function storageAvailable(type) {
               }
 
               var memberName =  '';
-              if (JSON.stringify(membersList).indexOf(memberID) != -1) {
+              if (membersList.hasOwnProperty(memberID)) {
                 memberName = prefix + membersList[memberID].name ;
                 if (weighted && prefix === '1| '){
                   if (!paLeads.includes(memberName))
@@ -1618,7 +1618,7 @@ function storageAvailable(type) {
               var memberID = `${key}`;
 
               var memberName =  '';
-              if (JSON.stringify(membersList).indexOf(memberID) != -1) {
+              if (membersList.hasOwnProperty(memberID)) {
                 memberName = membersList[memberID].name;
                 if (memberName in memberStatus) {
                   memberStatus[memberName] = memberStatus[memberName] + 1;
