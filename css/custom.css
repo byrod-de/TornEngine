@@ -1,0 +1,20 @@
+.emoji {
+    margin: 0;
+    color: transparent;
+    text-shadow: 0 0 3px #343a40;
+    fill: #dee2e6;
+    font-size: 100px;
+    position: relative;
+  }
+
+.link-alternative {
+    color: #abb6c2;
+}
+
+.link-alternative:hover{
+    color:#343a40;
+}
+
+svg {
+    fill: #abb6c2;
+}
