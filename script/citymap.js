@@ -259,6 +259,10 @@ document.addEventListener('DOMContentLoaded', function () {
     function addCardsWithData(cardsData) {
         const cardsContainer = document.getElementById('cardsContainer');
 
+        while (cardsContainer.firstChild) {
+            cardsContainer.removeChild(cardsContainer.firstChild);
+        }
+
         for (const data of cardsData) {
             const card = createCardElement(data);
             card.dataset.territoryId = data.territoryId; // Add territoryId as a dataset attribute

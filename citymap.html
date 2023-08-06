@@ -41,10 +41,11 @@
 		</div>
 		<br />
 		<div class="row">
-			<div class="col-sm-4 badge-primary">
+			<div class="col-sm-4 badge-danger">
 				<b>Faction Tools</b>
 			</div>
-			<div class="col-sm-8 badge-secondary">City Map</div>
+			<div class="col-sm-8 badge-secondary">City Map <b class="badge badge-pill badge-danger">Experimental</b>
+			</div>
 		</div>
 		<br />
 
@@ -100,16 +101,16 @@
 					<br />
 					<button type="submit" class="btn btn-primary" id="submit">Pull War Info</button>
 				</div>
-				<div class="form-group col-sm-1">
+				<div class="form-group col-sm-6">
 					<br />
 				</div>
 				<div class="form-group col-sm-3">
 					<fieldset class="form-group">
 
 						<div class="form-check">
-
+							<br /><br /><br /><br /><br />
 							<input class="form-check-input" type="checkbox" id="colorSwitch" checked>
-							<label for="colorSwitch">Use Size or Sector:</label>
+							<label for="colorSwitch">Colour by size instead of sector.</label>
 
 						</div>
 					</fieldset>
@@ -143,15 +144,17 @@
 			<div class="form-group col-sm-3">
 
 				<label for="factionInput">Filter wars by Faction <b>ID</b>:</label>
-				<input type="text" id="factionInput" type="input" class="form-control" 
-				placeholder="Filter by faction id">
+				<input type="text" id="factionInput" type="input" class="form-control"
+					placeholder="Filter by faction id">
 
 				</fieldset>
 			</div>
 		</div>
 		<div class="container-fluid">
 			<div id="cardsContainer" class="row">
-				<!-- Cards will be dynamically added here -->
+				<div class="col-sm-12">
+				<div class="alert alert-info">Submit form to display territory war data here!</div>
+				</div>
 			</div>
 		</div>
 
