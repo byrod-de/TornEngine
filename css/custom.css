@@ -1,3 +1,11 @@
+:root {
+    --highlight-color: #d9534f;
+    --neighbor-color: #E20074;
+    --color-palette: #df691a, #2b3e50, #5cb85c, #5bc0de, #f0ad4e, #6f42c1, #abb6c2;
+
+}
+
+
 .emoji {
     margin: 0;
     color: transparent;
@@ -5,14 +13,14 @@
     fill: #dee2e6;
     font-size: 100px;
     position: relative;
-  }
+}
 
 .link-alternative {
     color: #abb6c2;
 }
 
-.link-alternative:hover{
-    color:#343a40;
+.link-alternative:hover {
+    color: #343a40;
 }
 
 svg {
@@ -41,6 +49,36 @@ svg {
 }
 
 
-  .highlighted {
-    fill: #E20074;
+#mapSVG .highlighted circle {
+    fill: var(--highlight-color);
+    stroke: var(--highlight-color);
+
+}
+
+#mapSVG .neighbor-highlighted circle {
+    fill: var(--neighbor-color);
+    stroke: var(--neighbor-color);
+}
+
+/* Add these CSS rules to your custom.css or create a new style block in the head section of your HTML */
+#cardsContainer {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.card {
+    flex: 0 0 100%; /* By default, each card will take 100% width */
+}
+
+/* For larger screens, you can adjust the width to create a multi-column layout */
+@media (min-width: 576px) {
+    .card {
+        flex: 0 0 calc(25% - 1rem); /* 4 cards in a row with 1rem spacing between each card */
+        margin: 0.5rem; /* Add a margin for spacing */
+    }
+}
+
+
+.hidden {
+    display: none;
 }
