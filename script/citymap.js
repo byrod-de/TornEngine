@@ -319,8 +319,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 assaultingFaction: `${getFactions(assaultingFactionId)} - ${assaultingFactionId}`,
                 defendingFaction: `${getFactions(defendingFactionId)} - ${defendingFactionId}`,
                 header: `${getFactions(assaultingFactionId)} is assaulting ${getFactions(defendingFactionId)} on ${territoryId}`,
-                title: `Name: <a target="_blank" href="$https://www.torn.com/city.php#terrName=${territoryId}">${territoryId}</a>`, // Update the title to include the territoryId
-                text: text,
+                title: `Name: <a target="_blank" href="https://www.torn.com/city.php#terrName=${territoryId}">${territoryId}</a>`, // Update the title to include the territoryId
+                text: text, 
                 color: 'primary' // You can change this color as needed
             };
             cardsData.push(data);
