@@ -38,12 +38,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    const colorSwitch = document.getElementById('colorSwitch');
-    colorSwitch.addEventListener('change', () => {
-        drawMap(); // Redraw the map when the switch is clicked
-    });
-
     drawMap();
+    drawLegend();
 
     function handleFormSubmit(event) {
         event.preventDefault();
@@ -94,12 +90,42 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function getColorParam(territory) {
-        // Read the switch status
-        const useSize = colorSwitch.checked;
+    function drawLegend() {
+        const legendData = [
+            { name: "Sector 1", color: getColorForCircle(1) },
+            { name: "Sector 2", color: getColorForCircle(2) },
+            { name: "Sector 3", color: getColorForCircle(3) },
+            { name: "Sector 4", color: getColorForCircle(4) },
+            { name: "Sector 5", color: getColorForCircle(5) },
+            { name: "Sector 6", color: getColorForCircle(6) },
+            { name: "Sector 7", color: getColorForCircle(7) },
+            { name: "Neighbour", color: getComputedStyle(document.documentElement).getPropertyValue('--neighbor-color').trim() },
+            { name: "War", color: getComputedStyle(document.documentElement).getPropertyValue('--war-color').trim() },
+            { name: "Racket", color: getComputedStyle(document.documentElement).getPropertyValue('--racket-color').trim() },
+        ];
+    
+        const legendContainer = document.getElementById('legend');
+    
+        for (const entry of legendData) {
+            const circle = document.createElement('span');
+            circle.style.backgroundColor = entry.color;
+            circle.style.width = '10px';
+            circle.style.height = '10px';
+            circle.style.borderRadius = '50%';
+            circle.style.display = 'inline-block';
+            circle.style.marginRight = '5px';
+    
+            const label = document.createElement('span');
+            label.textContent = `${entry.name}`;
+    
+            const legendEntry = document.createElement('div');
+            const smallText = document.createElement('small');
+            smallText.textContent = label.textContent;
 
-        // Decide whether to use "size" or "sector" based on the switch status
-        return useSize ? territory.size : territory.sector;
+            legendEntry.appendChild(circle);
+            legendEntry.appendChild(smallText);
+            legendContainer.appendChild(legendEntry);
+        }
     }
 
     function drawMap() {
@@ -107,16 +133,13 @@ document.addEventListener('DOMContentLoaded', function () {
             svg.removeChild(svg.firstChild);
         }
 
-        //territoriesData = getTerritories();
-
         for (const territoryId in territoriesData.territory) {
             const territory = territoriesData.territory[territoryId];
             const x = parseFloat(territory.coordinate_x) / 5;
             const y = parseFloat(territory.coordinate_y) / 5;
             const sector = territory.sector;
             const size = territory.size;
-            const colorParam = getColorParam(territory);
-            const color = getColorForCircle(colorParam);
+            const color = getColorForCircle(sector);
 
             const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
             group.id = territoryId;

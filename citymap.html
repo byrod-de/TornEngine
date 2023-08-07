@@ -98,29 +98,21 @@
 						class="form-text text-muted">API key with <i>Public
 							Only</i> access is sufficient
 					</small>
-					<br />
+					<div>
 					<button type="submit" class="btn btn-primary" id="submit">Pull War and Racket Info</button>
+					
+					</div>
+					<br />
+					<div class="form-group" id="alert"></div>
 				</div>
-				<div class="form-group col-sm-6">
+				<div class="form-group col-sm-1">
 					<br />
 				</div>
 				<div class="form-group col-sm-3">
-					<fieldset class="form-group">
-
-						<div class="form-check">
-							<br /><br /><br /><br /><br />
-							<input class="form-check-input" type="checkbox" id="colorSwitch">
-							<label for="colorSwitch">Colour by size instead of sector.</label>
-
-						</div>
-					</fieldset>
+					<div id="legend"></div>
 				</div>
 			</div>
 		</form>
-
-		<div class="row">
-			<div class="form-group col-sm-7" id="alert"></div>
-		</div>
 
 		<p id="map">
 			<svg class="mapSVG" id="mapSVG"></svg>
