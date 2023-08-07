@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     let territoriesData = getTerritories(); // Declare territoriesData at a higher scope
     let territoryWars = null; // Declare territoryWars at a higher scope
+    let rackets = null; // Declare rackets at a higher scope
 
 
     const svg = document.getElementById('mapSVG');
@@ -57,16 +58,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function fetchTerritoryData(apiKey) {
         try {
-            const response = await fetch(`https://api.torn.com/torn/?selections=territorywars&key=${apiKey}&comment=TornEngine`);
+            const response = await fetch(`https://api.torn.com/torn/?selections=territorywars,rackets&key=${apiKey}&comment=TornEngine`);
             const data = await response.json();
             territoryWars = data.territorywars;
+            rackets = data.rackets;
 
             printAlert('Success', 'The API Call successful, find the results below the map.');
 
             //territoriesData = getTerritories();
             const cardsData = createCardsData(territoryWars, territoriesData); // Pass both territoryWars and territoriesData
             addCardsWithData(cardsData);
-            highlightTerritories(territoryWars);
+            highlightTerritories(territoryWars, rackets);
         } catch (error) {
             console.error('Error fetching territory data:', error);
             printAlert('Error', error);
@@ -74,12 +76,20 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function highlightTerritories(territoryWars) {
+    function highlightTerritories(territoryWars, rackets) {
         for (const territoryId in territoryWars) {
             const group = document.getElementById(territoryId);
 
             if (group) {
-                group.classList.add('highlighted');
+                group.classList.add('war-highlighted');
+            }
+        }
+
+        for (const territoryId in rackets) {
+            const group = document.getElementById(territoryId);
+
+            if (group) {
+                group.classList.add('racket-highlighted');
             }
         }
     }
@@ -112,9 +122,13 @@ document.addEventListener('DOMContentLoaded', function () {
             group.id = territoryId;
             svg.appendChild(group);
 
-            // Apply the highlighted class to the group element
-            if (group.classList.contains('highlighted')) {
-                group.classList.add('highlighted');
+            // Apply the highlighted classes to the group element
+            if (group.classList.contains('war-highlighted')) {
+                group.classList.add('war-highlighted');
+            }
+
+            if (group.classList.contains('racket-highlighted')) {
+                group.classList.add('racket-highlighted');
             }
 
             const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
@@ -123,9 +137,13 @@ document.addEventListener('DOMContentLoaded', function () {
             circle.setAttribute('r', size * 1.2);
 
             // Apply the highlighted class to the circle element
-            if (group.classList.contains('highlighted')) {
-                circle.classList.add('highlighted');
+            if (group.classList.contains('war-highlighted')) {
+                circle.classList.add('war-highlighted');
             }
+            if (group.classList.contains('racket-highlighted')) {
+                circle.classList.add('racket-highlighted');
+            }
+
 
             circle.setAttribute('fill', color);
             circle.setAttribute('data-toggle', 'tooltip');
@@ -136,10 +154,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 const mouseX = event.clientX;
                 const mouseY = event.clientY;
                 const territoryData = territoryWars && territoryWars[territoryId] ? territoryWars[territoryId] : null;
-                showTooltip(territoryId, territory, territoryData, mouseX, mouseY);
+                const racketData = rackets && rackets[territoryId] ? rackets[territoryId] : null;
+
+                showTooltip(territoryId, territory, territoryData, racketData, mouseX, mouseY);
                 highlightNeighbors(territory.neighbors);
             });
-            
+
 
             group.addEventListener('mouseout', () => {
                 hideTooltip();
@@ -202,22 +222,30 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-    function showTooltip(territoryId, territory, territoryData, mouseX, mouseY) {
+    function showTooltip(territoryId, territory, territoryData, racketData, mouseX, mouseY) {
         const tooltip = document.querySelector('.tooltip');
         let tooltipContent = `<strong>Name: ${territoryId}</strong><br>
                               Sector: ${territory.sector}<br>
                               Slots: ${territory.slots}<br>
                               Neighbors: ${territory.neighbors.join(', ')}<br>`;
-    
+
+        if (racketData) {
+            tooltipContent += `Racket: ${racketData.name}<br>
+                                                   Reward: ${racketData.reward}</strong><br>
+                                                   Faction: ${getFactions(racketData.faction)}<br>`;
+        }
+
         if (territoryData) {
             tooltipContent += `<strong class="text-danger">Attacking Faction: ${getFactions(territoryData.assaulting_faction)}</strong><br>
-                               <strong class="text-success">Defending Faction: ${getFactions(territoryData.defending_faction)}</strong><br>
-                               Started: ${formatDate(territoryData.started)}<br>
-                               Ends: ${formatRelativeTime(territoryData.ends)}<br>`;
-        } else {
+                                <strong class="text-success">Defending Faction: ${getFactions(territoryData.defending_faction)}</strong><br>
+                                Started: ${formatDate(territoryData.started)}<br>
+                                Ends: ${formatRelativeTime(territoryData.ends)}<br>`;
+        }
+
+        if (!racketData && !territoryData) {
             tooltipContent += '<i class="text-light">Additional data not available for this territory.</i><br>';
         }
-    
+
         tooltip.innerHTML = tooltipContent;
         tooltip.style.opacity = '1';
         tooltip.style.visibility = 'visible';
@@ -226,7 +254,7 @@ document.addEventListener('DOMContentLoaded', function () {
         tooltip.style.left = `${mouseX + scrollX + 10}px`;
         tooltip.style.top = `${mouseY + scrollY + 10}px`;
     }
-    
+
 
     function hideTooltip() {
         const tooltip = document.querySelector('.tooltip');
@@ -320,7 +348,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 defendingFaction: `${getFactions(defendingFactionId)} - ${defendingFactionId}`,
                 header: `${getFactions(assaultingFactionId)} is assaulting ${getFactions(defendingFactionId)} on ${territoryId}`,
                 title: `Name: <a target="_blank" href="https://www.torn.com/city.php#terrName=${territoryId}">${territoryId}</a>`, // Update the title to include the territoryId
-                text: text, 
+                text: text,
                 color: 'primary' // You can change this color as needed
             };
             cardsData.push(data);

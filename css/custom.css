@@ -1,30 +1,10 @@
 :root {
-    --highlight-color: #E20074;
+    --war-color: #E20074;
+    --racket-color: #e2b900;
     --neighbor-color: #B8005B;
     --color-palette: #df691a, #2b3e50, #5cb85c, #5bc0de, #f0ad4e, #6f42c1, #abb6c2;
 
 }
-
-@keyframes pulse {
-    0% {
-      fill: var(--highlight-color);
-      stroke: var(--highlight-color);
-      opacity: 0.8;
-      stroke-width: 2;
-    }
-    50% {
-      fill: var(--highlight-color);
-      stroke: var(--highlight-color);
-      opacity: 1;
-      stroke-width: 4;
-    }
-    100% {
-      fill: var(--highlight-color);
-      stroke: var(--highlight-color);
-      opacity: 0.8;
-      stroke-width: 2;
-    }
-  }
 
 
 .emoji {
@@ -70,10 +50,18 @@ svg {
 }
 
 
-#mapSVG .highlighted circle {
-    fill: var(--highlight-color);
-    stroke: var(--highlight-color);
-  }
+#mapSVG .war-highlighted circle {
+    fill: var(--war-color);
+    stroke: var(--war-color);
+    stroke-width: 2;
+
+}
+
+#mapSVG .racket-highlighted circle {
+    stroke: var(--racket-color);
+    stroke-width: 2;
+
+}
 
 #mapSVG .neighbor-highlighted circle {
     fill: var(--neighbor-color);

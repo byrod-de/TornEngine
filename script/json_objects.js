@@ -79158,6 +79158,1178 @@ function getFactions(factionID) {
       },
       "12031": {
         "name": "The Low Lands"
+      },
+      "12082": {
+        "name": "Just4Fun",
+        "respect": 196505
+      },
+      "12094": {
+        "name": "Nuclear Fusion",
+        "respect": 10221834
+      },
+      "12112": {
+        "name": "Licentia Proeliator",
+        "respect": 71960
+      },
+      "12119": {
+        "name": "1878",
+        "respect": 63858
+      },
+      "12179": {
+        "name": "Rapid Dominance",
+        "respect": 108756
+      },
+      "12188": {
+        "name": "caes da vila",
+        "respect": 54454
+      },
+      "12190": {
+        "name": "KILL2WIN",
+        "respect": 257518
+      },
+      "12213": {
+        "name": "The United Nations",
+        "respect": 67930
+      },
+      "12220": {
+        "name": "The Bastards",
+        "respect": 51106
+      },
+      "12249": {
+        "name": "Aurora Surrealis",
+        "respect": 3174365
+      },
+      "12255": {
+        "name": "Imperial MediHaven",
+        "respect": 1097724
+      },
+      "12369": {
+        "name": "KUBARK",
+        "respect": 66355
+      },
+      "12398": {
+        "name": "Black Hawks",
+        "respect": 158128
+      },
+      "12471": {
+        "name": "Deadly Silence",
+        "respect": 133014
+      },
+      "12472": {
+        "name": "Lazy Guys",
+        "respect": 29470
+      },
+      "12501": {
+        "name": "the dark tower",
+        "respect": 15121
+      },
+      "12505": {
+        "name": "Cul-de-sac Cartel",
+        "respect": 258380
+      },
+      "12527": {
+        "name": "STEELBACKS RETURN",
+        "respect": 23803
+      },
+      "12544": {
+        "name": "new leder",
+        "respect": 56033
+      },
+      "12569": {
+        "name": "Angels of Darkness",
+        "respect": 70657
+      },
+      "12645": {
+        "name": "Free Xanax",
+        "respect": 1922505
+      },
+      "12665": {
+        "name": "Natural Effects",
+        "respect": 89219
+      },
+      "12681": {
+        "name": "MyFaction",
+        "respect": 21931
+      },
+      "12698": {
+        "name": "GALAXY : INC",
+        "respect": 76895
+      },
+      "12721": {
+        "name": "Dominion of Crime",
+        "respect": 176082
+      },
+      "12802": {
+        "name": "The Carnage Club",
+        "respect": 205881
+      },
+      "12844": {
+        "name": "Revolution",
+        "respect": 229888
+      },
+      "12863": {
+        "name": "WTF Healers",
+        "respect": 3452258
+      },
+      "12893": {
+        "name": "Darkside",
+        "respect": 4893673
+      },
+      "12894": {
+        "name": "New Sith Order",
+        "respect": 1737104
+      },
+      "12895": {
+        "name": "Italy",
+        "respect": 89459
+      },
+      "12905": {
+        "name": "Dutch-United",
+        "respect": 1302434
+      },
+      "12912": {
+        "name": "The House Of Retribution",
+        "respect": 3253534
+      },
+      "13005": {
+        "name": "Dragon Warriors RAWR",
+        "respect": 42162
+      },
+      "13034": {
+        "name": "Entourage",
+        "respect": 82942
+      },
+      "13041": {
+        "name": "Crime Monasterio",
+        "respect": 57954
+      },
+      "13089": {
+        "name": "ExCoNs",
+        "respect": 76465
+      },
+      "13129": {
+        "name": "Batavia",
+        "respect": 1510632
+      },
+      "13131": {
+        "name": "Torn Galactic Republic",
+        "respect": 2229202
+      },
+      "13138": {
+        "name": "Dark Carnival",
+        "respect": 514774
+      },
+      "13180": {
+        "name": "-Borealis-",
+        "respect": 829678
+      },
+      "13211": {
+        "name": "Power Rangers",
+        "respect": 174285
+      },
+      "13217": {
+        "name": "-lost for humanity -",
+        "respect": 74887
+      },
+      "13227": {
+        "name": "battle stat training camp",
+        "respect": 83549
+      },
+      "13238": {
+        "name": "LeNoir",
+        "respect": 21632
+      },
+      "13245": {
+        "name": "Just For Crimes",
+        "respect": 75137
+      },
+      "13274": {
+        "name": "SPECTRE",
+        "respect": 2144877
+      },
+      "13278": {
+        "name": "Great Eagle",
+        "respect": 64772
+      },
+      "13307": {
+        "name": "Goblin Horde",
+        "respect": 1435991
+      },
+      "13336": {
+        "name": "Z3R0 Z0NE",
+        "respect": 171687
+      },
+      "13343": {
+        "name": "The Defiant",
+        "respect": 3036109
+      },
+      "13362": {
+        "name": "The ALEuminati",
+        "respect": 104518
+      },
+      "13364": {
+        "name": "Royal Straight Flush",
+        "respect": 406290
+      },
+      "13377": {
+        "name": "The Brotherhood of War",
+        "respect": 3315675
+      },
+      "13383": {
+        "name": "SA Infinite - Recruiting",
+        "respect": 1496222
+      },
+      "13403": {
+        "name": "Mythic Dawn",
+        "respect": 56518
+      },
+      "13406": {
+        "name": "J.H.A.",
+        "respect": 41079
+      },
+      "13410": {
+        "name": "Pwners United",
+        "respect": 10946
+      },
+      "13421": {
+        "name": "Heretics",
+        "respect": 486284
+      },
+      "13464": {
+        "name": "Bada-Bing",
+        "respect": 41184
+      },
+      "13467": {
+        "name": "Deagles",
+        "respect": 37692
+      },
+      "13502": {
+        "name": "Dead or Alive",
+        "respect": 10205425
+      },
+      "13525": {
+        "name": "Wargasm 2.0",
+        "respect": 514458
+      },
+      "13542": {
+        "name": "SBGi",
+        "respect": 85413
+      },
+      "13598": {
+        "name": "Twisted Psychosis",
+        "respect": 53581
+      },
+      "13603": {
+        "name": "Aegis",
+        "respect": 55596
+      },
+      "13607": {
+        "name": "The Sexy and Funny",
+        "respect": 92054
+      },
+      "13611": {
+        "name": "PARTIZAN",
+        "respect": 642544
+      },
+      "13615": {
+        "name": "None Yet",
+        "respect": 18305
+      },
+      "13636": {
+        "name": "Kafuffle",
+        "respect": 43136
+      },
+      "13665": {
+        "name": "PT-ShadowRazers",
+        "respect": 10361664
+      },
+      "13675": {
+        "name": "Veho in Tempestas",
+        "respect": 29128
+      },
+      "13726": {
+        "name": "Dark Energy",
+        "respect": 894741
+      },
+      "13737": {
+        "name": "The War Rig",
+        "respect": 1954476
+      },
+      "13766": {
+        "name": "Puppy Power",
+        "respect": 105102
+      },
+      "13784": {
+        "name": "WarBirds",
+        "respect": 9297728
+      },
+      "13789": {
+        "name": "Aperture Science",
+        "respect": 2748125
+      },
+      "13795": {
+        "name": "The Mighty Templars",
+        "respect": 57179
+      },
+      "13799": {
+        "name": "Alkari",
+        "respect": 35537
+      },
+      "13814": {
+        "name": "Royal Danish Army",
+        "respect": 41008
+      },
+      "13842": {
+        "name": "BR - Brazilian Unit",
+        "respect": 3186816
+      },
+      "13848": {
+        "name": "BreakingBad",
+        "respect": 96197
+      },
+      "13851": {
+        "name": "Nuclear Therapy",
+        "respect": 4214360
+      },
+      "13872": {
+        "name": "Fluffle",
+        "respect": 481320
+      },
+      "13933": {
+        "name": "Laserninjas",
+        "respect": 27977
+      },
+      "13960": {
+        "name": "d@fT pUnk",
+        "respect": 12568
+      },
+      "13972": {
+        "name": "Bloods 2.0",
+        "respect": 0
+      },
+      "13974": {
+        "name": "Mafia Crew",
+        "respect": 54833
+      },
+      "13991": {
+        "name": "UoE - Not for Sale",
+        "respect": 88149
+      },
+      "14004": {
+        "name": "Bud Bath",
+        "respect": 99266
+      },
+      "14035": {
+        "name": "Phawkes Brotherhood",
+        "respect": 96304
+      },
+      "14037": {
+        "name": "Banco",
+        "respect": 69818
+      },
+      "14052": {
+        "name": "NPO - Endurance",
+        "respect": 1342661
+      },
+      "14053": {
+        "name": "The Dogs Bollox",
+        "respect": 51905
+      },
+      "14056": {
+        "name": "Devilution",
+        "respect": 208065
+      },
+      "14078": {
+        "name": "~Twisted~",
+        "respect": 8554684
+      },
+      "14119": {
+        "name": "TORN",
+        "respect": 87134
+      },
+      "14139": {
+        "name": "GangBang",
+        "respect": 52264
+      },
+      "14194": {
+        "name": "796 Pink Power",
+        "respect": 384943
+      },
+      "14270": {
+        "name": "The Continental",
+        "respect": 590807
+      },
+      "14276": {
+        "name": "T0rnHub",
+        "respect": 70019
+      },
+      "14308": {
+        "name": "Solitary Confinement",
+        "respect": 92805
+      },
+      "14365": {
+        "name": "JFK 2.1",
+        "respect": 9047335
+      },
+      "14367": {
+        "name": "Grinder",
+        "respect": 44518
+      },
+      "14375": {
+        "name": " N/A",
+        "respect": 67145
+      },
+      "14386": {
+        "name": "TRANQUILITY",
+        "respect": 1095513
+      },
+      "14399": {
+        "name": "------",
+        "respect": 50980
+      },
+      "14432": {
+        "name": "160th SOAR Night Stalkers",
+        "respect": 2094270
+      },
+      "14435": {
+        "name": "Crippling_Desire",
+        "respect": 0
+      },
+      "14438": {
+        "name": "Dragonborn Army",
+        "respect": 380953
+      },
+      "14441": {
+        "name": "The Cake Crusaders",
+        "respect": 761419
+      },
+      "14455": {
+        "name": "Falcon Hoof",
+        "respect": 105806
+      },
+      "14500": {
+        "name": "Automaton Machinations",
+        "respect": 64563
+      },
+      "14552": {
+        "name": "Grinch Pimps",
+        "respect": 0
+      },
+      "14581": {
+        "name": "Project Nimbus",
+        "respect": 2028224
+      },
+      "14587": {
+        "name": "Self Made",
+        "respect": 72369
+      },
+      "14592": {
+        "name": "Roaring Lions",
+        "respect": 58666
+      },
+      "14619": {
+        "name": "Unicorn farts",
+        "respect": 64550
+      },
+      "14633": {
+        "name": "Nuova Famiglia",
+        "respect": 794357
+      },
+      "14655": {
+        "name": "Pirates from Hell",
+        "respect": 47740
+      },
+      "14685": {
+        "name": "merits faction",
+        "respect": 72036
+      },
+      "14686": {
+        "name": "Endless Endeavor",
+        "respect": 4573245
+      },
+      "14694": {
+        "name": "Homeboiis",
+        "respect": 52515
+      },
+      "14760": {
+        "name": "Dopeheads on Mopeds",
+        "respect": 5474054
+      },
+      "14768": {
+        "name": "RISE FROM RUIN",
+        "respect": 1002334
+      },
+      "14807": {
+        "name": "Inagawa-kai",
+        "respect": 9774
+      },
+      "14819": {
+        "name": "eSaD",
+        "respect": 125113
+      },
+      "14820": {
+        "name": "Unbroken Legion",
+        "respect": 1993455
+      },
+      "14821": {
+        "name": "JFK - Future Killers",
+        "respect": 5644477
+      },
+      "14841": {
+        "name": "Ride Em Dry ",
+        "respect": 38744
+      },
+      "14859": {
+        "name": "Five Man Army",
+        "respect": 7081
+      },
+      "14869": {
+        "name": "Exiles",
+        "respect": 7797
+      },
+      "14901": {
+        "name": "Winter soldiers",
+        "respect": 15777
+      },
+      "14938": {
+        "name": "Ogdenfort's Marauders",
+        "respect": 4250
+      },
+      "14973": {
+        "name": "Verdeatza",
+        "respect": 15661
+      },
+      "15032": {
+        "name": "ILLUMINATI INITIATION",
+        "respect": 54079
+      },
+      "15033": {
+        "name": "Cabaret of 7 Devils",
+        "respect": 33125
+      },
+      "15046": {
+        "name": "We Are Rising",
+        "respect": 3750408
+      },
+      "15053": {
+        "name": "Arsekickers",
+        "respect": 77841
+      },
+      "15058": {
+        "name": "YChuck Place",
+        "respect": 15302
+      },
+      "15083": {
+        "name": "Leeches",
+        "respect": 1126270
+      },
+      "15120": {
+        "name": "Wolf Pack Next Generation",
+        "respect": 4954725
+      },
+      "15135": {
+        "name": "The Son of Sun (Recru",
+        "respect": 169939
+      },
+      "15151": {
+        "name": "The ZOO",
+        "respect": 2165833
+      },
+      "15154": {
+        "name": "The Fallen",
+        "respect": 2706930
+      },
+      "15182": {
+        "name": "STOMPDOWN",
+        "respect": 183435
+      },
+      "15222": {
+        "name": "Carbon Rising",
+        "respect": 4490701
+      },
+      "15226": {
+        "name": "Whitenoise",
+        "respect": 799515
+      },
+      "15239": {
+        "name": "Addicts In Attics",
+        "respect": 170879
+      },
+      "15254": {
+        "name": "Pornstars",
+        "respect": 79244
+      },
+      "15255": {
+        "name": "Devious",
+        "respect": 208395
+      },
+      "15256": {
+        "name": "Hell Hounds",
+        "respect": 1098362
+      },
+      "15279": {
+        "name": "Spec OPs",
+        "respect": 39370
+      },
+      "15286": {
+        "name": "C2C",
+        "respect": 2300592
+      },
+      "15307": {
+        "name": "Salihli",
+        "respect": 66484
+      },
+      "15317": {
+        "name": "Las Noches Espadas",
+        "respect": 59677
+      },
+      "15388": {
+        "name": "Blodigrove",
+        "respect": 72038
+      },
+      "15446": {
+        "name": "Druggies in Snuggies",
+        "respect": 3073302
+      },
+      "15448": {
+        "name": "BLUEBIRD'S",
+        "respect": 72252
+      },
+      "15536": {
+        "name": "The Aggrolites",
+        "respect": 76809
+      },
+      "15547": {
+        "name": "Anarchist of Torn",
+        "respect": 146045
+      },
+      "15573": {
+        "name": "Cryogenic  Inc",
+        "respect": 49792
+      },
+      "15595": {
+        "name": "Lusty Lizards",
+        "respect": 941417
+      },
+      "15602": {
+        "name": "Lone Wolves",
+        "respect": 1138732
+      },
+      "15644": {
+        "name": "BoW - New Sith Order",
+        "respect": 2561678
+      },
+      "15655": {
+        "name": "Ravage",
+        "respect": 2301572
+      },
+      "15685": {
+        "name": "naruto",
+        "respect": 17503
+      },
+      "15694": {
+        "name": "ZERO TO HERO SUPREME",
+        "respect": 158731
+      },
+      "15788": {
+        "name": "United Mutations",
+        "respect": 58404
+      },
+      "15789": {
+        "name": "Dungeons and Dragons",
+        "respect": 59055
+      },
+      "15837": {
+        "name": "Suits",
+        "respect": 2000849
+      },
+      "15842": {
+        "name": "H-A Training Ground ",
+        "respect": 23150
+      },
+      "15914": {
+        "name": "'",
+        "respect": 34198
+      },
+      "15929": {
+        "name": "The Inquisition",
+        "respect": 2935058
+      },
+      "15930": {
+        "name": "HellBound",
+        "respect": 1267445
+      },
+      "15940": {
+        "name": "Heavens Gate",
+        "respect": 69673
+      },
+      "15961": {
+        "name": "~R3bellioN~",
+        "respect": 118878
+      },
+      "16040": {
+        "name": "Winter is Coming",
+        "respect": 4706317
+      },
+      "16053": {
+        "name": "Asylum 2.0",
+        "respect": 1980650
+      },
+      "16054": {
+        "name": "PKP",
+        "respect": 193379
+      },
+      "16057": {
+        "name": "Glory to Heroes",
+        "respect": 1389591
+      },
+      "16079": {
+        "name": "Paramore",
+        "respect": 729230
+      },
+      "16120": {
+        "name": "WarDogs MD",
+        "respect": 854728
+      },
+      "16171": {
+        "name": "Got Your Six",
+        "respect": 139153
+      },
+      "16187": {
+        "name": "Violent if Necessary  X",
+        "respect": 2228343
+      },
+      "16189": {
+        "name": "D-Generation X",
+        "respect": 13553
+      },
+      "16196": {
+        "name": "High Times",
+        "respect": 155100
+      },
+      "16247": {
+        "name": "BoW - 4.20",
+        "respect": 1914150
+      },
+      "16269": {
+        "name": "MindBomb",
+        "respect": 23425
+      },
+      "16274": {
+        "name": "Exposed Design",
+        "respect": 50262
+      },
+      "16282": {
+        "name": "Nuclear Winter",
+        "respect": 8456036
+      },
+      "16296": {
+        "name": "School of Devlins",
+        "respect": 236372
+      },
+      "16299": {
+        "name": "Dark Arts",
+        "respect": 1294811
+      },
+      "16303": {
+        "name": "Thunder Romania",
+        "respect": 55795
+      },
+      "16312": {
+        "name": "39th Street Killers X",
+        "respect": 12570987
+      },
+      "16335": {
+        "name": "SMTH - November Chopin",
+        "respect": 4103502
+      },
+      "16381": {
+        "name": "The Dothraki",
+        "respect": 223810
+      },
+      "16388": {
+        "name": "WithinTheShadows",
+        "respect": 103757
+      },
+      "16414": {
+        "name": "Black Roses",
+        "respect": 43640
+      },
+      "16420": {
+        "name": "East 16th",
+        "respect": 83226
+      },
+      "16424": {
+        "name": "SMTH - HoYoverse",
+        "respect": 1465478
+      },
+      "16443": {
+        "name": "Ricemarket of Trailblazer",
+        "respect": 355745
+      },
+      "16452": {
+        "name": "The Troublemakerz",
+        "respect": 16040
+      },
+      "16468": {
+        "name": "Valhalla",
+        "respect": 175108
+      },
+      "16495": {
+        "name": "Next Enemy",
+        "respect": 167583
+      },
+      "16503": {
+        "name": "The Four Twenty C-K-A",
+        "respect": 2250856
+      },
+      "16541": {
+        "name": "Zombie Hunters R Us",
+        "respect": 39163
+      },
+      "16628": {
+        "name": "Chain Reaction",
+        "respect": 12517089
+      },
+      "16634": {
+        "name": "7th St. Assassins",
+        "respect": 1894087
+      },
+      "16696": {
+        "name": "New York Cyndicate",
+        "respect": 612214
+      },
+      "16727": {
+        "name": "Arak Attack",
+        "respect": 95061
+      },
+      "16888": {
+        "name": "Borg Collective",
+        "respect": 0
+      },
+      "16942": {
+        "name": "The Platonists",
+        "respect": 51704
+      },
+      "16963": {
+        "name": "ChuckTown Bound -Recr",
+        "respect": 55216
+      },
+      "16971": {
+        "name": "LegacyOfWar-",
+        "respect": 86484
+      },
+      "17001": {
+        "name": "Trigger Happy Devils",
+        "respect": 1162771
+      },
+      "17026": {
+        "name": "Dragon/Phoenix",
+        "respect": 112650
+      },
+      "17055": {
+        "name": "The Hamburglars",
+        "respect": 200355
+      },
+      "17058": {
+        "name": "Exogenesis",
+        "respect": 60856
+      },
+      "17110": {
+        "name": "Sesame Street G's",
+        "respect": 68669
+      },
+      "17133": {
+        "name": "Torn Medical",
+        "respect": 3987380
+      },
+      "17237": {
+        "name": "Marvel- Village",
+        "respect": 306179
+      },
+      "17247": {
+        "name": "NATO",
+        "respect": 58131
+      },
+      "17250": {
+        "name": "Dog Tags",
+        "respect": 1012884
+      },
+      "17256": {
+        "name": "Starters",
+        "respect": 20063
+      },
+      "17562": {
+        "name": "Silver Town",
+        "respect": 0
+      },
+      "17567": {
+        "name": "RUM",
+        "respect": 126143
+      },
+      "17587": {
+        "name": "Nomads 2.0",
+        "respect": 1746442
+      },
+      "17589": {
+        "name": "Illuminati Familia",
+        "respect": 300538
+      },
+      "17608": {
+        "name": "The Nut House",
+        "respect": 307295
+      },
+      "17659": {
+        "name": "HELLAS",
+        "respect": 145091
+      },
+      "17702": {
+        "name": "R3s1gn3d",
+        "respect": 35823
+      },
+      "17717": {
+        "name": "Purple Passion Pandas",
+        "respect": 14872
+      },
+      "17759": {
+        "name": "Moonlight Contraband HQ",
+        "respect": 117688
+      },
+      "17776": {
+        "name": "ThugLife Recruiting",
+        "respect": 1982931
+      },
+      "17845": {
+        "name": "Ascension",
+        "respect": 1484975
+      },
+      "17867": {
+        "name": "The Dimmlings",
+        "respect": 111842
+      },
+      "17904": {
+        "name": "Plastic Gangstas",
+        "respect": 96330
+      },
+      "17919": {
+        "name": "THE MAYHEM BOIZ",
+        "respect": 173870
+      },
+      "17924": {
+        "name": "The Mandalors",
+        "respect": 216555
+      },
+      "17931": {
+        "name": "Mad Men",
+        "respect": 35970
+      },
+      "17956": {
+        "name": "The Forgotten",
+        "respect": 22800
+      },
+      "17969": {
+        "name": "Entropy",
+        "respect": 36665
+      },
+      "17991": {
+        "name": "The Collective Syndicate",
+        "respect": 226574
+      },
+      "18090": {
+        "name": "REK&morty",
+        "respect": 467145
+      },
+      "18158": {
+        "name": "Strangers in Paradise",
+        "respect": 46220
+      },
+      "18396": {
+        "name": "WAR MACHINES",
+        "respect": 79293
+      },
+      "18415": {
+        "name": "Cayman Islands",
+        "respect": 629116
+      },
+      "18420": {
+        "name": "The Black Knights",
+        "respect": 421655
+      },
+      "18477": {
+        "name": "Anonymous",
+        "respect": 99904
+      },
+      "18512": {
+        "name": "Suntzu-(Recruiting)",
+        "respect": 55353
+      },
+      "18518": {
+        "name": "illusion",
+        "respect": 64436
+      },
+      "18560": {
+        "name": "S.C.A.R. - DELTA GREEN",
+        "respect": 406723
+      },
+      "18569": {
+        "name": "Romania Elite Kommando",
+        "respect": 7878964
+      },
+      "18597": {
+        "name": "The Collective Resistance",
+        "respect": 1398824
+      },
+      "18606": {
+        "name": "shreks museum",
+        "respect": 20824
+      },
+      "18678": {
+        "name": "Murder Junkies",
+        "respect": 2500646
+      },
+      "18714": {
+        "name": "NPO - Peace",
+        "respect": 153247
+      },
+      "18736": {
+        "name": "Monarch Research",
+        "respect": 10348975
+      },
+      "18766": {
+        "name": "Paula Deen",
+        "respect": 21494
+      },
+      "18882": {
+        "name": "Antichrist",
+        "respect": 87812
+      },
+      "18923": {
+        "name": "Still Thinking",
+        "respect": 39782
+      },
+      "18963": {
+        "name": "Search & Destroy",
+        "respect": 449512
+      },
+      "18975": {
+        "name": "HELL FIRE",
+        "respect": 110441
+      },
+      "19002": {
+        "name": "De-Commissioned Angels",
+        "respect": 102426
+      },
+      "19048": {
+        "name": "Twizted",
+        "respect": 62453
+      },
+      "19060": {
+        "name": "Little Famiglia",
+        "respect": 412312
+      },
+      "19096": {
+        "name": "Arkham Asylum",
+        "respect": 10828
+      },
+      "19147": {
+        "name": "Grindc0re Is ART!",
+        "respect": 16784
+      },
+      "19188": {
+        "name": "Deus Mortiis",
+        "respect": 21070
+      },
+      "19238": {
+        "name": "BETAMAXX",
+        "respect": 21943
+      },
+      "19249": {
+        "name": "Tanglewood",
+        "respect": 239732
+      },
+      "19259": {
+        "name": "Atonement",
+        "respect": 30602
+      },
+      "19283": {
+        "name": "One Piece",
+        "respect": 135968
+      },
+      "19297": {
+        "name": "Havoc",
+        "respect": 198267
+      },
+      "19322": {
+        "name": "Phawkes",
+        "respect": 56706
+      },
+      "19354": {
+        "name": "Lancia  C. Fabbrica",
+        "respect": 72147
+      },
+      "19386": {
+        "name": "Sins",
+        "respect": 8052
+      },
+      "19398": {
+        "name": "Taffia",
+        "respect": 27463
+      },
+      "19417": {
+        "name": "Perfect",
+        "respect": 103798
+      },
+      "19449": {
+        "name": "Simulation",
+        "respect": 294491
+      },
+      "19529": {
+        "name": "Lumios",
+        "respect": 0
+      },
+      "19533": {
+        "name": "B.P.P.",
+        "respect": 39256
+      },
+      "19594": {
+        "name": "IDGAF",
+        "respect": 30917
+      },
+      "19608": {
+        "name": "YellowBrickRoad",
+        "respect": 11100
+      },
+      "19617": {
+        "name": "Republic of South Africa",
+        "respect": 14352
+      },
+      "19654": {
+        "name": "Spoty",
+        "respect": 49826
+      },
+      "19676": {
+        "name": "Lethal Lads",
+        "respect": 27888
+      },
+      "19764": {
+        "name": "The Well Behaved Boys",
+        "respect": 206027
+      },
+      "19831": {
+        "name": "War_Lords_Of_The_Sea",
+        "respect": 32873
+      },
+      "19892": {
+        "name": "VIETNAM",
+        "respect": 45985
+      },
+      "19915": {
+        "name": "Cake Or Death",
+        "respect": 78147
+      },
+      "19982": {
+        "name": "Midnight Ghosts",
+        "respect": 199738
       }
     }
   }
