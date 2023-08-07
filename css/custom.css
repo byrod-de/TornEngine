@@ -1,9 +1,30 @@
 :root {
-    --highlight-color: #d9534f;
-    --neighbor-color: #E20074;
+    --highlight-color: #E20074;
+    --neighbor-color: #B8005B;
     --color-palette: #df691a, #2b3e50, #5cb85c, #5bc0de, #f0ad4e, #6f42c1, #abb6c2;
 
 }
+
+@keyframes pulse {
+    0% {
+      fill: var(--highlight-color);
+      stroke: var(--highlight-color);
+      opacity: 0.8;
+      stroke-width: 2;
+    }
+    50% {
+      fill: var(--highlight-color);
+      stroke: var(--highlight-color);
+      opacity: 1;
+      stroke-width: 4;
+    }
+    100% {
+      fill: var(--highlight-color);
+      stroke: var(--highlight-color);
+      opacity: 0.8;
+      stroke-width: 2;
+    }
+  }
 
 
 .emoji {
@@ -50,10 +71,8 @@ svg {
 
 
 #mapSVG .highlighted circle {
-    fill: var(--highlight-color);
-    stroke: var(--highlight-color);
-
-}
+    animation: pulse 2s ease-in-out infinite;
+  }
 
 #mapSVG .neighbor-highlighted circle {
     fill: var(--neighbor-color);

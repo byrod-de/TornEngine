@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     let territoriesData = getTerritories(); // Declare territoriesData at a higher scope
+    let territoryWars = null; // Declare territoryWars at a higher scope
+
 
     const svg = document.getElementById('mapSVG');
     const tooltip = document.createElement('div');
@@ -57,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
             const response = await fetch(`https://api.torn.com/torn/?selections=territorywars&key=${apiKey}&comment=TornEngine`);
             const data = await response.json();
-            const territoryWars = data.territorywars;
+            territoryWars = data.territorywars;
 
             printAlert('Success', 'The API Call successful, find the results below the map.');
 
@@ -87,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const useSize = colorSwitch.checked;
 
         // Decide whether to use "size" or "sector" based on the switch status
-        return useSize ? territory.sector : territory.size;
+        return useSize ? territory.size : territory.sector;
     }
 
     function drawMap() {
@@ -133,9 +135,11 @@ document.addEventListener('DOMContentLoaded', function () {
             group.addEventListener('mouseover', (event) => {
                 const mouseX = event.clientX;
                 const mouseY = event.clientY;
-                showTooltip(territoryId, territory, mouseX, mouseY);
+                const territoryData = territoryWars && territoryWars[territoryId] ? territoryWars[territoryId] : null;
+                showTooltip(territoryId, territory, territoryData, mouseX, mouseY);
                 highlightNeighbors(territory.neighbors);
             });
+            
 
             group.addEventListener('mouseout', () => {
                 hideTooltip();
@@ -198,14 +202,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-    function showTooltip(territoryId, territory, mouseX, mouseY) {
+    function showTooltip(territoryId, territory, territoryData, mouseX, mouseY) {
         const tooltip = document.querySelector('.tooltip');
-        tooltip.innerHTML = `
-            <strong>Name: ${territoryId}</strong><br>
-            Sector: ${territory.sector}<br>
-            Slots: ${territory.slots}<br>
-            Neighbors: ${territory.neighbors.join(', ')}
-        `;
+        let tooltipContent = `<strong>Name: ${territoryId}</strong><br>
+                              Sector: ${territory.sector}<br>
+                              Slots: ${territory.slots}<br>
+                              Neighbors: ${territory.neighbors.join(', ')}<br>`;
+    
+        if (territoryData) {
+            tooltipContent += `<strong class="text-danger">Attacking Faction: ${getFactions(territoryData.assaulting_faction)}</strong><br>
+                               <strong class="text-success">Defending Faction: ${getFactions(territoryData.defending_faction)}</strong><br>
+                               Started: ${formatDate(territoryData.started)}<br>
+                               Ends: ${formatRelativeTime(territoryData.ends)}<br>`;
+        } else {
+            tooltipContent += '<i class="text-light">Additional data not available for this territory.</i><br>';
+        }
+    
+        tooltip.innerHTML = tooltipContent;
         tooltip.style.opacity = '1';
         tooltip.style.visibility = 'visible';
         const scrollX = window.scrollX || window.pageXOffset;
@@ -213,6 +226,7 @@ document.addEventListener('DOMContentLoaded', function () {
         tooltip.style.left = `${mouseX + scrollX + 10}px`;
         tooltip.style.top = `${mouseY + scrollY + 10}px`;
     }
+    
 
     function hideTooltip() {
         const tooltip = document.querySelector('.tooltip');
@@ -237,15 +251,17 @@ document.addEventListener('DOMContentLoaded', function () {
     function filterTerritories(searchText) {
         for (const territoryId in territoriesData.territory) {
             const group = document.getElementById(territoryId); // Get the group for the territory
-            const territory = territoriesData.territory[territoryId];
 
             // Check if the territoryId contains the search text
             if (territoryId.toLowerCase().includes(searchText)) {
                 // Show the group if it matches the search
-                group.style.display = 'inline';
+                //group.style.display = 'inline';
+                group.style.opacity = '1';
+
             } else {
                 // Hide the group if it doesn't match the search
-                group.style.display = 'none';
+                //group.style.display = 'none';
+                group.style.opacity = '0.2';
             }
         }
     }
@@ -266,8 +282,8 @@ document.addEventListener('DOMContentLoaded', function () {
         for (const data of cardsData) {
             const card = createCardElement(data);
             card.dataset.territoryId = data.territoryId; // Add territoryId as a dataset attribute
-            card.dataset.assaultingFactionId = data.assaultingFactionId; // Add assaulting faction as a dataset attribute
-            card.dataset.defendingFactionId = data.defendingFactionId; // Add defending faction as a dataset attribute
+            card.dataset.assaultingFactionId = data.assaultingFaction; // Add assaulting faction as a dataset attribute
+            card.dataset.defendingFactionId = data.defendingFaction; // Add defending faction as a dataset attribute
             const col = document.createElement('div');
             col.classList.add('col-md-3', 'mb-3');
             col.appendChild(card);
@@ -291,8 +307,8 @@ document.addEventListener('DOMContentLoaded', function () {
             const text = `
                         Sector: ${territory.sector}<br />
                         Slots: ${territory.slots}<br />
-                        Attacking Faction: <a target="_blank" href="${assaultingFactionLink}">${territoryWars[territoryId].assaulting_faction}</a><br/>
-                        Defending Faction: <a target="_blank" href="${defendingFactionLink}">${territoryWars[territoryId].defending_faction}</a><br/>
+                        <strong class="text-danger">Attacking Faction: <a target="_blank" href="${assaultingFactionLink}">${getFactions(assaultingFactionId)}</a></strong><br/>
+                        <strong class="text-success">Defending Faction: <a target="_blank" href="${defendingFactionLink}">${getFactions(defendingFactionId)}</a></strong><br/>
                         Started: ${formatDate(startedTimestamp)}<br />
                         Ends: ${formatRelativeTime(endsTimestamp)}<br />
                         Neighbors: ${territory.neighbors.join(', ')}<br />
@@ -300,10 +316,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const data = {
                 territoryId: territoryId,
-                assaultingFactionId: assaultingFactionId,
-                defendingFactionId: defendingFactionId,
-                header: `${assaultingFactionId} is assaulting ${defendingFactionId} on ${territoryId}`,
-                title: `${territoryId}`, // Update the title to include the territoryId
+                assaultingFaction: `${getFactions(assaultingFactionId)} - ${assaultingFactionId}`,
+                defendingFaction: `${getFactions(defendingFactionId)} - ${defendingFactionId}`,
+                header: `${getFactions(assaultingFactionId)} is assaulting ${getFactions(defendingFactionId)} on ${territoryId}`,
+                title: `Name: <a target="_blank" href="$https://www.torn.com/city.php#terrName=${territoryId}">${territoryId}</a>`, // Update the title to include the territoryId
                 text: text,
                 color: 'primary' // You can change this color as needed
             };
@@ -311,9 +327,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         cardsData.sort((a, b) => {
-            const factionA = territoryWars[a.territoryId].assaulting_faction;
-            const factionB = territoryWars[b.territoryId].assaulting_faction;
-            return factionA - factionB;
+            const endsTimestampA = territoryWars[a.territoryId].ends;
+            const endsTimestampB = territoryWars[b.territoryId].ends;
+            return endsTimestampA - endsTimestampB;
         });
 
         return cardsData;
@@ -357,9 +373,9 @@ document.addEventListener('DOMContentLoaded', function () {
         cardBody.classList.add('card-body');
         card.appendChild(cardBody);
 
-        const cardTitle = document.createElement('h4');
+        const cardTitle = document.createElement('strong');
         cardTitle.classList.add('card-title');
-        cardTitle.textContent = title;
+        cardTitle.innerHTML = title;
         cardBody.appendChild(cardTitle);
 
         const cardText = document.createElement('p');
