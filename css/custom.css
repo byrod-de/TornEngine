@@ -71,7 +71,8 @@ svg {
 
 
 #mapSVG .highlighted circle {
-    animation: pulse 2s ease-in-out infinite;
+    fill: var(--highlight-color);
+    stroke: var(--highlight-color);
   }
 
 #mapSVG .neighbor-highlighted circle {
