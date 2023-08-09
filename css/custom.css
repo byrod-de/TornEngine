@@ -1,11 +1,10 @@
 :root {
     --war-color: #a5263b;
-    --racket-color: #e29700;
-    --neighbor-color: #c23796;
+    --racket-color: #eeaa22;
+    --neighbor-color: #e55fbb;
     --color-palette: #5700ad, #1b0091, #0050b3, #2695d1, #2ad7eb, #09edc7, #1cff7e;
 
 }
-
 
 .emoji {
     margin: 0;
@@ -59,7 +58,7 @@ svg {
 
 #mapSVG .racket-highlighted circle {
     stroke: var(--racket-color);
-    stroke-width: 2;
+    stroke-width: 1.8;
 
 }
 
