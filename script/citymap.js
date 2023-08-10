@@ -262,17 +262,25 @@ document.addEventListener('DOMContentLoaded', function () {
                               Slots: ${territory.slots}<br>
                               Neighbors: ${territory.neighbors.join(', ')}<br>`;
 
+
+        if (territoryData) {
+            let score = territoryData.score;
+            let score_required = territoryData.score_required;
+            let slots = territory.slots;
+            let best = (score_required - score) / slots * 1000;
+
+            tooltipContent += `<strong class="text-danger">Attacking Faction: ${getFactions(territoryData.assaulting_faction)}</strong><br>
+                                <strong class="text-success">Defending Faction: ${getFactions(territoryData.defending_faction)}</strong><br>
+                                Score: ${score}/${score_required}<br>
+                                Start: ${formatDate(territoryData.started)}<br>
+                                End: ${formatRelativeTime(territoryData.ends)}<br>
+                                Best Case: ${formatBestWallTime(best)}<br>`;
+        }
+
         if (racketData) {
             tooltipContent += `Racket: ${racketData.name}<br>
                                                    Reward: ${racketData.reward}</strong><br>
                                                    Faction: ${getFactions(racketData.faction)}<br>`;
-        }
-
-        if (territoryData) {
-            tooltipContent += `<strong class="text-danger">Attacking Faction: ${getFactions(territoryData.assaulting_faction)}</strong><br>
-                                <strong class="text-success">Defending Faction: ${getFactions(territoryData.defending_faction)}</strong><br>
-                                Started: ${formatDate(territoryData.started)}<br>
-                                Ends: ${formatRelativeTime(territoryData.ends)}<br>`;
         }
 
         if (!racketData && !territoryData) {
@@ -362,16 +370,29 @@ document.addEventListener('DOMContentLoaded', function () {
             const assaultingFactionLink = `https://www.torn.com/factions.php?step=profile&ID=${assaultingFactionId}`;
             const defendingFactionLink = `https://www.torn.com/factions.php?step=profile&ID=${defendingFactionId}`;
 
+            const score_required = territoryWars[territoryId].score_required;
+            const score = territoryWars[territoryId].score;
+            const slots = territoriesData.territory[territoryId].slots;
+            const percentage = score / score_required * 100;
+
             const startedTimestamp = territoryWars[territoryId].started;
             const endsTimestamp = territoryWars[territoryId].ends;
+
+            let best = (score_required - score) / slots * 1000;
 
             const text = `
                         Sector: ${territory.sector}<br />
                         Slots: ${territory.slots}<br />
                         <strong class="text-danger">Attacking Faction: <a target="_blank" href="${assaultingFactionLink}">${getFactions(assaultingFactionId)}</a></strong><br/>
                         <strong class="text-success">Defending Faction: <a target="_blank" href="${defendingFactionLink}">${getFactions(defendingFactionId)}</a></strong><br/>
-                        Started: ${formatDate(startedTimestamp)}<br />
-                        Ends: ${formatRelativeTime(endsTimestamp)}<br />
+                        Score: ${score}/${score_required}<br />
+                        <div class="progress">
+                           <div class="progress-bar bg-success" role="progressbar" style="width: ${percentage}%;" aria-valuenow="${percentage}" aria-valuemin="0" aria-valuemax="100"></div>
+                           <div class="progress-bar bg-light progress-bar-striped" role="progressbar" style="width: ${100-percentage}%;" aria-valuenow="${100-percentage}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        Start: ${formatDate(startedTimestamp)}<br />
+                        End: ${formatRelativeTime(endsTimestamp)}<br />
+                        Best Case: ${formatBestWallTime(best)}<br />
                         Neighbors: ${territory.neighbors.join(', ')}<br />
 `;
 
@@ -419,10 +440,18 @@ document.addEventListener('DOMContentLoaded', function () {
         return (days > 0) ? `in ${days} days ${hours}h and ${minutes}min` : `${hours}h and ${minutes}min`;
     }
 
+    function formatBestWallTime(bestWallTime) {
+        const days = Math.floor(bestWallTime / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((bestWallTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((bestWallTime % (1000 * 60 * 60)) / (1000 * 60));
+
+        return (days > 0) ? `in ${days} days ${hours}h and ${minutes}min` : `${hours}h and ${minutes}min`;
+    }
+
     function createCardElement(data) {
         const { territoryId, header, title, text, color } = data;
         const card = document.createElement('div');
-        card.classList.add('card', `border-${color}`, 'mb-3');
+        card.classList.add('card', `border-${color}`, 'mb-4');
         card.style.maxWidth = '20rem';
 
         const cardHeader = document.createElement('div');
