@@ -67,6 +67,14 @@ svg {
     stroke: var(--neighbor-color);
 }
 
+#mapSVG .map {
+    opacity: 0.05;
+}
+
+#mapSVG .map2 {
+    opacity: 0.25;
+}
+
 /* Add these CSS rules to your custom.css or create a new style block in the head section of your HTML */
 #cardsContainer {
     display: flex;

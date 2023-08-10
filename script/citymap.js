@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', function () {
     let territoryWars = null; // Declare territoryWars at a higher scope
     let rackets = null; // Declare rackets at a higher scope
 
-
     const svg = document.getElementById('mapSVG');
     const tooltip = document.createElement('div');
     tooltip.classList.add('tooltip');
@@ -132,6 +131,17 @@ document.addEventListener('DOMContentLoaded', function () {
         while (svg.firstChild) {
             svg.removeChild(svg.firstChild);
         }
+
+        const backgroundImage = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+
+        // Set the attributes for the image element
+        backgroundImage.setAttribute('href', 'images/map.png');
+        backgroundImage.setAttribute('width', '100%');
+        backgroundImage.setAttribute('height', '100%');
+        backgroundImage.setAttribute('class', 'map');
+
+        // Append the image element to the SVG
+        svg.appendChild(backgroundImage);
 
         for (const territoryId in territoriesData.territory) {
             const territory = territoriesData.territory[territoryId];
