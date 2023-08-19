@@ -669,7 +669,7 @@ function parseMembers(statusData, selection, element, membersList) {
 
   table = table + '<br /><table class="table table-hover" id="members"><thead><tr>'
     + '<th>Name&nbsp;&nbsp;</th>'
-    + '<th>Icons&nbsp;&nbsp;</th>'
+    + '<th>Position&nbsp;&nbsp;</th>'
     + '<th>Attack Link&nbsp;&nbsp;</th>'
     + '<th>Status&nbsp;&nbsp;</th>'
     + '<th>Details&nbsp;&nbsp;</th>'
@@ -831,8 +831,8 @@ function parseMembers(statusData, selection, element, membersList) {
 
       table = table + '<tr>'
 
-        + '<td class="align-middle"><a href="https://www.torn.com/profiles.php?XID=' + id + '" target="_blank">' + member.name + ' [' + id + ']</a></td>'
-        + '<td class="align-middle">' + icon + '</td>'
+        + '<td class="align-middle"><a href="https://www.torn.com/profiles.php?XID=' + id + '" target="_blank">' + member.name + ' [' + id + ']</a><br/>' + icon + '</td>'
+        + '<td class="align-middle"><pre>' + member.position + '</pre></td>'
         + '<td class="align-middle">'
         + '<a class="btn btn-link btn-sm" role="button" href="https://www.torn.com/loader.php?sid=attack&user2ID=' + id + '" target="_blank">Attack Link</a>&nbsp;'
         + '<input type="hidden" class="form-control" value="' + copyableText + '" placeholder="..." id="copy-input-' + id + '">'
