@@ -686,7 +686,7 @@ function parseMembers(statusData, selection, element, membersList) {
   var countMembers = 0;
   var filteredMembers = 0;
   var statusDescriptionText = '';
-
+  var uniquePositions = new Set();
 
   var timeStamp = Math.floor(Date.now() / 1000);
   var timeDifference = 0;
@@ -699,6 +699,8 @@ function parseMembers(statusData, selection, element, membersList) {
     var member = membersList[id];
     var memberStatusState = member.status.state;
     var hospitalTime = '';
+
+    uniquePositions.add(member.position);
 
     if ((filterMinutesHosp && memberStatusState == 'Hospital')
       || (!filterMinutesHosp && memberStatusState == 'Hospital')
@@ -825,7 +827,8 @@ function parseMembers(statusData, selection, element, membersList) {
 
     if (statusList.includes(member.last_action.status)
       && detailsList.includes(memberStatusState)
-      && printEntry) {
+      && printEntry
+      && (!document.getElementById(member.position) || document.getElementById(member.position).checked)) {
 
       var copyableText = ' >> ' + member.name + ' << ' + hospitalTime.replace(' hrs ', ':').replace(' min ', ':').replace(' sec ', '') + ' || https://www.torn.com/loader.php?sid=attack&user2ID=' + id;
 
@@ -878,6 +881,8 @@ function parseMembers(statusData, selection, element, membersList) {
     });
   });
 
+  if (!document.getElementById(member.position))  generatePositionCheckboxes(uniquePositions);
+
   document.getElementById(element).innerHTML = table;
 
   var ts = new Date(timeStamp * 1000);
@@ -885,7 +890,28 @@ function parseMembers(statusData, selection, element, membersList) {
 
   document.getElementById('summary').innerHTML = `<span class="text-primary">${filteredMembers} members out of ${countMembers} total members filtered.</span> <span class="text-muted">Last refreshed: ${formatted_date}</span>`;
 
+
 }
+
+function generatePositionCheckboxes(uniquePositions) {
+  var additionalFiltersDiv = document.getElementById('additionalFilters');
+  var positionCheckboxes = '';
+
+  positionCheckboxes += '<legend>Positions</legend>';
+  positionCheckboxes += '<fieldset class="form-group">';
+
+  uniquePositions.forEach(function (position) {
+      positionCheckboxes += '<div class="form-check">';
+      positionCheckboxes += '<input class="form-check-input" type="checkbox" value="' + position + '" name="position" id="' + position + '" checked />';
+      positionCheckboxes += '<label class="form-check-label" for="' + position + '">' + position + '</label>';
+      positionCheckboxes += '</div>';
+  });
+
+  positionCheckboxes += '</fieldset>';
+
+  additionalFiltersDiv.innerHTML = positionCheckboxes;
+}
+
 
 function parseNews(newsData, selection, element, membersList) {
 
