@@ -110,26 +110,17 @@
 				<div class="form-group col-sm-5">
 
 					<legend>Select timeframe for PA results</legend>
-					<div class="form-check">
-						<label class="form-check-label"> <input type="radio"
-							class="form-check-input" name="optionsRadios" id="current"
-							value="current" checked="checked"> Current month
-						</label>
-					</div>
-					<div class="form-check">
-						<label class="form-check-label"> <input type="radio"
-							class="form-check-input" name="optionsRadios" id="last"
-							value="last"> Last month
-						</label>
-					</div>
-					<div class="form-check">
-						<label class="form-check-label"> <input type="radio"
-							class="form-check-input" name="optionsRadios" id="before"
-							value="before"> The month before
-						</label>
+					<div class="form-group">
+						<select class="custom-select" id="monthSelect">
+						</select>
 					</div>
 				</div>
 			</div>
+
+			<script>
+				monthSelection(); // Call the function to populate the options
+			</script>
+
 			<div class="row">
 				<div class="form-group col-sm-3" id="alert"></div>
 				<div class="form-group col-sm-2">
@@ -155,10 +146,11 @@
 			<div class="form-group col-sm-7" id="alert"></div>
 		</div>
 
-		<p id="summary"></p>
-		<br />
 		<p id="output"></p>
 		<br />
+		<p id="summary"></p>
+		<br />
+		
 
 
 		<div class="card border-primary mb-3" style="max-width: 100%;">

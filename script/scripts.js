@@ -76,20 +76,17 @@ function userSubmit(selection) {
 
       var today = new Date();
 
-      if (document.getElementById('current').checked) {
-        var currentMonth = today.getMonth();
-        var timestamps = calculateMonthTimestamps(today, currentMonth, 192);
-      }
 
-      if (document.getElementById('last').checked) {
-        var currentMonth = today.getMonth();
-        var timestamps = calculateMonthTimestamps(today, currentMonth - 1, 192); // Previous month
-      }
+      var firstDayOfMonth, lastDayOfMonth;
 
-      if (document.getElementById('before').checked) {
-        var currentMonth = today.getMonth();
-        var timestamps = calculateMonthTimestamps(today, currentMonth - 2, 192); // Two months ago
-      }
+      var selectedMonthValue = document.getElementById('monthSelect').value;
+    
+      // Calculate the month offset based on selectedMonthValue
+      var monthOffset = parseInt(selectedMonthValue);
+    
+      // Calculate timestamps using the offset
+      var currentMonth = today.getMonth();
+      var timestamps = calculateMonthTimestamps(today, currentMonth - monthOffset, 192);
 
       var firstDayOfMonth = timestamps.firstDay;
       var lastDayOfMonth = timestamps.lastDay;
@@ -1366,31 +1363,27 @@ function parsePayouts(crimeData, element, membersList) {
 
   var firstDayOfMonth, lastDayOfMonth;
 
-  // Example usage:
-  if (document.getElementById('current').checked) {  
-    var timestamps = calculateMonthTimestamps(today, currentMonth);
-    var firstDayOfMonth = timestamps.firstDay;
-    var lastDayOfMonth = timestamps.lastDay;
-  }
+  var selectedMonthValue = document.getElementById('monthSelect').value;
+  var selectedMonthValue = document.getElementById('monthSelect').value;
 
-  if (document.getElementById('last').checked) {
-    var timestamps = calculateMonthTimestamps(today, currentMonth - 1); // Previous month
-    var firstDayOfMonth = timestamps.firstDay;
-    var lastDayOfMonth = timestamps.lastDay;
-  }
+  // Calculate the month offset based on selectedMonthValue
+  var monthOffset = parseInt(selectedMonthValue);
 
-  if (document.getElementById('before').checked) {
-    var timestamps = calculateMonthTimestamps(today, currentMonth - 2); // Two months ago
-    var firstDayOfMonth = timestamps.firstDay;
-    var lastDayOfMonth = timestamps.lastDay;
-  }
+  // Calculate timestamps using the offset
+  var timestamps = calculateMonthTimestamps(today, currentMonth - monthOffset);
+  var firstDayOfMonth = timestamps.firstDay;
+  var lastDayOfMonth = timestamps.lastDay;
 
   var splitFactor = document.getElementById('range').value;
   var weightedPerRank = document.getElementById('weighted').checked;
   var paLeads = '';
 
+  var selectElement = document.getElementById('monthSelect');
+var selectedOption = selectElement.options[selectElement.selectedIndex];
+var selectedMonthText = selectedOption.text;
 
-  var table = `<div class="col-sm-12 badge-primary"><b>PA Details for ${monthToText(currentMonth)}</b> <input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents(document.getElementById('totals'));"></div>`;
+
+  var table = `<div class="col-sm-12 badge-primary"><b>PA Details for ${selectedMonthText}</b> <input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents(document.getElementById('totals'));"></div>`;
   table += '<br />';
   table += '<table class="table table-hover" id="totals"><thead><tr>'
     + '<th>Date</th>'
@@ -1507,7 +1500,7 @@ function parsePayouts(crimeData, element, membersList) {
     + `<td colspan = "3">Totals</td>`
     + `<td>`
     + `<span class="badge badge-pill ${badgeFailed}">${factionFailed}</span>-`
-    + `<span class="badge badge-pill ${ badgeSuccess}">${factionSuccess}</span>`
+    + `<span class="badge badge-pill ${badgeSuccess}">${factionSuccess}</span>`
     + `</td>`
     + `<td>$${totalMoney.toLocaleString('en-US')}</td>`
     + `<td>${totalRespect}</td>`
@@ -1521,7 +1514,7 @@ function parsePayouts(crimeData, element, membersList) {
   var multiplier = 0;
   var numberOfTeams = paLeads.split(';').length - 1;
 
-  var summary = `<div class="col-sm-12 badge-primary" ><b>Individual results for ${monthToText(currentMonth)}</b> <input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents( document.getElementById('individual') );"></div>`;
+  var summary = `<div class="col-sm-12 badge-primary" ><b>Individual results for ${selectedMonthText}</b> <input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents( document.getElementById('individual') );"></div>`;
   summary += '<br />';
   summary += '<table class="table table-hover" id="individual"><thead><tr>'
     + '<th>Name</th>';
@@ -2083,4 +2076,39 @@ function getPlayerById(request, object, id) {
       db.close();
     };
   };
+}
+
+function monthSelection() {
+  // Get the current date
+  var currentDate = new Date();
+  var currentYear = currentDate.getFullYear();
+  var currentMonth = currentDate.getMonth() + 1; // Adding 1 to match the month format (1-12)
+
+  // Create a reference date that represents the current month
+  var referenceDate = new Date(currentYear, currentMonth - 1, 1); // Subtract 1 to get the current month (0-11)
+
+  // Initialize an array to store the options
+  var monthOptions = [];
+
+  // Loop to generate options for the previous 12 months
+  for (var i = 0; i < 12; i++) {
+    // Calculate the year and month for the current option
+    var year = referenceDate.getFullYear();
+    var month = referenceDate.getMonth() + 1; // Adding 1 to match the month format (1-12)
+
+    // Format the option label as "YYYY-MM"
+    var optionLabel = year + '-' + (month < 10 ? '0' : '') + month;
+
+    // Create an option element and add it to the array
+    monthOptions.push('<option value="' + i + '">' + optionLabel + '</option>');
+
+    // Move the reference date to the previous month for the next iteration
+    referenceDate.setMonth(referenceDate.getMonth() - 1);
+  }
+
+  monthOptions.reverse();
+
+  // Join the options and set them in the select element
+  document.getElementById('monthSelect').innerHTML = monthOptions.reverse().join('');
+
 }
