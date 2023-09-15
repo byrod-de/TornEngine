@@ -73,7 +73,27 @@ function userSubmit(selection) {
     printAlert('Warning', 'You might want to enter your API key if you expect this to work...');
   } else {
     if (selection == 'pa_payouts') {
-      callTornAPI(trustedApiKey, 'faction', 'basic,crimes', 'pa_payouts');
+
+      var today = new Date();
+
+      if (document.getElementById('current').checked) {
+        var currentMonth = today.getMonth();
+        var timestamps = calculateMonthTimestamps(today, currentMonth, 192);
+      }
+
+      if (document.getElementById('last').checked) {
+        var currentMonth = today.getMonth();
+        var timestamps = calculateMonthTimestamps(today, currentMonth - 1, 192); // Previous month
+      }
+
+      if (document.getElementById('before').checked) {
+        var currentMonth = today.getMonth();
+        var timestamps = calculateMonthTimestamps(today, currentMonth - 2, 192); // Two months ago
+      }
+
+      var firstDayOfMonth = timestamps.firstDay;
+      var lastDayOfMonth = timestamps.lastDay;
+      callTornAPI(trustedApiKey, 'faction', 'basic,crimes', 'pa_payouts', firstDayOfMonth, lastDayOfMonth);
     }
 
     if (selection == 'oc_overview') {
@@ -301,17 +321,23 @@ function callRankedWarDetails(key, id) {
   request.send();
 }
 
-function callTornAPI(key, part, selection, source) {
+function callTornAPI(key, part, selection, source, fromTS = '', toTS = '') {
 
   var factionid = '';
+  let from = '', to = '';
+
+  if (toTS > 0) to = `&to=${toTS}`;
+  if (fromTS > 0) from = `&from=${fromTS}`;
 
   if (source == 'members') factionid = document.getElementById("factionid").value;
 
   sessionStorage.factionid = factionid;
+  var url = 'https://api.torn.com/' + part + '/' + factionid + '?selections=' + selection + from + to + '&key=' + key + '&comment=tornengine';
+  console.log(url);
 
   var request = new XMLHttpRequest();
 
-  request.open('GET', 'https://api.torn.com/' + part + '/' + factionid + '?selections=' + selection + '&key=' + key + '&comment=tornengine', true);
+  request.open('GET', url, true);
 
   request.onload = function () {
 
@@ -881,7 +907,7 @@ function parseMembers(statusData, selection, element, membersList) {
     });
   });
 
-  if (!document.getElementById(member.position))  generatePositionCheckboxes(uniquePositions);
+  if (!document.getElementById(member.position)) generatePositionCheckboxes(uniquePositions);
 
   document.getElementById(element).innerHTML = table;
 
@@ -901,10 +927,10 @@ function generatePositionCheckboxes(uniquePositions) {
   positionCheckboxes += '<fieldset class="form-group">';
 
   uniquePositions.forEach(function (position) {
-      positionCheckboxes += '<div class="form-check">';
-      positionCheckboxes += '<input class="form-check-input" type="checkbox" value="' + position + '" name="position" id="' + position + '" checked />';
-      positionCheckboxes += '<label class="form-check-label" for="' + position + '">' + position + '</label>';
-      positionCheckboxes += '</div>';
+    positionCheckboxes += '<div class="form-check">';
+    positionCheckboxes += '<input class="form-check-input" type="checkbox" value="' + position + '" name="position" id="' + position + '" checked />';
+    positionCheckboxes += '<label class="form-check-label" for="' + position + '">' + position + '</label>';
+    positionCheckboxes += '</div>';
   });
 
   positionCheckboxes += '</fieldset>';
@@ -1332,32 +1358,41 @@ function parsePayouts(crimeData, element, membersList) {
   var factionFailed = 0;
   var totalRespect = 0;
   var totalMoney = 0;
-  var today = new Date();
-  var badgeSuccess = 'badge-dark';
-  var badgeFailed = 'badge-dark';
+  const today = new Date();
+  let badgeSuccess = 'badge-dark';
+  let badgeFailed = 'badge-dark';
+  const currentMonth = today.getMonth();
+  const PA_CRIME_ID = 8;
 
-  if (document.getElementById('current').checked) {
-    var currentMonth = today.getMonth() + 1;
-    if (currentMonth > 11) { currentMonth = 0; }
+  var firstDayOfMonth, lastDayOfMonth;
+
+  // Example usage:
+  if (document.getElementById('current').checked) {  
+    var timestamps = calculateMonthTimestamps(today, currentMonth);
+    var firstDayOfMonth = timestamps.firstDay;
+    var lastDayOfMonth = timestamps.lastDay;
   }
+
   if (document.getElementById('last').checked) {
-    var currentMonth = today.getMonth();
-    if (currentMonth == 0) { currentMonth = 12; }
-  }
-  if (document.getElementById('before').checked) {
-    var currentMonth = today.getMonth() - 1;
-    if (currentMonth == 0) { currentMonth = 12; }
-    if (currentMonth < 0) { currentMonth = 11; }
+    var timestamps = calculateMonthTimestamps(today, currentMonth - 1); // Previous month
+    var firstDayOfMonth = timestamps.firstDay;
+    var lastDayOfMonth = timestamps.lastDay;
   }
 
-  var split = document.getElementById('range').value;
-  var weighted = document.getElementById('weighted').checked;
+  if (document.getElementById('before').checked) {
+    var timestamps = calculateMonthTimestamps(today, currentMonth - 2); // Two months ago
+    var firstDayOfMonth = timestamps.firstDay;
+    var lastDayOfMonth = timestamps.lastDay;
+  }
+
+  var splitFactor = document.getElementById('range').value;
+  var weightedPerRank = document.getElementById('weighted').checked;
   var paLeads = '';
 
 
-  var table = '<div class="col-sm-12 badge-primary" ><b>PA Details for ' + monthToText(currentMonth) + '</b> <input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents( document.getElementById(\'totals\') );"></div>';
-  table = table + '<br />';
-  table = table + '<table class="table table-hover" id="totals"><thead><tr>'
+  var table = `<div class="col-sm-12 badge-primary"><b>PA Details for ${monthToText(currentMonth)}</b> <input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents(document.getElementById('totals'));"></div>`;
+  table += '<br />';
+  table += '<table class="table table-hover" id="totals"><thead><tr>'
     + '<th>Date</th>'
     + '<th>Participants</th>'
     + '<th>Crime Type</th>'
@@ -1368,11 +1403,12 @@ function parsePayouts(crimeData, element, membersList) {
 
   for (var id in crimeData) {
     var crime = crimeData[id];
-    // 8 = PA
-    if (crime.crime_id === 8) {
+
+    if (crime.crime_id === PA_CRIME_ID) {
+
       var ts = new Date(crime.time_completed * 1000);
 
-      if (crime.initiated === 1 && ts.getMonth() + 1 === currentMonth) {
+      if (crime.initiated === 1 & crime.time_completed >= firstDayOfMonth && crime.time_completed <= lastDayOfMonth) {
 
         var crimeResult = '';
         var failed = 0;
@@ -1394,23 +1430,23 @@ function parsePayouts(crimeData, element, membersList) {
           Object.entries(obj).forEach(([key, value]) => {
             var memberID = `${key}`;
             countRank = countRank + 1;
-            if (weighted) {
+            if (weightedPerRank) {
               prefix = countRank + '| ';
             }
 
             var memberName = '';
             if (membersList.hasOwnProperty(memberID)) {
               memberName = prefix + membersList[memberID].name;
-              if (weighted && prefix === '1| ') {
+              if (weightedPerRank && prefix === '1| ') {
                 if (!paLeads.includes(memberName))
                   paLeads = memberName + ';' + paLeads;
               }
               if (memberName in memberMoney) {
-                memberMoney[memberName] = memberMoney[memberName] + (crime.money_gain / split);
+                memberMoney[memberName] = memberMoney[memberName] + (crime.money_gain / splitFactor);
                 memberSuccess[memberName] = memberSuccess[memberName] + success;
                 memberFailed[memberName] = memberFailed[memberName] + failed;
               } else {
-                memberMoney[memberName] = (crime.money_gain / split);
+                memberMoney[memberName] = (crime.money_gain / splitFactor);
                 memberSuccess[memberName] = success;
                 memberFailed[memberName] = failed;
               }
@@ -1418,11 +1454,11 @@ function parsePayouts(crimeData, element, membersList) {
               memberName = memberID;
 
               if (memberName in memberMoney) {
-                memberMoney[memberName] = memberMoney[memberName] + (crime.money_gain / split);
+                memberMoney[memberName] = memberMoney[memberName] + (crime.money_gain / splitFactor);
                 memberSuccess[memberName] = memberSuccess[memberName] + success;
                 memberFailed[memberName] = memberFailed[memberName] + failed;
               } else {
-                memberMoney[memberName] = (crime.money_gain / split);
+                memberMoney[memberName] = (crime.money_gain / splitFactor);
                 memberSuccess[memberName] = success;
                 memberFailed[memberName] = failed;
               }
@@ -1437,12 +1473,12 @@ function parsePayouts(crimeData, element, membersList) {
           });
         });
 
-        if (weighted)
+        if (weightedPerRank)
           factionMoney = factionMoney + (crime.money_gain)
 
         else {
-          if (split == 5) { factionMoney = factionMoney + (crime.money_gain / split); }
-          if (split == 4) { factionMoney = 0; }
+          if (splitFactor == 5) { factionMoney = factionMoney + (crime.money_gain / splitFactor); }
+          if (splitFactor == 4) { factionMoney = 0; }
         }
 
         factionSuccess = factionSuccess + success;
@@ -1452,14 +1488,14 @@ function parsePayouts(crimeData, element, membersList) {
 
         var formatted_date = ts.toISOString().replace('T', ' ').replace('.000Z', '');
 
-        table = table + '<tr>'
-          + '<td>' + formatted_date + '</td>'
-          + '<td>' + participants + '</td>'
-          + '<td>' + crime.crime_name + '</td>'
-          + '<td>' + crimeResult + '</td>'
-          + '<td>$' + crime.money_gain.toLocaleString('en-US') + '</td>'
-          + '<td>' + crime.respect_gain + '</td>'
-          + '</tr>';
+        table += '<tr>'
+          + `<td>${formatted_date}</td>`
+          + `<td>${participants}</td>`
+          + `<td>${crime.crime_name}</td>`
+          + `<td>${crimeResult}</td>`
+          + `<td>$${crime.money_gain.toLocaleString('en-US')}</td>`
+          + `<td>${crime.respect_gain}</td>`
+          + `</tr>`;
       }
     }
   }
@@ -1467,34 +1503,36 @@ function parsePayouts(crimeData, element, membersList) {
   if (factionFailed > 0) { badgeFailed = 'badge-danger'; }
   if (factionSuccess > 0) { badgeSuccess = 'badge-success'; }
 
-  table = table + '<tr class="table-dark">'
-    + '<td colspan = "3">Totals</td>'
-    + '<td>'
-    + '<span class="badge badge-pill ' + badgeFailed + '">' + factionFailed + '</span>-'
-    + '<span class="badge badge-pill ' + badgeSuccess + '">' + factionSuccess + '</span>'
-    + '</td>'
-    + '<td>$' + totalMoney.toLocaleString('en-US') + '</td>'
-    + '<td>' + totalRespect + '</td>'
-    + '</tr>';
+  table += `<tr class="table-dark">`
+    + `<td colspan = "3">Totals</td>`
+    + `<td>`
+    + `<span class="badge badge-pill ${badgeFailed}">${factionFailed}</span>-`
+    + `<span class="badge badge-pill ${ badgeSuccess}">${factionSuccess}</span>`
+    + `</td>`
+    + `<td>$${totalMoney.toLocaleString('en-US')}</td>`
+    + `<td>${totalRespect}</td>`
+    + `</tr>`;
 
   table = table + '</tbody></table>';
   document.getElementById(element).innerHTML = table;
 
+
+
   var multiplier = 0;
   var numberOfTeams = paLeads.split(';').length - 1;
 
-  var summary = '<div class="col-sm-12 badge-primary" ><b>Individual results for ' + monthToText(currentMonth) + '</b> <input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents( document.getElementById(\'individual\') );"></div>';
-  summary = summary + '<br />';
-  summary = summary + '<table class="table table-hover" id="individual"><thead><tr>'
+  var summary = `<div class="col-sm-12 badge-primary" ><b>Individual results for ${monthToText(currentMonth)}</b> <input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents( document.getElementById('individual') );"></div>`;
+  summary += '<br />';
+  summary += '<table class="table table-hover" id="individual"><thead><tr>'
     + '<th>Name</th>';
 
-  if (weighted) {
-    summary = summary + '<th>Money earned (weighted per PA rank)</th>';
+  if (weightedPerRank) {
+    summary += '<th>Money earned (weighted per PA rank)</th>';
   } else {
-    summary = summary + '<th>Money earned (<sup>1</sup>/<sub>' + split + '</sub>th of result)</th>';
+    summary += `<th>Money earned (<sup>1</sup>/<sub>${splitFactor}</sub>th of result)</th>`;
   }
 
-  summary = summary + '<th>Fail</th>'
+  summary += '<th>Fail</th>'
     + '<th>Success</th>'
     + '</tr></thead><tbody>';
 
@@ -1512,7 +1550,7 @@ function parsePayouts(crimeData, element, membersList) {
     summary = summary + '<tr>'
       + '<td>' + name + '</td>';
 
-    if (!weighted) {
+    if (!weightedPerRank) {
       summary = summary + '<td>' + ' $' + memberMoney[name].toLocaleString('en-US') + '</td>';
     }
     else {
@@ -1540,6 +1578,7 @@ function parsePayouts(crimeData, element, membersList) {
 
   document.getElementById('summary').innerHTML = summary;
 
+
 }
 
 function parseOCs(crimeData, element, membersList) {
@@ -1547,7 +1586,6 @@ function parseOCs(crimeData, element, membersList) {
   var memberStatus = {};
   var memberSuccess = {};
   var memberFailed = {};
-  var factionMoney = 0;
   var factionSuccess = 0;
   var factionFailed = 0;
   var totalRespect = 0;
@@ -1984,6 +2022,23 @@ function insertPlayer(request, object, player) {
   }
 
 }
+
+// Function to calculate Unix timestamps for the first and last day of a selected month
+function calculateMonthTimestamps(today, selectedMonth, offsetInHours = 0) {
+  // Get the current year
+  var currentYear = today.getFullYear();
+
+  var firstDayOfMonth = new Date(currentYear, selectedMonth, 1).getTime() / 1000;
+  var lastDayOfMonth = new Date(currentYear, selectedMonth + 1, 0, 23, 59, 59).getTime() / 1000;
+
+  if (offsetInHours > 0) {
+    firstDayOfMonth -= (offsetInHours + 36) * 60 * 60;
+    lastDayOfMonth -= offsetInHours * 60 * 60;
+  }
+
+  return { firstDay: firstDayOfMonth, lastDay: lastDayOfMonth };
+}
+
 
 
 function getPlayerById(request, object, id) {

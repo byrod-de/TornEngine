@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let territoriesData = getTerritories(); // Declare territoriesData at a higher scope
     let territoryWars = null; // Declare territoryWars at a higher scope
     let rackets = null; // Declare rackets at a higher scope
+    let factionTTs = null; // Declare rackets at a higher scope
 
     const svg = document.getElementById('mapSVG');
     const tooltip = document.createElement('div');
@@ -53,17 +54,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function fetchTerritoryData(apiKey) {
         try {
-            const response = await fetch(`https://api.torn.com/torn/?selections=territorywars,rackets&key=${apiKey}&comment=TornEngine`);
-            const data = await response.json();
-            territoryWars = data.territorywars;
-            rackets = data.rackets;
+            const ttResponse = await fetch(`https://api.torn.com/torn/?selections=territorywars,rackets&key=${apiKey}&comment=TornEngine`);
+            const ttData = await ttResponse.json();
+            territoryWars = ttData.territorywars;
+            rackets = ttData.rackets;
+
+            const factionResponse = await fetch(`https://api.torn.com/faction/?selections=territory&&key=${apiKey}&comment=TornEngine`);
+            const factionData = await factionResponse.json();
+            factionTTs = factionData.territory;
+            console.log(factionTTs);
 
             printAlert('Success', 'The API Call successful, find the results below the map.');
 
             //territoriesData = getTerritories();
             const cardsData = createCardsData(territoryWars, territoriesData); // Pass both territoryWars and territoriesData
             addCardsWithData(cardsData);
-            highlightTerritories(territoryWars, rackets);
+            highlightTerritories(territoryWars, rackets, factionTTs);
         } catch (error) {
             console.error('Error fetching territory data:', error);
             printAlert('Error', error);
@@ -71,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function highlightTerritories(territoryWars, rackets) {
+    function highlightTerritories(territoryWars, rackets, own) {
         for (const territoryId in territoryWars) {
             const group = document.getElementById(territoryId);
 
@@ -87,6 +93,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 group.classList.add('racket-highlighted');
             }
         }
+
+        for (const territoryId in own) {
+            console.log(territoryId);
+            const group = document.getElementById(territoryId);
+
+            if (group) {
+                group.classList.add('own-highlighted');
+            }
+        }
     }
 
     function drawLegend() {
@@ -98,13 +113,17 @@ document.addEventListener('DOMContentLoaded', function () {
             { name: "Sector 5", color: getColorForCircle(5) },
             { name: "Sector 6", color: getColorForCircle(6) },
             { name: "Sector 7", color: getColorForCircle(7) },
+        ];
+
+        const legend2Data = [
             { name: "Neighbour", color: getComputedStyle(document.documentElement).getPropertyValue('--neighbor-color').trim() },
             { name: "War", color: getComputedStyle(document.documentElement).getPropertyValue('--war-color').trim() },
             { name: "Racket", color: getComputedStyle(document.documentElement).getPropertyValue('--racket-color').trim() },
+            { name: "Own Faction", color: getComputedStyle(document.documentElement).getPropertyValue('--own-color').trim() },
         ];
-    
+
         const legendContainer = document.getElementById('legend');
-    
+
         for (const entry of legendData) {
             const circle = document.createElement('span');
             circle.style.backgroundColor = entry.color;
@@ -113,10 +132,10 @@ document.addEventListener('DOMContentLoaded', function () {
             circle.style.borderRadius = '50%';
             circle.style.display = 'inline-block';
             circle.style.marginRight = '5px';
-    
+
             const label = document.createElement('span');
             label.textContent = `${entry.name}`;
-    
+
             const legendEntry = document.createElement('div');
             const smallText = document.createElement('small');
             smallText.textContent = label.textContent;
@@ -124,6 +143,29 @@ document.addEventListener('DOMContentLoaded', function () {
             legendEntry.appendChild(circle);
             legendEntry.appendChild(smallText);
             legendContainer.appendChild(legendEntry);
+        }
+
+        const legend2Container = document.getElementById('legend2');
+
+        for (const entry of legend2Data) {
+            const circle = document.createElement('span');
+            circle.style.backgroundColor = entry.color;
+            circle.style.width = '10px';
+            circle.style.height = '10px';
+            circle.style.borderRadius = '50%';
+            circle.style.display = 'inline-block';
+            circle.style.marginRight = '5px';
+
+            const label = document.createElement('span');
+            label.textContent = `${entry.name}`;
+
+            const legendEntry = document.createElement('div');
+            const smallText = document.createElement('small');
+            smallText.textContent = label.textContent;
+
+            legendEntry.appendChild(circle);
+            legendEntry.appendChild(smallText);
+            legend2Container.appendChild(legendEntry);
         }
     }
 
@@ -279,8 +321,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (racketData) {
             tooltipContent += `Racket: ${racketData.name}<br>
-                                                   Reward: ${racketData.reward}</strong><br>
-                                                   Faction: ${getFactions(racketData.faction)}<br>`;
+                                Reward: ${racketData.reward}</strong><br>
+                                Faction: ${getFactions(racketData.faction)}<br>`;
         }
 
         if (!racketData && !territoryData) {
@@ -388,7 +430,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         Score: ${score}/${score_required}<br />
                         <div class="progress">
                            <div class="progress-bar bg-success" role="progressbar" style="width: ${percentage}%;" aria-valuenow="${percentage}" aria-valuemin="0" aria-valuemax="100"></div>
-                           <div class="progress-bar bg-light progress-bar-striped" role="progressbar" style="width: ${100-percentage}%;" aria-valuenow="${100-percentage}" aria-valuemin="0" aria-valuemax="100"></div>
+                           <div class="progress-bar bg-light progress-bar-striped" role="progressbar" style="width: ${100 - percentage}%;" aria-valuenow="${100 - percentage}" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
                         Start: ${formatDate(startedTimestamp)}<br />
                         End: ${formatRelativeTime(endsTimestamp)}<br />
