@@ -75,15 +75,12 @@ function userSubmit(selection) {
     if (selection == 'pa_payouts') {
 
       var today = new Date();
-
-
       var firstDayOfMonth, lastDayOfMonth;
-
       var selectedMonthValue = document.getElementById('monthSelect').value;
-    
+
       // Calculate the month offset based on selectedMonthValue
       var monthOffset = parseInt(selectedMonthValue);
-    
+
       // Calculate timestamps using the offset
       var currentMonth = today.getMonth();
       var timestamps = calculateMonthTimestamps(today, currentMonth - monthOffset, 192);
@@ -94,7 +91,22 @@ function userSubmit(selection) {
     }
 
     if (selection == 'oc_overview') {
-      callTornAPI(trustedApiKey, 'faction', 'basic,crimes', 'oc_overview');
+
+      var today = new Date();
+      var firstDayOfMonth, lastDayOfMonth;
+      var selectedMonthValue = document.getElementById('monthSelect').value;
+
+      // Calculate the month offset based on selectedMonthValue
+      var monthOffset = parseInt(selectedMonthValue);
+
+      // Calculate timestamps using the offset
+      var currentMonth = today.getMonth();
+      var timestamps = calculateMonthTimestamps(today, currentMonth - monthOffset, 192);
+
+      var firstDayOfMonth = timestamps.firstDay;
+      var lastDayOfMonth = timestamps.lastDay;
+      callTornAPI(trustedApiKey, 'faction', 'basic,crimes', 'oc_overview', firstDayOfMonth, lastDayOfMonth);
+
     }
 
     if (selection == 'reports') {
@@ -1355,9 +1367,11 @@ function parsePayouts(crimeData, element, membersList) {
   var factionFailed = 0;
   var totalRespect = 0;
   var totalMoney = 0;
-  const today = new Date();
+  
   let badgeSuccess = 'badge-dark';
   let badgeFailed = 'badge-dark';
+
+  const today = new Date();
   const currentMonth = today.getMonth();
   const PA_CRIME_ID = 8;
 
@@ -1379,8 +1393,8 @@ function parsePayouts(crimeData, element, membersList) {
   var paLeads = '';
 
   var selectElement = document.getElementById('monthSelect');
-var selectedOption = selectElement.options[selectElement.selectedIndex];
-var selectedMonthText = selectedOption.text;
+  var selectedOption = selectElement.options[selectElement.selectedIndex];
+  var selectedMonthText = selectedOption.text;
 
 
   var table = `<div class="col-sm-12 badge-primary"><b>PA Details for ${selectedMonthText}</b> <input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents(document.getElementById('totals'));"></div>`;
@@ -1583,23 +1597,29 @@ function parseOCs(crimeData, element, membersList) {
   var factionFailed = 0;
   var totalRespect = 0;
   var totalMoney = 0;
-  var today = new Date();
+
   var badgeSuccess = 'badge-dark';
   var badgeFailed = 'badge-dark';
 
-  if (document.getElementById('current').checked) {
-    var currentMonth = today.getMonth() + 1;
-    if (currentMonth > 11) { currentMonth = 0; }
-  }
-  if (document.getElementById('last').checked) {
-    var currentMonth = today.getMonth();
-    if (currentMonth == 0) { currentMonth = 12; }
-  }
-  if (document.getElementById('before').checked) {
-    var currentMonth = today.getMonth() - 1;
-    if (currentMonth == 0) { currentMonth = 12; }
-    if (currentMonth < 0) { currentMonth = 11; }
-  }
+  const today = new Date();
+  const currentMonth = today.getMonth();
+
+  var firstDayOfMonth, lastDayOfMonth;
+
+  var selectedMonthValue = document.getElementById('monthSelect').value;
+  var selectedMonthValue = document.getElementById('monthSelect').value;
+
+  // Calculate the month offset based on selectedMonthValue
+  var monthOffset = parseInt(selectedMonthValue);
+
+  // Calculate timestamps using the offset
+  var timestamps = calculateMonthTimestamps(today, currentMonth - monthOffset);
+  var firstDayOfMonth = timestamps.firstDay;
+  var lastDayOfMonth = timestamps.lastDay;
+
+  var selectElement = document.getElementById('monthSelect');
+  var selectedOption = selectElement.options[selectElement.selectedIndex];
+  var selectedMonthText = selectedOption.text;
 
   var crimeList = '';
   if (document.getElementById('PoliticalAssassination').checked) {
@@ -1627,7 +1647,7 @@ function parseOCs(crimeData, element, membersList) {
     crimeList = document.getElementById('Blackmailing').value + ',' + crimeList;
   }
 
-  var table = '<div class="col-sm-12 badge-primary" ><b>Organized Crime Overview for ' + monthToText(currentMonth) + '</b> <input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents( document.getElementById(\'totals\') );"></div>';
+  var table = '<div class="col-sm-12 badge-primary" ><b>Organized Crime Overview for ' + selectedMonthText + '</b> <input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents( document.getElementById(\'totals\') );"></div>';
   table = table + '<br />';
 
   table = table + '<table class="table table-hover" id="organizedcrimes"><thead><tr>'
@@ -1654,7 +1674,8 @@ function parseOCs(crimeData, element, membersList) {
       // 1 = Blackmailing
       var ts = new Date(crime.time_completed * 1000);
 
-      if (crime.initiated === 1 && ts.getMonth() + 1 === currentMonth) {
+
+      if (crime.initiated === 1 & crime.time_completed >= firstDayOfMonth && crime.time_completed <= lastDayOfMonth) {
 
         var crimeResult = '';
         var failed = 0;

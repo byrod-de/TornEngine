@@ -62,7 +62,6 @@ document.addEventListener('DOMContentLoaded', function () {
             const factionResponse = await fetch(`https://api.torn.com/faction/?selections=territory&&key=${apiKey}&comment=TornEngine`);
             const factionData = await factionResponse.json();
             factionTTs = factionData.territory;
-            console.log(factionTTs);
 
             printAlert('Success', 'The API Call successful, find the results below the map.');
 

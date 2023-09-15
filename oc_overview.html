@@ -107,27 +107,18 @@
 
 				<div class="form-group col-sm-5">
 
-					<legend>Select timeframe for Organized Crimes results</legend>
-					<div class="form-check">
-						<label class="form-check-label"> <input type="radio"
-							class="form-check-input" name="optionsRadios" id="current"
-							value="current"> Current month
-						</label>
-					</div>
-					<div class="form-check">
-						<label class="form-check-label"> <input type="radio"
-							class="form-check-input" name="optionsRadios" id="last"
-							value="last" checked="checked"> Last month
-						</label>
-					</div>
-					<div class="form-check">
-						<label class="form-check-label"> <input type="radio"
-							class="form-check-input" name="optionsRadios" id="before"
-							value="before"> The month before
-						</label>
+					<label>Select timeframe for PA results</label>
+					<div class="form-group">
+						<select class="custom-select" id="monthSelect">
+						</select>
 					</div>
 				</div>
 			</div>
+
+			<script>
+				monthSelection(); // Call the function to populate the options
+			</script>
+
 			<div class="row">
 				<div class="form-group col-sm-3" id="alert"></div>
 				<div class="form-group col-sm-2">
@@ -150,25 +141,25 @@
 						</div>
 						<div class="form-check">
 							<input class="form-check-input" type="checkbox" value="4"
-								id="PlannedRobbery" checked=""> <label
+								id="PlannedRobbery" > <label
 								class="form-check-label" for="PlannedRobbery"> Planned
 								Robbery </label>
 						</div>
 						<div class="form-check">
 							<input class="form-check-input" type="checkbox" value="5"
-								id="RobbingOfAMoneyTrain" checked=""> <label
+								id="RobbingOfAMoneyTrain" > <label
 								class="form-check-label" for="RobbingOfAMoneyTrain">
 								Robbing Of A Money Train </label>
 						</div>
 						<div class="form-check">
 							<input class="form-check-input" type="checkbox" value="6"
-								id="TakeOverACruiseLiner" checked=""> <label
+								id="TakeOverACruiseLiner" > <label
 								class="form-check-label" for="TakeOverACruiseLiner">
 								Take Over A Cruise Liner </label>
 						</div>
 						<div class="form-check">
 							<input class="form-check-input" type="checkbox" value="7"
-								id="PlaneHijacking" checked=""> <label
+								id="PlaneHijacking" > <label
 								class="form-check-label" for="PlaneHijacking"> Plane
 								Hijacking </label>
 						</div>
