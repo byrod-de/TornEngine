@@ -688,6 +688,17 @@ function parseMembers(statusData, selection, element, membersList) {
     cacheStats = checkIndexedDBSupport();
   }
 
+  const territory_wars = statusData['territory_wars'];
+  let membersOnWall = ['WallMembers'];
+
+  for(let i = 0; i < territory_wars.length; i++) {
+    let territory_war = territory_wars[i];
+    if (territory_war.assaulting_faction === statusData.ID)
+      membersOnWall = membersOnWall.concat(territory_war.assaulters);
+    if (territory_war.defending_faction === statusData.ID)
+      membersOnWall = membersOnWall.concat(territory_war.defenders);
+  }
+
 
   var printEntry = false;
 
@@ -734,6 +745,7 @@ function parseMembers(statusData, selection, element, membersList) {
     var member = membersList[id];
     var memberStatusState = member.status.state;
     var hospitalTime = '';
+    var isOnWall = membersOnWall.includes(parseInt(id));
 
     uniquePositions.add(member.position);
 
@@ -858,6 +870,9 @@ function parseMembers(statusData, selection, element, membersList) {
       detailFormat = 'badge-info';
       icon = icon + '<img src="images/icon_abroad.png" alt="Abroad" title="Abroad" width="20" height="20"/>&nbsp;';
       detail = detail + '<span class="badge badge-pill ' + detailFormat + '">' + memberStatusState + '</span>';
+    }
+    if (isOnWall) {
+      icon = icon + '<img src="images/wall.png" alt="On Wall" title="On Wall" width="20" height="20"/>&nbsp;';
     }
 
     if (statusList.includes(member.last_action.status)
@@ -2067,7 +2082,7 @@ function getPlayerById(request, object, id) {
 
     query.onsuccess = (event) => {
       if (!event.target.result) {
-        console.log(`The ${object} with ${id} not found`);
+        //console.log(`The ${object} with ${id} not found`);
       } else {
         let result = event.target.result
 
