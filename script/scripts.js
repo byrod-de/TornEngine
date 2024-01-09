@@ -342,7 +342,6 @@ function callTornAPI(key, part, selection, source, fromTS = '', toTS = '') {
 
   sessionStorage.factionid = factionid;
   var url = 'https://api.torn.com/' + part + '/' + factionid + '?selections=' + selection + from + to + '&key=' + key + '&comment=tornengine';
-  console.log(url);
 
   var request = new XMLHttpRequest();
 
@@ -689,14 +688,15 @@ function parseMembers(statusData, selection, element, membersList) {
   }
 
   const territory_wars = statusData['territory_wars'];
-  let membersOnWall = ['WallMembers'];
+  let membersOnDefendingWall = ['WallMembers'];
+  let membersOnAssaultingWall = ['WallMembers'];
 
   for(let i = 0; i < territory_wars.length; i++) {
     let territory_war = territory_wars[i];
     if (territory_war.assaulting_faction === statusData.ID)
-      membersOnWall = membersOnWall.concat(territory_war.assaulters);
+    membersOnAssaultingWall = membersOnAssaultingWall.concat(territory_war.assaulters);
     if (territory_war.defending_faction === statusData.ID)
-      membersOnWall = membersOnWall.concat(territory_war.defenders);
+    membersOnDefendingWall = membersOnDefendingWall.concat(territory_war.defenders);
   }
 
 
@@ -745,7 +745,8 @@ function parseMembers(statusData, selection, element, membersList) {
     var member = membersList[id];
     var memberStatusState = member.status.state;
     var hospitalTime = '';
-    var isOnWall = membersOnWall.includes(parseInt(id));
+    var isOnAssaultingWall  = membersOnAssaultingWall.includes(parseInt(id));
+    var isOnDefendingngWall = membersOnDefendingWall.includes(parseInt(id));
 
     uniquePositions.add(member.position);
 
@@ -871,8 +872,11 @@ function parseMembers(statusData, selection, element, membersList) {
       icon = icon + '<img src="images/icon_abroad.png" alt="Abroad" title="Abroad" width="20" height="20"/>&nbsp;';
       detail = detail + '<span class="badge badge-pill ' + detailFormat + '">' + memberStatusState + '</span>';
     }
-    if (isOnWall) {
-      icon = icon + '<img src="images/wall.png" alt="On Wall" title="On Wall" width="20" height="20"/>&nbsp;';
+    if (isOnAssaultingWall) {
+      icon = icon + '<img src="images/icon_wall_assault.png" alt="On Wall" title="On Wall" width="20" height="20"/>&nbsp;';
+    }
+    if (isOnDefendingngWall) {
+      icon = icon + '<img src="images/icon_wall_defend.png" alt="On Wall" title="On Wall" width="20" height="20"/>&nbsp;';
     }
 
     if (statusList.includes(member.last_action.status)
