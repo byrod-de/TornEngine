@@ -1,237 +1,275 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<title>Torn Engine - A collection of more or less useful things</title>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Torn Engine - A collection of more or less useful things</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
-<link rel="icon" type="image/png" href="images/mstile-144x144.png" sizes="32x32" />
-<meta name="msapplication-TileColor" content="#ffffff" />
-<meta name="msapplication-TileImage" content="images/logo-144x144.png" />
+  <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
+  <link rel="icon" type="image/png" href="images/mstile-144x144.png" sizes="32x32" />
+  <meta name="msapplication-TileColor" content="#ffffff" />
+  <meta name="msapplication-TileImage" content="images/logo-144x144.png" />
 
-<link rel="stylesheet" href="css/bootstrap.min.css" />
-<link rel="stylesheet" href="css/bootstrap.css" />
-<link rel="stylesheet" href="css/dataTables.min.css" />
+  <link rel="stylesheet" href="css/bootstrap.min.css" />
+  <link rel="stylesheet" href="css/bootstrap.css" />
+  <link rel="stylesheet" href="css/dataTables.min.css" />
 
-<script src="script/scripts.js"></script>
-<script src="script/jquery.min.js"></script>
-<script src="script/bootstrap.bundle.min.js"></script>
-<script src="script/custom.js"></script>
-<script src="script/jquery.dataTables.min.js"></script>
+
+  <script src="script/scripts.js"></script>
+  <script src="script/jquery.min.js"></script>
+  <script src="script/bootstrap.bundle.min.js"></script>
+  <script src="script/custom.js"></script>
+  <script src="script/jquery.dataTables.min.js"></script>
+
+  <link rel="stylesheet" href="ext/nouislider.css">
+  <script src="ext/nouislider.js"></script>
+  <script src="ext/wNumb.js"></script>
+
+  <link rel="stylesheet" href="css/custom.css" />
 
 </head>
+
 <body onload="loadKeyFromSession('members'); checkAPIKey(), loadFiltersFromSession()">
 
   <div class="container-fluid">
-		<br />
-		<div class="row">
-			<div class="col-sm-2">
-				<br /> <br />
-				<h1>
-					Torn Engine <small></small>
-				</h1>
-			</div>
-			<div class="col-sm-2">
-				<img alt="Logo" src="images/logo-100x100.png">
-			</div>
-		</div>
-		<br />
-		<div class="row">
-			<div class="col-sm-4 badge-primary">
-				<b>Faction Tools</b>
-			</div>
-			<div class="col-sm-8 badge-secondary">Faction members status</div>
-		</div>
-		<br />
+    <br />
+    <div class="row">
+      <div class="col-sm-2">
+        <br /> <br />
+        <h1>
+          Torn Engine <small></small>
+        </h1>
+      </div>
+      <div class="col-sm-2">
+        <img alt="Logo" src="images/logo-100x100.png">
+      </div>
+    </div>
+    <br />
+    <div class="row">
+      <div class="col-sm-4 badge-primary">
+        <b>Faction Tools</b>
+      </div>
+      <div class="col-sm-8 badge-secondary">Faction members status</div>
+    </div>
+    <br />
 
-		<!-- Navbar -->
-		<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-			<a class="navbar-brand" href="index.html">Home</a>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <a class="navbar-brand" href="index.html">Home</a>
 
-			<div class="navbar-collapse" id="navbarColor01">
-				<ul class="navbar-nav mr-auto">
-					<li class="nav-item dropdown show"><a
-						class="nav-link dropdown-toggle" data-toggle="dropdown" href="#"
-						role="button" aria-haspopup="true" aria-expanded="true">Faction
-							Tools</a>
-						<div class="dropdown-menu ">
-							<a class="dropdown-item" href="pa_payouts.html">PA Payouts</a> <a
-								class="dropdown-item" href="oc_overview.html">OC Overview</a> <a
-								class="dropdown-item" href="news.html">News</a>
-						</div></li>
+      <div class="navbar-collapse" id="navbarColor01">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item dropdown show"><a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#"
+              role="button" aria-haspopup="true" aria-expanded="true">Faction
+              Tools</a>
+            <div class="dropdown-menu ">
+              <a class="dropdown-item" href="pa_payouts.html">PA Payouts</a> <a class="dropdown-item"
+                href="oc_overview.html">OC Overview</a> <a class="dropdown-item" href="news.html">News</a>
+            </div>
+          </li>
 
-					<li class="nav-item dropdown show"><a
-						class="nav-link dropdown-toggle" data-toggle="dropdown" href="#"
-						role="button" aria-haspopup="true" aria-expanded="true">Warring
-							Tools</a>
-              <div class="dropdown-menu ">
-                <a class="dropdown-item active" href="members.html">Member Status</a>
-                <a class="dropdown-item" href="rankedwars.html">Ranked Wars <sup class="badge badge-pill badge-secondary">BETA</sup></a>
-                <a class="dropdown-item" href="citymap.html">City Map <sup class="badge badge-pill badge-danger">Experimental</sup></a>
-              </div></li>
+          <li class="nav-item dropdown show"><a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#"
+              role="button" aria-haspopup="true" aria-expanded="true">Warring
+              Tools</a>
+            <div class="dropdown-menu ">
+              <a class="dropdown-item active" href="members.html">Member Status</a>
+              <a class="dropdown-item" href="rankedwars.html">Ranked Wars <sup
+                  class="badge badge-pill badge-secondary">BETA</sup></a>
+              <a class="dropdown-item" href="citymap.html">City Map <sup
+                  class="badge badge-pill badge-warning">Experimental</sup></a>
+            </div>
+          </li>
 
-						<li class="nav-item dropdown show"><a
-							class="nav-link dropdown-toggle" data-toggle="dropdown" href="#"
-							role="button" aria-haspopup="true" aria-expanded="true">Helpful Tools</a>
-							<div class="dropdown-menu ">
-								<a class="dropdown-item" href="keycheck.html">API Key Check</a>
-                <a class="dropdown-item" href="discord.html">Discord Timestamp</a>
-							</div></li>
-				</ul>
-			</div>
-		</nav>
-		<br />
+          <li class="nav-item dropdown show"><a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#"
+              role="button" aria-haspopup="true" aria-expanded="true">Helpful Tools</a>
+            <div class="dropdown-menu ">
+              <a class="dropdown-item" href="keycheck.html">API Key Check</a>
+              <a class="dropdown-item" href="discord.html">Discord Timestamp</a>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <br />
 
-		<!-- Here comes the content *sings* -->
-  <form id="userForm">
+    <!-- Here comes the content *sings* -->
+    <form id="userForm">
+      <div class="row">
+        <div class="form-group col-sm-3">
+          <label for="trustedkey">API Key *</label>
+          <input type="input" class="form-control" id="trustedkey" name="trustedkey" placeholder="API Key" />
+          <small id="hint" class="form-text text-muted">API key with <i>PublicOnly</i> access is sufficient</small>
+        </div>
+        <div class="form-group col-sm-5">
+          <label for="factionid">Faction ID</label>
+          <input type="input" class="form-control" id="factionid" name="factionid"
+            placeholder="Faction ID (if empty, your own faction is used)" list="factions" />
+          <small id="hint2" class="form-text text-muted"></small>
+          <datalist id="factions"></datalist>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group col-sm-3" id="alert"></div>
+        <div class="row" id="filter">
+          <div class="form-group col-sm-3">
+            <legend>Status</legend>
+            <fieldset class="form-group">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Online" name="status" id="Online" />
+                <label class="form-check-label" for="Online"> Online </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Idle" name="status" id="Idle" />
+                <label class="form-check-label" for="Idle"> Idle </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Offline" name="status" id="Offline" />
+                <label class="form-check-label" for="Offline"> Offline </label>
+              </div>
+            </fieldset>
+            <legend>Last Active</legend>
+            <fieldset class="form-group">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="FilterActive" id="FilterActive" name="status"
+                  onclick="disableElement('FilterActive', 'TimeActive');" />
+                <label class="form-check-label" for="FilterActive"> Filter last active time </label>
+              </div>
+              <div class="form-check">
+                <label for="TimeActive" class="form-label">Skip members with action of less than <span id="rangeValue"
+                    class="rangeValue">15</span> minutes ago</label>
+                <input type="range" class="form-range" min="0" max="240" step="5" id="TimeActive" disabled="disabled"
+                  value="15" />
+              </div>
+            </fieldset>
+          </div>
+
+          <div class="form-group col-sm-3">
+            <legend>Details</legend>
+            <fieldset class="form-group">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Okay" name="details" id="Okay" />
+                <label class="form-check-label" for="Okay"> Okay </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Hospital" name="details" id="Hospital"
+                  onclick="disableElement('Hospital', 'MinutesHosp');" />
+                <label class="form-check-label" for="Hospital"> Hospital </label>
+              </div>
+              <div class="form-check">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input class="form-check-input"
+                  name="details" type="checkbox" value="MinutesHosp" id="MinutesHosp" /> less than 15 minutes </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Jail" name="details" id="Jail" />
+                <label class="form-check-label" for="Jail"> Jail </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Traveling" name="details" id="Traveling" />
+                <label class="form-check-label" for="Traveling"> Traveling </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Abroad" name="details" id="Abroad" />
+                <label class="form-check-label" for="Abroad"> Abroad </label>
+              </div>
+            </fieldset>
+            <legend>Experimental Features</legend>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="FactionStats" name="FactionStats" id="FactionStats"
+                checked="checked" />
+              <label class="form-check-label" for="FactionStats"> TornStats integration <sup
+                  class="badge badge-pill badge-warning">Experimental</sup> </label>
+            </div>
+
+              <div class="form-check">
+                <label for="Level" class="form-label">Level <span id="levelRange" class="levelRange"></span></label>
+                <div class="slider-styled" id="slider"></div>
+              </div>
+          </div>
+          <div class="form-group col-sm-3" id="additionalFilters">
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <script>
+
+      noUiSlider.create(slider, {
+        start: [0, 100],
+        connect: true,
+        tooltips: false,
+        range: {
+          'min': 0,
+          'max': 100
+        },
+        format: wNumb({ decimals: 0 })
+      });
+      $(document).ready(function () {
+        $('#TimeActive').on('input', function () {
+          $('span.rangeValue').text($('#TimeActive').val());
+        });
+      });
+
+      var sliderInput = document.getElementById('levelRange');
+      slider.noUiSlider.on('update', function (values, handle, unencoded) {
+        var levelRange = slider.noUiSlider.get();
+        $('span.levelRange').text(levelRange[0] + ' - ' + levelRange[1]);
+      });
+    </script>
+
     <div class="row">
       <div class="form-group col-sm-3">
-        <label for="trustedkey">API Key *</label>
-        <input type="input"	class="form-control" id="trustedkey" name="trustedkey"	placeholder="API Key" />
-        <small id="hint"	class="form-text text-muted">API key with <i>PublicOnly</i> access is sufficient</small>
+        <button onclick="userSubmit('members')" class="btn btn-primary" id="submit">Submit</button>
       </div>
-      <div class="form-group col-sm-5">
-        <label for="factionid">Faction ID</label>
-        <input type="input"	class="form-control" id="factionid" name="factionid"placeholder="Faction ID (if empty, your own faction is used)"	list="factions" />
-        <small id="hint2"	class="form-text text-muted"></small>
-        <datalist id="factions"></datalist>
+      <div class="form-group col-sm-2">
+        <button onclick="hideElementByID('filter')" class="btn btn-secondary" id="btnHideFilter">Hide Filter</button>
+
       </div>
     </div>
 
-    <div class="row">
-      <div class="form-group col-sm-3" id="alert"></div>
-      <div class="row" id="filter">
-      <div class="form-group col-sm-3">
-        <legend>Status</legend>
-        <fieldset class="form-group">
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="Online"	name="status" id="Online" />
-            <label	class="form-check-label" for="Online"> Online </label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="Idle"	name="status" id="Idle" />
-            <label class="form-check-label"	for="Idle"> Idle </label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="Offline"	name="status" id="Offline" />
-            <label	class="form-check-label" for="Offline"> Offline </label>
-          </div>
-        </fieldset>
-        <legend>Last Active</legend>
-        <fieldset class="form-group">
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="FilterActive" id="FilterActive" name="status" onclick="disableElement('FilterActive', 'TimeActive');" />
-            <label	class="form-check-label" for="FilterActive"> Filter last active time </label>
-          </div>
-          <div class="form-check">
-            <label for="TimeActive" class="form-label">Skip members with action of less than <span id="rangeValue" class="rangeValue">15</span> minutes ago</label>
-            <input type="range" class="form-range" min="0" max="240" step="5" id="TimeActive" disabled="disabled" value="15" />
-          </div>
-        </fieldset>
+    <p id="summary"></p>
+    <br />
+    <p id="output"></p>
+    <br />
 
-        <script>
-            $( document ).ready(function() {
-              $('#TimeActive').on('input', function(){
-                $('span.rangeValue').text($('#TimeActive').val());
-                });
-              });
-        </script>
-      </div>
-
-      <div class="form-group col-sm-3">
-        <legend>Details</legend>
-        <fieldset class="form-group">
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="Okay"	name="details" id="Okay" />
-          <label	class="form-check-label" for="Okay"> Okay </label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="Hospital"	name="details" id="Hospital"	onclick="disableElement('Hospital', 'MinutesHosp');" />
-          <label	class="form-check-label" for="Hospital"> Hospital </label>
-        </div>
-        <div class="form-check">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input	class="form-check-input" name="details" type="checkbox" value="MinutesHosp"	id="MinutesHosp" /> less than 15 minutes	</div>
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="Jail"	name="details" id="Jail" />
-            <label	class="form-check-label" for="Jail"> Jail </label>
+    <!-- Modal -->
+    <div class="modal fade" id="statsModal" tabindex="-1" role="dialog" aria-labelledby="statsModal" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="statsModalLabel">Calling
+              TornStats API</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
           </div>
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="Traveling"	name="details" id="Traveling" />
-            <label	class="form-check-label" for="Traveling"> Traveling </label>
+          <div class="modal-body" id="statsModalBody">Please hold
+            the line...</div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
           </div>
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="Abroad"	name="details" id="Abroad" />
-            <label	class="form-check-label" for="Abroad"> Abroad </label>
-          </div>
-        </fieldset>
-        <legend>Enable Experimental Features</legend>
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="FactionStats" name="FactionStats" id="FactionStats" checked="checked"/>
-          <label	class="form-check-label" for="FactionStats"> Faction Stats integration <sup class="badge badge-pill badge-primary">Experimental</sup> </label>
-        </div>
-      </div>
-      <div class="form-group col-sm-3" id="additionalFilters">
-      </div>
-    </div>
-  </div>
-  </form>
-
-  <div class="row">
-    <div class="form-group col-sm-3">
-      <button onclick="userSubmit('members')" class="btn btn-primary"id="submit">Submit</button>
-    </div>
-    <div class="form-group col-sm-2">
-      <button onclick="hideElementByID('filter')"class="btn btn-secondary" id="btnHideFilter">Hide Filter</button>
-
-    </div>
-  </div>
-
-  <p id="summary"></p>
-  <br />
-  <p id="output"></p>
-  <br />
-
-  <!-- Modal -->
-  <div class="modal fade" id="statsModal" tabindex="-1"
-    role="dialog" aria-labelledby="statsModal" aria-hidden="true">
-    <div
-      class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="statsModalLabel">Calling
-            TornStats API</h5>
-          <button type="button" class="close" data-dismiss="modal"
-            aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body" id="statsModalBody">Please hold
-          the line...</div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
-  </div>
 
 
 
     <div class="card border-primary mb-3" style="max-width: 100%;">
-			<div class="card-header" id="contact">Fineprint</div>
-			<div class="card-body">
-				<p class="card-text">
-          Let me (<a
-						href="https://www.torn.com/profiles.php?XID=1132772"
-						class="card-link" target="_blank"> byrod [1132772] </a>) know
-					about any issues. Thanks!<br /> * Your API key will not be stored
-					or logged, and is only used to call <a href="https://api.torn.com"
-						class="card-link" target="_blank">https://api.torn.com</a>.
-				</p>
-			</div>
-		</div>
-    <a href="https://ko-fi.com/N4N6L8OBN" target="_blank"><img height="36" style="border:0px;height:36px;" src="https://storage.ko-fi.com/cdn/kofi2.png?v=3" alt="Buy Me a Coffee at ko-fi.com" /></a>
-	</div>
-	<br />
-	<br />
+      <div class="card-header" id="contact">Fineprint</div>
+      <div class="card-body">
+        <p class="card-text">
+          Let me (<a href="https://www.torn.com/profiles.php?XID=1132772" class="card-link" target="_blank"> byrod
+            [1132772] </a>) know
+          about any issues. Thanks!<br /> * Your API key will not be stored
+          or logged, and is only used to call <a href="https://api.torn.com" class="card-link"
+            target="_blank">https://api.torn.com</a>.
+        </p>
+      </div>
+    </div>
+    <a href="https://ko-fi.com/N4N6L8OBN" target="_blank"><img height="36" style="border:0px;height:36px;"
+        src="https://storage.ko-fi.com/cdn/kofi2.png?v=3" alt="Buy Me a Coffee at ko-fi.com" /></a>
+  </div>
+  <br />
+  <br />
 </body>
+
 </html>

@@ -699,6 +699,7 @@ function parseMembers(statusData, selection, element, membersList) {
     membersOnDefendingWall = membersOnDefendingWall.concat(territory_war.defenders);
   }
 
+  var levelRange = slider.noUiSlider.get();
 
   var printEntry = false;
 
@@ -882,7 +883,8 @@ function parseMembers(statusData, selection, element, membersList) {
     if (statusList.includes(member.last_action.status)
       && detailsList.includes(memberStatusState)
       && printEntry
-      && (!document.getElementById(member.position) || document.getElementById(member.position).checked)) {
+      && (!document.getElementById(member.position) || document.getElementById(member.position).checked)
+      && (member.level >= levelRange[0] && member.level <= levelRange[1])) {
 
       var copyableText = ' >> ' + member.name + ' << ' + hospitalTime.replace(' hrs ', ':').replace(' min ', ':').replace(' sec ', '') + ' || https://www.torn.com/loader.php?sid=attack&user2ID=' + id;
 

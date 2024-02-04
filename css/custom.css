@@ -89,14 +89,17 @@ svg {
 }
 
 .card {
-    flex: 0 0 100%; /* By default, each card will take 100% width */
+    flex: 0 0 100%;
+    /* By default, each card will take 100% width */
 }
 
 /* For larger screens, you can adjust the width to create a multi-column layout */
 @media (min-width: 576px) {
     .card {
-        flex: 0 0 calc(25% - 1rem); /* 4 cards in a row with 1rem spacing between each card */
-        margin: 0.5rem; /* Add a margin for spacing */
+        flex: 0 0 calc(25% - 1rem);
+        /* 4 cards in a row with 1rem spacing between each card */
+        margin: 0.5rem;
+        /* Add a margin for spacing */
     }
 }
 
@@ -104,3 +107,42 @@ svg {
 .hidden {
     display: none;
 }
+
+
+.slider-styled .noUi-handle .noUi-touch-area {
+    border: 1px solid transparent;
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    width: auto;
+    height: auto;
+}
+
+/* Show a border when hovering the area the handle responds to */
+.slider-styled .noUi-handle:hover .noUi-touch-area {
+    border: 1px dashed #7f7f7f;
+}
+
+.noUi-connect,
+.progress-bar {
+    background-color: #5bc0de;
+}
+
+#slider {
+    height: 10px;
+}
+
+#slider .noUi-handle {
+    height: 18px;
+    width: 18px;
+    top: -5px;
+    right: -9px;
+    /* half the width */
+    border-radius: 9px;
+}
+
+.noUi-handle:before, .noUi-handle:after {
+    display: none;
+    }
