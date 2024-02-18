@@ -691,12 +691,12 @@ function parseMembers(statusData, selection, element, membersList) {
   let membersOnDefendingWall = ['WallMembers'];
   let membersOnAssaultingWall = ['WallMembers'];
 
-  for(let i = 0; i < territory_wars.length; i++) {
+  for (let i = 0; i < territory_wars.length; i++) {
     let territory_war = territory_wars[i];
     if (territory_war.assaulting_faction === statusData.ID)
-    membersOnAssaultingWall = membersOnAssaultingWall.concat(territory_war.assaulters);
+      membersOnAssaultingWall = membersOnAssaultingWall.concat(territory_war.assaulters);
     if (territory_war.defending_faction === statusData.ID)
-    membersOnDefendingWall = membersOnDefendingWall.concat(territory_war.defenders);
+      membersOnDefendingWall = membersOnDefendingWall.concat(territory_war.defenders);
   }
 
   var levelRange = slider.noUiSlider.get();
@@ -746,7 +746,7 @@ function parseMembers(statusData, selection, element, membersList) {
     var member = membersList[id];
     var memberStatusState = member.status.state;
     var hospitalTime = '';
-    var isOnAssaultingWall  = membersOnAssaultingWall.includes(parseInt(id));
+    var isOnAssaultingWall = membersOnAssaultingWall.includes(parseInt(id));
     var isOnDefendingngWall = membersOnDefendingWall.includes(parseInt(id));
 
     uniquePositions.add(member.position);
@@ -1388,7 +1388,7 @@ function parsePayouts(crimeData, element, membersList) {
   var factionFailed = 0;
   var totalRespect = 0;
   var totalMoney = 0;
-  
+
   let badgeSuccess = 'badge-dark';
   let badgeFailed = 'badge-dark';
 
@@ -2153,4 +2153,87 @@ function monthSelection() {
   // Join the options and set them in the select element
   document.getElementById('monthSelect').innerHTML = monthOptions.reverse().join('');
 
+}
+
+/**
+ * Format Discord timestamp based on user input and update the output.
+ *
+ * @param {void} None
+ * @return {void} None
+ */
+function formatDiscordTimestamp() {
+  const dateInput = document.getElementById('inputDate');
+  const timeInput = document.getElementById('inputTime');
+  const typeInput = document.getElementById('formatSelection');
+  const output = document.getElementById('outputCode');
+  const preview = document.getElementById('outputDate');
+  const copyButton = document.getElementById('copyButton');
+
+  dateInput.addEventListener('input', updateOutput);
+  timeInput.addEventListener('input', updateOutput);
+  typeInput.addEventListener('input', updateOutput);
+  output.addEventListener('mouseover', function () { this.select(); });
+  copyButton.addEventListener('click', async () => {
+    updateOutput();
+    try {
+      await navigator.clipboard.writeText(output.value);
+      output.className = 'form-control is-valid';
+    } catch (e) {
+      alert(e);
+    }
+  });
+
+  const onload = _ => {
+    const now = new Date();
+    dateInput.value = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
+    timeInput.value = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+    updateOutput();
+  };
+  window.onload = onload;
+
+  const typeFormats = {
+    't': { timeStyle: 'short' },
+    'T': { timeStyle: 'medium' },
+    'd': { dateStyle: 'short' },
+    'D': { dateStyle: 'long' },
+    'f': { dateStyle: 'long', timeStyle: 'short' },
+    'F': { dateStyle: 'full', timeStyle: 'short' },
+    'R': { style: 'long', numeric: 'auto' },
+  };
+
+  function automaticRelativeDifference(d) {
+    const secondsDiff = Math.round((new Date() - d) / 1000);
+    if (secondsDiff > 86400 * 30 * 10) {
+      return { duration: Math.round(secondsDiff / (86400 * 365)), unit: 'years' };
+    }
+    if (secondsDiff > 86400 * 25) {
+      return { duration: Math.round(secondsDiff / (86400 * 30)), unit: 'months' };
+    }
+    if (secondsDiff > 3600 * 21) {
+      return { duration: Math.round(secondsDiff / 86400), unit: 'days' };
+    }
+    if (secondsDiff > 60 * 44) {
+      return { duration: Math.round(secondsDiff / 3600), unit: 'hours' };
+    }
+    if (secondsDiff > 30) {
+      return { duration: Math.round(secondsDiff / 60), unit: 'minutes' };
+    }
+    return { duration: secondsDiff, unit: 'seconds' };
+  }
+
+  function updateOutput() {
+    const combinedMilliseconds = dateInput.valueAsNumber + timeInput.valueAsNumber + new Date().getTimezoneOffset() * 60000;
+    const selectedDate = new Date(combinedMilliseconds);
+    const timestamp = Math.floor(selectedDate.getTime() / 1000);
+    output.value = `<t:${timestamp}:${typeInput.value}>`;
+
+    if (['R'].includes(typeInput.value)) {
+      const formatter = new Intl.RelativeTimeFormat(navigator.language || 'en', typeFormats[typeInput.value] || {});
+      const format = automaticRelativeDifference(selectedDate);
+      preview.value = formatter.format(format.duration, format.unit);
+    } else {
+      const formatter = new Intl.DateTimeFormat(navigator.language || 'en', typeFormats[typeInput.value] || {});
+      preview.value = formatter.format(selectedDate);
+    }
+  }
 }

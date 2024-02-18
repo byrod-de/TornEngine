@@ -1,27 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<title>Torn Engine - A collection of more or less useful things</title>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Torn Engine - A collection of more or less useful things</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-<link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
-<link rel="icon" type="image/png" href="images/mstile-144x144.png"
-	sizes="32x32" />
-<meta name="msapplication-TileColor" content="#ffffff" />
-<meta name="msapplication-TileImage" content="images/logo-144x144.png" />
+	<link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
+	<link rel="icon" type="image/png" href="images/mstile-144x144.png" sizes="32x32" />
+	<meta name="msapplication-TileColor" content="#ffffff" />
+	<meta name="msapplication-TileImage" content="images/logo-144x144.png" />
 
-<link rel="stylesheet" href="css/bootstrap.min.css">
-<link rel="stylesheet" href="css/bootstrap.css">
-<link rel="stylesheet" href="css/dataTables.min.css">
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/bootstrap.css">
+	<link rel="stylesheet" href="css/dataTables.min.css">
 
-<script src="script/scripts.js"></script>
-<script src="script/jquery.min.js"></script>
-<script src="script/bootstrap.bundle.min.js"></script>
-<script src="script/custom.js"></script>
-<script src="script/jquery.dataTables.min.js"></script>
+	<script src="script/scripts.js"></script>
+	<script src="script/jquery.min.js"></script>
+	<script src="script/bootstrap.bundle.min.js"></script>
+	<script src="script/custom.js"></script>
+	<script src="script/jquery.dataTables.min.js"></script>
 
 </head>
+
 <body onload="loadKeyFromSession('keycheck');">
 
 	<div class="container-fluid">
@@ -52,33 +53,35 @@
 
 			<div class="navbar-collapse" id="navbarColor01">
 				<ul class="navbar-nav mr-auto">
-					<li class="nav-item dropdown show"><a
-						class="nav-link dropdown-toggle" data-toggle="dropdown" href="#"
-						role="button" aria-haspopup="true" aria-expanded="true">Faction
+					<li class="nav-item dropdown show"><a class="nav-link dropdown-toggle" data-toggle="dropdown"
+							href="#" role="button" aria-haspopup="true" aria-expanded="true">Faction
 							Tools</a>
 						<div class="dropdown-menu ">
-							<a class="dropdown-item" href="pa_payouts.html">PA Payouts</a> <a
-								class="dropdown-item" href="oc_overview.html">OC Overview</a> <a
-								class="dropdown-item" href="news.html">News</a>
-						</div></li>
+							<a class="dropdown-item" href="pa_payouts.html">PA Payouts</a> <a class="dropdown-item"
+								href="oc_overview.html">OC Overview</a> <a class="dropdown-item"
+								href="news.html">News</a>
+						</div>
+					</li>
 
-					<li class="nav-item dropdown show"><a
-						class="nav-link dropdown-toggle" data-toggle="dropdown" href="#"
-						role="button" aria-haspopup="true" aria-expanded="true">Warring
+					<li class="nav-item dropdown show"><a class="nav-link dropdown-toggle" data-toggle="dropdown"
+							href="#" role="button" aria-haspopup="true" aria-expanded="true">Warring
 							Tools</a>
 						<div class="dropdown-menu ">
 							<a class="dropdown-item" href="members.html">Member Status</a>
-							<a class="dropdown-item" href="rankedwars.html">Ranked Wars <sup class="badge badge-pill badge-secondary">BETA</sup></a>
-							<a class="dropdown-item" href="citymap.html">City Map <sup class="badge badge-pill badge-danger">Experimental</sup></a>
-						</div></li>
+							<a class="dropdown-item" href="rankedwars.html">Ranked Wars <sup
+									class="badge badge-pill badge-secondary">BETA</sup></a>
+							<a class="dropdown-item" href="citymap.html">City Map <sup
+									class="badge badge-pill badge-warning">Experimental</sup></a>
+						</div>
+					</li>
 
-						<li class="nav-item dropdown show"><a
-							class="nav-link dropdown-toggle" data-toggle="dropdown" href="#"
-							role="button" aria-haspopup="true" aria-expanded="true">Helpful Tools</a>
-							<div class="dropdown-menu ">
-								<a class="dropdown-item" href="keycheck.html">API Key Check</a>
-								<a class="dropdown-item active" href="discord.html">Discord Timestamp</a>
-							</div></li>
+					<li class="nav-item dropdown show"><a class="nav-link dropdown-toggle" data-toggle="dropdown"
+							href="#" role="button" aria-haspopup="true" aria-expanded="true">Helpful Tools</a>
+						<div class="dropdown-menu ">
+							<a class="dropdown-item" href="keycheck.html">API Key Check</a>
+							<a class="dropdown-item active" href="discord.html">Discord Timestamp</a>
+						</div>
+					</li>
 				</ul>
 			</div>
 		</nav>
@@ -88,35 +91,38 @@
 		<form id="userForm">
 			<div class="row">
 
-				<div class="form-group col-sm-1">
-					
-						<label class="col-form-label" for="inputDate">Date</label>
-						<input type="date" class="form-control" value="" id="inputDate">
-					
-					
-						<label class="col-form-label" for="inputTime">Time</label>
-						<input type="time" class="form-control" value="" id="inputTime">
-					
-						<label class="col-form-label" for="formatSelection">Format</label>
-						<select class="form-control" id="formatSelection">
-								<option value="t">time short</option>
-								<option value="T">time long</option>
-								<option value="d">date short</option>
-								<option value="D">date long</option>
-								<option value="f">date long + time</option>
-								<option value="R" selected="">relative</option>
-						  </select>
-					
+				<div class="form-group col-sm-2">
+
+					<label class="col-form-label" for="inputDate">Date</label>
+					<input type="date" class="form-control" value="" id="inputDate">
+
+
+					<label class="col-form-label" for="inputTime">Time</label>
+					<input type="time" class="form-control" value="" id="inputTime">
+
+					<label class="col-form-label" for="formatSelection">Format</label>
+					<select class="form-control" id="formatSelection">
+						<option value="t">time short</option>
+						<option value="T">time long</option>
+						<option value="d">date short</option>
+						<option value="D">date long</option>
+						<option value="f">date long + time</option>
+						<option value="R" selected="">relative</option>
+					</select>
+
 				</div>
 
-				<div class="form-group col-sm-1">
-					
-						<label class="col-form-label" for="outputDate">Output</label>
-						<input type="text" class="form-control" value="Default input" id="outputDate" readonly="">
-					
-						<label class="col-form-label" for="outputCode">Code</label>
-						<input type="text" class="form-control" value="Default input" id="outputCode" readonly=""><button class="btn btn-secondary" id="copyButton">Copy</button>				
+				<div class="form-group col-sm-2">
 
+					<label class="col-form-label" for="outputDate">Output</label>
+					<input type="text" class="form-control" value="Default input" id="outputDate" readonly="">
+
+					<label class="col-form-label" for="outputCode">Code</label>
+					<div class="input-group">
+						<input type="text" class="form-control" value="Default input" id="outputCode" readonly="">
+						<div class="input-group-append"><button class="btn btn-secondary" id="copyButton">Copy</button>
+						</div>
+					</div>
 				</div>
 
 				<div class="form-group col-sm-5">
@@ -136,107 +142,31 @@
 		<br />
 
 
-			<script>
-const dateInput = document.getElementById('inputDate');
-const timeInput = document.getElementById('inputTime');
-const typeInput = document.getElementById('formatSelection');
-const output = document.getElementById('outputCode');
-const copy = document.getElementById('copyButton');
-
-const preview = document.getElementById('outputDate');
-
-dateInput.onchange = updateOutput;
-timeInput.onchange = updateOutput;
-typeInput.onchange = updateOutput;
-output.onmouseover = function() { this.select(); }
-copy.onclick = async () => {
-	updateOutput();
-	try {
-		await navigator.clipboard.writeText(output.value);
-		document.getElementById('outputCode').className = 'form-control is-valid';
-	} catch (e) {
-		alert(e);
-	}
-}
-
-
-const onload =_=> {
-	const now = new Date();
-	dateInput.value = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
-	timeInput.value = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-	updateOutput();
-}
-window.onload = onload;
-
-const typeFormats = {
-	't': { timeStyle: 'short' },
-	'T': { timeStyle: 'medium' },
-	'd': { dateStyle: 'short' },
-	'D': { dateStyle: 'long' },
-	'f': { dateStyle: 'long', timeStyle: 'short' },
-	'F': { dateStyle: 'full', timeStyle: 'short' },
-	'R': { style: 'long', numeric: 'auto' },
-};
-
-function automaticRelativeDifference(d) {
-	const diff = -((new Date().getTime() - d.getTime())/1000)|0;
-	const absDiff = Math.abs(diff);
-	console.log(diff);
-	if (absDiff > 86400*30*10) {
-		return { duration: Math.round(diff/(86400*365)), unit: 'years' };
-	}
-	if (absDiff > 86400*25) {
-		return { duration: Math.round(diff/(86400*30)), unit: 'months' };
-	}
-	if (absDiff > 3600*21) {
-		return { duration: Math.round(diff/86400), unit: 'days' };
-	}
-	if (absDiff > 60*44) {
-		return { duration: Math.round(diff/3600), unit: 'hours' };
-	}
-	if (absDiff > 30) {
-		return { duration: Math.round(diff/60), unit: 'minutes' };
-	}
-	return { duration: diff, unit: 'seconds' };
-}
-
-function updateOutput() {
-	const selectedDate = new Date(dateInput.valueAsNumber + timeInput.valueAsNumber + new Date().getTimezoneOffset() * 60000);
-	console.log(selectedDate);
-	const ts = selectedDate.getTime().toString();
-	output.value = `<t:${ts.substr(0, ts.length - 3)}:${typeInput.value}>`;
-
-	if (['R'].includes(typeInput.value)) {
-		const formatter = new Intl.RelativeTimeFormat(navigator.language || 'en', typeFormats[typeInput.value] || {});
-		const format = automaticRelativeDifference(selectedDate);
-		preview.value = formatter.format(format.duration, format.unit);
-	} else {
-		const formatter = new Intl.DateTimeFormat(navigator.language || 'en', typeFormats[typeInput.value] || {});
-		preview.value = formatter.format(selectedDate);
-	}
-}
-</script>
+		<script>
+			formatDiscordTimestamp();
+		</script>
 
 
 		<div class="card border-primary mb-3" style="max-width: 100%;">
 			<div class="card-header" id="contact">Fineprint</div>
 			<div class="card-body">
 				<p class="card-text">
-					Let me (<a
-						href="https://www.torn.com/profiles.php?XID=1132772"
-						class="card-link" target="_blank"> byrod [1132772] </a>) know
+					Let me (<a href="https://www.torn.com/profiles.php?XID=1132772" class="card-link" target="_blank">
+						byrod [1132772] </a>) know
 					about any issues. Thanks!<br /> * Your API key will not be stored
-					or logged, and is only used to call <a href="https://api.torn.com"
-						class="card-link" target="_blank">https://api.torn.com</a>.
+					or logged, and is only used to call <a href="https://api.torn.com" class="card-link"
+						target="_blank">https://api.torn.com</a>.
 				</p>
 			</div>
 		</div>
 
-		<a href="https://ko-fi.com/N4N6L8OBN" target="_blank"><img height="36" style="border:0px;height:36px;" src="https://storage.ko-fi.com/cdn/kofi2.png?v=3" alt="Buy Me a Coffee at ko-fi.com" /></a>
+		<a href="https://ko-fi.com/N4N6L8OBN" target="_blank"><img height="36" style="border:0px;height:36px;"
+				src="https://storage.ko-fi.com/cdn/kofi2.png?v=3" alt="Buy Me a Coffee at ko-fi.com" /></a>
 	</div>
 	<br />
 	<br />
 
 
 </body>
+
 </html>
