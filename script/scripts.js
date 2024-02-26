@@ -121,6 +121,10 @@ function userSubmit(selection) {
       callTornAPI(trustedApiKey, 'key', 'info', 'keycheck');
     }
 
+    if (selection == 'trailers') {
+      callTornAPI(trustedApiKey, 'user', 'basic,properties', 'trailers');
+    }
+
     if (selection == 'news') {
       var category = ''
       if (document.getElementById('armorynews').checked) {
@@ -332,16 +336,18 @@ function callRankedWarDetails(key, id) {
 
 function callTornAPI(key, part, selection, source, fromTS = '', toTS = '') {
 
-  var factionid = '';
+  var selectedID = '';
   let from = '', to = '';
 
   if (toTS > 0) to = `&to=${toTS}`;
   if (fromTS > 0) from = `&from=${fromTS}`;
 
-  if (source == 'members') factionid = document.getElementById("factionid").value;
+  if (source == 'members') selectedID = document.getElementById("factionid").value;
+  if (source == 'trailers') selectedID = document.getElementById("playerid").value;
 
-  sessionStorage.factionid = factionid;
-  var url = 'https://api.torn.com/' + part + '/' + factionid + '?selections=' + selection + from + to + '&key=' + key + '&comment=tornengine';
+
+  sessionStorage.factionid = selectedID;
+  var url = 'https://api.torn.com/' + part + '/' + selectedID + '?selections=' + selection + from + to + '&key=' + key + '&comment=tornengine';
 
   var request = new XMLHttpRequest();
 
@@ -424,6 +430,11 @@ function callTornAPI(key, part, selection, source, fromTS = '', toTS = '') {
           parseKeyInfo(jsonData, selection, 'output', jsonData['selections']);
         }
 
+        if (source === 'trailers') {
+          printAlert('Success', 'The API Call successful, find the results below.');
+          parsePropertyInfo(jsonData, 'properties', 'output');
+        }
+
         if (selection === 'rankedwars') {
 
           if (source === 'rankedwars') {
@@ -442,6 +453,38 @@ function callTornAPI(key, part, selection, source, fromTS = '', toTS = '') {
     }
   }
   request.send();
+}
+
+
+function parsePropertyInfo(propertyInfoData, selection, element) {
+  let countOwn = 0;
+  let countSpouse = 0;
+
+  console.log(propertyInfoData);
+
+  const name = propertyInfoData['name'];
+  const player_id = propertyInfoData['player_id'];
+  const propertyData = propertyInfoData[selection];
+
+  console.log(propertyData);
+    
+    for (const key in propertyData) {
+      const property = propertyData[key].property;
+      const status = propertyData[key].status;
+      if (property === 'Trailer') {
+        if (status === 'Owned by them') {
+          countOwn++;
+        }
+        if (status === 'Owned by their spouse') {
+          countSpouse++;
+        }
+      }
+    }
+
+    let value =  '<div class="alert alert-secondary"><a class="alert-link" href="https://www.torn.com/profiles.php?XID=' + player_id + '" target="_blank">' + name + ' [' + player_id + ']</a>:<br />There are <span class="badge badge-primary">' + countOwn + '</span> trailer(s) owned by them and <span class="badge badge-light">' + countSpouse + '</span> trailer(s) owned by their spouse.</div>'
+
+    document.getElementById(element).innerHTML = value;
+
 }
 
 function parseKeyInfo(keyInfoData, selection, element, keyInfo) {
