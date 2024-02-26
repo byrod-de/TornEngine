@@ -1944,9 +1944,14 @@ function loadFiltersFromSession() {
 function loadKeyFromSession(selection) {
   loadKeyFromLocalStorage();
   var paramFactionID = getUrlParam('factionID', 'NOT_SET');
+  var paramPlayerID = getUrlParam('playerID', 'NOT_SET');
 
   if (paramFactionID != 'NOT_SET') {
     sessionStorage.factionid = paramFactionID;
+  }
+
+  if (paramPlayerID != 'NOT_SET') {
+    sessionStorage.playerid = paramPlayerID;
   }
 
   if (typeof (Storage) !== "undefined") {
@@ -1955,6 +1960,13 @@ function loadKeyFromSession(selection) {
         document.getElementById("factionid").value = sessionStorage.factionid;
       }
     }
+
+    if (sessionStorage.playerid) {
+      if (document.getElementById("playerid")) {
+        document.getElementById("playerid").value = sessionStorage.playerid;
+      }
+    }
+
     if (sessionStorage.trustedApiKey) {
       if (document.getElementById("trustedkey")) {
         document.getElementById("trustedkey").value = sessionStorage.trustedApiKey;
