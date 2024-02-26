@@ -460,13 +460,9 @@ function parsePropertyInfo(propertyInfoData, selection, element) {
   let countOwn = 0;
   let countSpouse = 0;
 
-  console.log(propertyInfoData);
-
   const name = propertyInfoData['name'];
   const player_id = propertyInfoData['player_id'];
   const propertyData = propertyInfoData[selection];
-
-  console.log(propertyData);
     
     for (const key in propertyData) {
       const property = propertyData[key].property;
