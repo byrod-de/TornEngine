@@ -463,23 +463,23 @@ function parsePropertyInfo(propertyInfoData, selection, element) {
   const name = propertyInfoData['name'];
   const player_id = propertyInfoData['player_id'];
   const propertyData = propertyInfoData[selection];
-    
-    for (const key in propertyData) {
-      const property = propertyData[key].property;
-      const status = propertyData[key].status;
-      if (property === 'Trailer') {
-        if (status === 'Owned by them') {
-          countOwn++;
-        }
-        if (status === 'Owned by their spouse') {
-          countSpouse++;
-        }
+
+  for (const key in propertyData) {
+    const property = propertyData[key].property;
+    const status = propertyData[key].status;
+    if (property === 'Trailer') {
+      if (status === 'Owned by them') {
+        countOwn++;
+      }
+      if (status === 'Owned by their spouse') {
+        countSpouse++;
       }
     }
+  }
 
-    let value =  '<div class="alert alert-secondary"><a class="alert-link" href="https://www.torn.com/profiles.php?XID=' + player_id + '" target="_blank">' + name + ' [' + player_id + ']</a>:<br />There are <span class="badge badge-primary">' + countOwn + '</span> trailer(s) owned by them and <span class="badge badge-light">' + countSpouse + '</span> trailer(s) owned by their spouse.</div>'
+  let value = '<div class="alert alert-secondary"><a class="alert-link" href="https://www.torn.com/profiles.php?XID=' + player_id + '" target="_blank">' + name + ' [' + player_id + ']</a>:<br />There are <span class="badge badge-primary">' + countOwn + '</span> trailer(s) owned by them and <span class="badge badge-light">' + countSpouse + '</span> trailer(s) owned by their spouse.</div>'
 
-    document.getElementById(element).innerHTML = value;
+  document.getElementById(element).innerHTML = value;
 
 }
 
@@ -1979,6 +1979,129 @@ function loadKeyFromSession(selection) {
       userSubmit('members');
     }
   }
+}
+
+
+function overrideMemberFilters() {
+  const statusFilters = getUrlParam('status', 'NOT_SET');
+  const detailsFilters = getUrlParam('details', 'NOT_SET');
+  const activityFilter = getUrlParam('lastactive', 'NOT_SET');
+
+  console.log(statusFilters, detailsFilters);
+
+  if (statusFilters != 'NOT_SET') {
+    var markedCheckboxStatus = document.getElementsByName('status');
+    for (var checkbox of markedCheckboxStatus) {
+      var checkboxElement = document.getElementById(checkbox.id);
+      if (checkboxElement) {
+        checkboxElement.checked = false;
+        if (statusFilters.includes(checkbox.value)) checkboxElement.checked = true;
+        //console.log(checkbox.value, checkboxElement.checked);
+      } else {
+        console.log('Checkbox element not found:', checkbox.id);
+      }
+    }
+  }
+
+  if (activityFilter != 'NOT_SET') {
+    var activityCheckbox = document.getElementById('FilterActive');
+    if (activityCheckbox) {
+      activityCheckbox.checked = false;
+      if (activityFilter) {
+        activityCheckbox.checked = true;
+        document.getElementById('TimeActive').value = activityFilter;
+        document.getElementById('rangeValue').innerHTML = activityFilter;
+        document.getElementById('TimeActive').disabled = false;
+      }
+      //console.log(activityFilter, activityCheckbox.checked);
+
+    }
+    else {
+      console.log('Checkbox element not found:', checkbox.id);
+    }
+  }
+
+  if (detailsFilters != 'NOT_SET') {
+    var markedCheckboxDetails = document.getElementsByName('details');
+    for (var checkbox of markedCheckboxDetails) {
+      var checkboxElement = document.getElementById(checkbox.id);
+      if (checkboxElement) {
+        checkboxElement.checked = false;
+        if (detailsFilters.includes(checkbox.value)) checkboxElement.checked = true;
+        //console.log(checkbox.value, checkboxElement.checked);
+      } else {
+        console.log('Checkbox element not found:', checkbox.id);
+      }
+    }
+  }
+}
+
+function copyFilterAsURL(selection) {
+
+  if (selection == 'members') {
+    var siteUrl = "https://tornengine.netlify.app/members.html";
+
+    const markedCheckboxStatus = document.getElementsByName('status');
+    const markedCheckboxDetails = document.getElementsByName('details');
+    const activityCheckbox = document.getElementById('FilterActive');
+    const factionIDInput = document.getElementById('factionid').value;
+
+
+    var statusList = "";
+    var detailsList = "";
+    var activityFilter = "";
+    var factonID = "";
+
+    for (var checkbox of markedCheckboxStatus) {
+      if (checkbox.checked && checkbox.value != "FilterActive") {
+        statusList = statusList + checkbox.value + ",";
+      }
+    }
+
+    for (var checkbox of markedCheckboxDetails) {
+      if (checkbox.checked) {
+        detailsList = detailsList + checkbox.value + ",";
+      }
+    }
+
+    if (activityCheckbox.checked) {
+      activityFilter = document.getElementById('TimeActive').value;
+    }
+
+    if (statusList != "") {
+      statusList = "&status=" + statusList.substring(0, statusList.length - 1);
+    }
+    if (detailsList != "") {
+      detailsList = "&details=" + detailsList.substring(0, detailsList.length - 1);
+    }
+
+    if (activityFilter != "") {
+      activityFilter = "&lastactive=" + activityFilter;
+    }
+
+    if (factionIDInput != "") {
+      factonID = "&factionID=" + factionIDInput;
+    }
+
+    siteUrl = replaceFirstAmpersandWithQuestionMark(siteUrl + statusList + detailsList + activityFilter + factonID);
+
+    console.log(siteUrl);
+
+    setTimeout(function () {
+      navigator.clipboard.writeText(siteUrl);
+    }, 1000);
+
+  }
+}
+
+
+function replaceFirstAmpersandWithQuestionMark(inputString) {
+  var firstAmpersandIndex = inputString.indexOf('&');
+  if (firstAmpersandIndex !== -1) {
+    var modifiedString = inputString.substring(0, firstAmpersandIndex) + '?' + inputString.substring(firstAmpersandIndex + 1);
+    return modifiedString;
+  }
+  return inputString;
 }
 
 function copyButton(memberID, factionID = '') {

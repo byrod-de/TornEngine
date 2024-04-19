@@ -30,7 +30,7 @@
 
 </head>
 
-<body onload="loadKeyFromSession('members'); checkAPIKey(), loadFiltersFromSession()">
+<body onload="loadKeyFromSession('members'); checkAPIKey(), loadFiltersFromSession(), overrideMemberFilters()">
 
   <div class="container-fluid">
     <br />
@@ -212,6 +212,7 @@
         var levelRange = slider.noUiSlider.get();
         $('span.levelRange').text(levelRange[0] + ' - ' + levelRange[1]);
       });
+
     </script>
 
     <div class="row">
@@ -220,7 +221,7 @@
       </div>
       <div class="form-group col-sm-2">
         <button onclick="hideElementByID('filter')" class="btn btn-secondary" id="btnHideFilter">Hide Filter</button>
-
+        <button onclick="copyFilterAsURL('members')" class="btn btn-secondary" id="btnHideFilter">Copy Filter as URL</button>
       </div>
     </div>
 
