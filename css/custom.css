@@ -146,3 +146,9 @@ svg {
 .noUi-handle:before, .noUi-handle:after {
     display: none;
     }
+
+
+    .link-group {
+        display: flex;
+        align-items: center;
+      }

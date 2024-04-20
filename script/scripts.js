@@ -182,8 +182,7 @@ function callTornStatsAPI(apiKey, id, selection, cacheStats) {
             + '<br />Please make sure to use the same API Key as confiured in <a href="https://beta.tornstats.com/settings/general" target="_blank">TornStats</a>.';
         } else {
           if (jsonData.spy.message.includes("Spy not found.")) {
-            document.getElementById('statsModalLabel').innerHTML = 'Spy not found';
-
+  
             let statsModalBody = '';
 
             statsModalBody = '<div class="alert alert-info"><strong>Warning: </strong>Spy not found on Tornstats.</div>';
@@ -197,6 +196,8 @@ function callTornStatsAPI(apiKey, id, selection, cacheStats) {
               var innerJsonData = JSON.parse(this.response);
 
               if (innerRequest.status >= 200 && innerRequest.status < 400) {
+                document.getElementById('statsModalLabel').innerHTML = '<strong>Player:</strong> ' + innerJsonData.name + ' [' + innerJsonData.player_id + '] <a href="https://www.torn.com/loader.php?sid=attack&user2ID=' + innerJsonData.player_id + '" target="_blank"><img src="images/svg-icons/attack2.svg" height="25" alt="Attack" title="Attack" /></a>';
+
 
                 statsModalBody = statsModalBody + '<div class="text-muted"><strong>Age:</strong> ' + innerJsonData.age.toLocaleString('en-US') + ' days </div>';
 
@@ -207,8 +208,6 @@ function callTornStatsAPI(apiKey, id, selection, cacheStats) {
                   if (stat === 'consumablesused') statsModalBody = statsModalBody + '<div class="text-muted"><strong>Consumables Used:</strong> ' + innerJsonData.personalstats[stat].toLocaleString('en-US') + '</div>';
                   if (stat === 'refills') statsModalBody = statsModalBody + '<div class="text-muted"><strong>Refills:</strong> ' + innerJsonData.personalstats[stat].toLocaleString('en-US') + '</div>';
                 }
-
-                statsModalBody = statsModalBody + '<br /><a href="https://www.torn.com/loader.php?sid=attack&user2ID=' + innerJsonData.player_id + '" target="_blank">https://www.torn.com/loader.php?sid=attack&user2ID=' + innerJsonData.player_id + '</a>';
               }
               document.getElementById('statsModalBody').innerHTML = statsModalBody;
 
@@ -223,21 +222,19 @@ function callTornStatsAPI(apiKey, id, selection, cacheStats) {
             let statsModalBody = '';
             let compareList = 'Xanax Taken, Refills';
 
-            document.getElementById('statsModalLabel').innerHTML = '<strong>Player:</strong> ' + jsonData.spy.player_name + ' [' + jsonData.spy.player_id + ']';
+            document.getElementById('statsModalLabel').innerHTML = '<strong>Player:</strong> ' + jsonData.spy.player_name + ' [' + jsonData.spy.player_id + '] <a href="https://www.torn.com/loader.php?sid=attack&user2ID=' + jsonData.spy.player_id + '" target="_blank"><img src="images/svg-icons/attack2.svg" height="25" alt="Attack" title="Attack" /></a>';
             statsModalBody = '<div class="text-muted"><strong>Strength:</strong> ' + jsonData.spy.strength.toLocaleString('en-US') + '</div>'
               + '<div class="text-muted"><strong>Defense:</strong> ' + jsonData.spy.defense.toLocaleString('en-US') + '</div>'
               + '<div class="text-muted"><strong>Speed:</strong> ' + jsonData.spy.speed.toLocaleString('en-US') + '</div>'
               + '<div class="text-muted"><strong>Dexterity:</strong> ' + jsonData.spy.dexterity.toLocaleString('en-US') + '</div>'
               + '<div class="text-primary"><strong>Total:</strong> ' + jsonData.spy.total.toLocaleString('en-US') + '</div>'
-              + '<<div class="text-muted"><strong>Update:</strong> ' + ts.toISOString().substring(0, ts.toISOString().indexOf('T')) + '</div>'
-              + '<div class="text-muted"><strong>Type:</strong> ' + jsonData.spy.type + '</div>'
+              + '<br />'
+              + '<div class="text-muted"><em>Update: ' + ts.toISOString().substring(0, ts.toISOString().indexOf('T')) + ' (' + jsonData.spy.type + ')</em></div>'
               + '<br />';
 
             for (var key in jsonData.compare.data) {
               if (compareList.includes(key)) statsModalBody = statsModalBody + '<div class="text-muted"><strong>' + key + ':</strong> ' + jsonData.compare.data[key].amount + '</div>'
             }
-
-            statsModalBody = statsModalBody + '<br /><a href="https://www.torn.com/loader.php?sid=attack&user2ID=' + jsonData.spy.player_id + '" target="_blank">https://www.torn.com/loader.php?sid=attack&user2ID=' + jsonData.spy.player_id + '</a>';
 
             document.getElementById('statsModalBody').innerHTML = statsModalBody;
 
@@ -755,13 +752,14 @@ function parseMembers(statusData, selection, element, membersList) {
 
   table = table + '<br /><table class="table table-hover" id="members"><thead><tr>'
     + '<th>Name&nbsp;&nbsp;</th>'
-    + '<th>Position&nbsp;&nbsp;</th>'
+    + '<th>Icons&nbsp;&nbsp;</th>'
     + '<th>Attack Link&nbsp;&nbsp;</th>'
     + '<th>Status&nbsp;&nbsp;</th>'
     + '<th>Details&nbsp;&nbsp;</th>'
     + '<th>Description&nbsp;&nbsp;</th>'
     + '<th>Last Action&nbsp;&nbsp;</th>'
-    + '<th>Level&nbsp;&nbsp;</th>';
+    + '<th>Level&nbsp;&nbsp;</th>'
+    + '<th>Position&nbsp;&nbsp;</th>';
   if (integrateFactionStats) table = table + '<th>Torn Stats&nbsp;&nbsp;</th>';
   table = table + '<th>Stats Popup&nbsp;&nbsp;</th>'
 
@@ -929,19 +927,23 @@ function parseMembers(statusData, selection, element, membersList) {
 
       table = table + '<tr>'
 
-        + '<td class="align-middle"><a href="https://www.torn.com/profiles.php?XID=' + id + '" target="_blank">' + member.name + ' [' + id + ']</a><br/>' + icon + '</td>'
-        + '<td class="align-middle"><pre>' + member.position + '</pre></td>'
+        + '<td class="align-middle"><a href="https://www.torn.com/profiles.php?XID=' + id + '" target="_blank">' + member.name + '<br/>[' + id + ']</a><br/></td>'
+        + '<td class="align-middle">' + icon + '</td>'
         + '<td class="align-middle">'
-        + '<a class="btn btn-link btn-sm" role="button" href="https://www.torn.com/loader.php?sid=attack&user2ID=' + id + '" target="_blank">Attack Link</a>&nbsp;'
+        + '<div class="link-group" role="group">'
+        + '<a class="btn btn-link btn-sm" role="button" href="https://www.torn.com/loader.php?sid=attack&user2ID=' + id + '" target="_blank"><img alt="Attack" title="Attack" src="images/svg-icons/attack2.svg" height="25"></a>&nbsp;'
+        //+ '<button type="button" onclick="copyButton(' + id + ')" class="btn btn-secondary btn-sm" id="copy-button' + id + '" data-toggle="tooltip" data-placement="button" title="Copy for Faction Chat">'
+        + '<img alt="Copy" title="Copy" src="images/svg-icons/copy.svg" height="25" onclick="copyButton(' + id + ')">'
+        + '</div>'
         + '<input type="hidden" class="form-control" value="' + copyableText + '" placeholder="..." id="copy-input-' + id + '">'
-        + '<button type="button" onclick="copyButton(' + id + ')" class="btn btn-secondary btn-sm" id="copy-button' + id + '" data-toggle="tooltip" data-placement="button" title="Copy for Faction Chat">'
-        + 'Copy</button>'
+        //+ 'Copy</button>'
         + '</td>'
         + '<td class="align-middle">' + '<span class="badge badge-pill ' + statusFormat + '">' + member.last_action.status + '</span>' + '</td>'
         + '<td class="align-middle">' + detail + '</td>'
         + '<td class="align-middle">' + statusDescriptionText + '</td>'
         + '<td class="align-middle">' + memberLastAction + '</td>'
         + '<td class="align-middle">' + member.level + '</td>'
+        + '<td class="align-middle"><pre>' + member.position + '</pre></td>'
 
 
       if (integrateFactionStats) {
@@ -956,7 +958,8 @@ function parseMembers(statusData, selection, element, membersList) {
       }
 
       table = table + '<td class="align-middle">'
-        + '<button type="button" onclick="callTornStatsAPI(\'' + trustedApiKey + '\', ' + id + ', \'user\', false)" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#statsModal">Show Stats</button>'
+        + '<img alt="Show Stats" title="Show Stats" src="images/svg-icons/stats.svg" height="25" onclick="callTornStatsAPI(\'' + trustedApiKey + '\', ' + id + ', \'user\', false)" data-toggle="modal" data-target="#statsModal">'
+        //+ '<button type="button" onclick="callTornStatsAPI(\'' + trustedApiKey + '\', ' + id + ', \'user\', false)" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#statsModal">Show Stats</button>'
         + '</td>'
 
       filteredMembers++;
