@@ -306,13 +306,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (territoryData) {
             let score = territoryData.score;
-            let score_required = territoryData.score_required;
+            let required_score = territoryData.required_score;
             let slots = territory.slots;
-            let best = (score_required - score) / slots * 1000;
+            let best = (required_score - score) / slots * 1000;
 
-            tooltipContent += `<strong class="text-danger">Attacking Faction: ${getFactions(territoryData.assaulting_faction)}</strong><br>
-                                <strong class="text-success">Defending Faction: ${getFactions(territoryData.defending_faction)}</strong><br>
-                                Score: ${score}/${score_required}<br>
+            tooltipContent += `<strong class="text-danger">Attacking: ${getFactions(territoryData.assaulting_faction)}</strong><br>
+                                <strong class="text-success">Defending: ${getFactions(territoryData.defending_faction)}</strong><br>
+                                Score: ${score}/${required_score}<br>
                                 Start: ${formatDate(territoryData.started)}<br>
                                 End: ${formatRelativeTime(territoryData.ends)}<br>
                                 Best Case: ${formatBestWallTime(best)}<br>`;
@@ -411,22 +411,22 @@ document.addEventListener('DOMContentLoaded', function () {
             const assaultingFactionLink = `https://www.torn.com/factions.php?step=profile&ID=${assaultingFactionId}`;
             const defendingFactionLink = `https://www.torn.com/factions.php?step=profile&ID=${defendingFactionId}`;
 
-            const score_required = territoryWars[territoryId].score_required;
+            const required_score = territoryWars[territoryId].required_score;
             const score = territoryWars[territoryId].score;
             const slots = territoriesData.territory[territoryId].slots;
-            const percentage = score / score_required * 100;
+            const percentage = score / required_score * 100;
 
             const startedTimestamp = territoryWars[territoryId].started;
             const endsTimestamp = territoryWars[territoryId].ends;
 
-            let best = (score_required - score) / slots * 1000;
+            let best = (required_score - score) / slots * 1000;
 
             const text = `
                         Sector: ${territory.sector}<br />
                         Slots: ${territory.slots}<br />
-                        <strong class="text-danger">Attacking Faction: <a target="_blank" href="${assaultingFactionLink}">${getFactions(assaultingFactionId)}</a></strong><br/>
-                        <strong class="text-success">Defending Faction: <a target="_blank" href="${defendingFactionLink}">${getFactions(defendingFactionId)}</a></strong><br/>
-                        Score: ${score}/${score_required}<br />
+                        <strong class="text-danger">Attacking: <a target="_blank" href="${assaultingFactionLink}">${getFactions(assaultingFactionId)}</a></strong><br/>
+                        <strong class="text-success">Defending: <a target="_blank" href="${defendingFactionLink}">${getFactions(defendingFactionId)}</a></strong><br/>
+                        Score: ${score}/${required_score}<br />
                         <div class="progress">
                            <div class="progress-bar bg-success" role="progressbar" style="width: ${percentage}%;" aria-valuenow="${percentage}" aria-valuemin="0" aria-valuemax="100"></div>
                            <div class="progress-bar bg-light progress-bar-striped" role="progressbar" style="width: ${100 - percentage}%;" aria-valuenow="${100 - percentage}" aria-valuemin="0" aria-valuemax="100"></div>
