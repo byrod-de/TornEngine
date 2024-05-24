@@ -739,14 +739,20 @@ function parseMembers(statusData, selection, element, membersList) {
 
   var printEntry = false;
 
-  var table = '<div class="col-sm-12 badge-primary" ><b>Members Status of <img src="https://factiontags.torn.com/'
+  var table = '<div class="col-sm-12 badge-primary" >  <b>Members Status of <img src="https://factiontags.torn.com/'
     + statusData.tag_image + '"> '
     + statusData.name
     + ' [' + statusData.ID + ']'
-    + '</b>&nbsp;&nbsp;<input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents( document.getElementById(\'members\') );">';
-  table = table + '</div><br />';
+    + '';
+  table = table + '</div></b>';
+  table += '<div class="col-sm-12 badge-secondary" ><img alt="Reload" title="Reload" src="images/svg-icons/refresh.svg" height="25" onclick="userSubmit(\'members\')">'
+   + '&nbsp;<img alt="select table content" title="select table content" src="images/svg-icons/text-selection.svg" height="25" onclick="selectElementContents(document.getElementById(\'members\'));">';
 
-  if (integrateFactionStats) table = table + '<div class="float-right"><button type="button" onclick="callTornStatsAPI(\'' + trustedApiKey + '\', ' + statusData.ID + ', \'faction\', ' + cacheStats + ')" class="btn btn-primary btn-sm">Get Faction Stats</button></div>';
+   if (integrateFactionStats) table += '&nbsp;<img alt="Get Faction Stats" title="Get Faction Stats from TornStats" src="images/svg-icons/stats.svg" height="25" onclick="callTornStatsAPI(\'' + trustedApiKey + '\', ' + statusData.ID + ', \'faction\', ' + cacheStats + ')"';
+
+   table += '</div></div>'; 
+
+  //if (integrateFactionStats) table = table + '<div class="float-right"><button type="button" onclick="callTornStatsAPI(\'' + trustedApiKey + '\', ' + statusData.ID + ', \'faction\', ' + cacheStats + ')" class="btn btn-primary btn-sm">Get Faction Stats</button></div>';
 
 
 
@@ -1842,11 +1848,11 @@ function checkAPIKey() {
 
 function hideElementByID(element) {
   //document.getElementById(element).hidden = "true";
-  if (document.getElementById('btnHideFilter').innerHTML == 'Hide Filter') {
-    document.getElementById('btnHideFilter').innerHTML = 'Show Filter';
+  if (document.getElementById('btnHideFilter').innerHTML == 'Hide&nbsp;Filter') {
+    document.getElementById('btnHideFilter').innerHTML = 'Show&nbsp;Filter';
     document.getElementById(element).hidden = true;
   } else {
-    document.getElementById('btnHideFilter').innerHTML = 'Hide Filter';
+    document.getElementById('btnHideFilter').innerHTML = 'Hide&nbsp;Filter';
     document.getElementById(element).hidden = false;
   }
 }
@@ -1990,7 +1996,7 @@ function overrideMemberFilters() {
   const detailsFilters = getUrlParam('details', 'NOT_SET');
   const activityFilter = getUrlParam('lastactive', 'NOT_SET');
 
-  console.log(statusFilters, detailsFilters);
+  //console.log(statusFilters, detailsFilters);
 
   if (statusFilters != 'NOT_SET') {
     var markedCheckboxStatus = document.getElementsByName('status');
