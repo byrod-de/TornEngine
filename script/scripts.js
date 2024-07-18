@@ -419,7 +419,7 @@ function callTornAPI(key, part, selection, source, fromTS = '', toTS = '') {
 
         if (source === 'members') {
           printAlert('Success', 'The API Call successful, find the results below.');
-          parseMembers(jsonData, selection, 'output', jsonData['members']);
+          parseMembers(jsonData, selection, 'output', jsonData['members'], jsonData['ranked_wars'], jsonData['raid_wars']);
         }
 
         if (source === 'keycheck') {
@@ -687,7 +687,7 @@ function parseFactionSpies(faction, cacheStats) {
 }
 
 
-function parseMembers(statusData, selection, element, membersList) {
+function parseMembers(statusData, selection, element, membersList, ranked_wars, raid_wars) {
 
   var trustedApiKey = document.getElementById("trustedkey").value;
 
@@ -992,9 +992,37 @@ function parseMembers(statusData, selection, element, membersList) {
   var ts = new Date(timeStamp * 1000);
   var formatted_date = ts.toISOString().replace('T', ' ').replace('.000Z', '');
 
-  document.getElementById('summary').innerHTML = `<span class="text-primary">${filteredMembers} members out of ${countMembers} total members filtered.</span> <span class="text-muted">Last refreshed: ${formatted_date}</span>`;
+  const summary = `<span class="text-primary">${filteredMembers} members out of ${countMembers} total members filtered.</span> <span class="text-muted">Last refreshed: ${formatted_date}</span><div class="war-info"></div>`;
+  document.getElementById('summary').innerHTML = summary;
+  
+  let war_info = '';
+  const rankedWar = Object.values(ranked_wars)[0];
+  if (rankedWar) {
+    const factionIDs = Object.keys(rankedWar.factions);
+    const faction1ID = factionIDs[0];
+    const faction2ID = factionIDs[1];
+    console.log(faction1ID, faction2ID, statusData.ID);
 
+    if (faction1ID != statusData.ID.toString()) war_info += `<div>Ranked war opponent: <a href="members.html?factionID=${faction1ID}">${rankedWar.factions[faction1ID].name} [${faction1ID}]</a></div>`;
+    if (faction2ID != statusData.ID.toString()) war_info += `<div>Ranked war opponent: <a href="members.html?factionID=${faction2ID}">${rankedWar.factions[faction2ID].name} [${faction2ID}]</a></div>`;
+  }
 
+  if (Array.isArray(raid_wars) && raid_wars.length > 0) {
+
+    for (const raidWar of raid_wars) {
+      console.log(raidWar['raiding_faction'], statusData.ID);
+      if (raidWar['raiding_faction'] === statusData.ID) {
+        war_info += `<div>Raid war opponent: <a href="members.html?factionID=${raidWar['defending_faction']}">${raidWar['defending_faction']}</a></div>`
+      }
+      if (raidWar['defending_faction'] === statusData.ID) {
+        war_info += `<div>Raid war opponent: <a href="members.html?factionID=${raidWar['raiding_faction']}">${raidWar['raiding_faction']}</a></div>`
+      }
+    }
+  }
+  if (war_info.length > 0) {
+    const button = `<button onclick="hideElementByID('war-details')" class="btn btn-outline-secondary btn-sm" id="btnHideWarDetails">Hide&nbsp;Details</button>`;
+    document.getElementById('war-info').innerHTML = '<div class="war-details" id="war-details">' + war_info + '</div>' + button;
+  }
 }
 
 function generatePositionCheckboxes(uniquePositions) {
@@ -1847,12 +1875,17 @@ function checkAPIKey() {
 }
 
 function hideElementByID(element) {
-  //document.getElementById(element).hidden = "true";
-  if (document.getElementById('btnHideFilter').innerHTML == 'Hide&nbsp;Filter') {
-    document.getElementById('btnHideFilter').innerHTML = 'Show&nbsp;Filter';
+  let buttonId = 'btnHideFilter';
+  let label = 'Filter';
+  if (element === 'war-details') {
+    buttonId = 'btnHideWarDetails';
+    label = 'Details';
+  }
+  if (document.getElementById(buttonId).innerHTML == `Hide&nbsp;${label}`) {
+    document.getElementById(buttonId).innerHTML = `Show&nbsp;${label}`;
     document.getElementById(element).hidden = true;
   } else {
-    document.getElementById('btnHideFilter').innerHTML = 'Hide&nbsp;Filter';
+    document.getElementById(buttonId).innerHTML = `Hide&nbsp;${label}`;
     document.getElementById(element).hidden = false;
   }
 }
