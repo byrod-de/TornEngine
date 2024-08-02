@@ -2416,26 +2416,39 @@ function formatDiscordTimestamp() {
     'F': { dateStyle: 'full', timeStyle: 'short' },
     'R': { style: 'long', numeric: 'auto' },
   };
+function automaticRelativeDifference(d) {
+  const secondsDiff = Math.round((new Date() - d) / 1000) * -1;
+  console.log('secondsDiff:', secondsDiff);
 
-  function automaticRelativeDifference(d) {
-    const secondsDiff = Math.round((new Date() - d) / 1000);
-    if (secondsDiff > 86400 * 30 * 10) {
-      return { duration: Math.round(secondsDiff / (86400 * 365)), unit: 'years' };
-    }
-    if (secondsDiff > 86400 * 25) {
-      return { duration: Math.round(secondsDiff / (86400 * 30)), unit: 'months' };
-    }
-    if (secondsDiff > 3600 * 21) {
-      return { duration: Math.round(secondsDiff / 86400), unit: 'days' };
-    }
-    if (secondsDiff > 60 * 44) {
-      return { duration: Math.round(secondsDiff / 3600), unit: 'hours' };
-    }
-    if (secondsDiff > 30) {
-      return { duration: Math.round(secondsDiff / 60), unit: 'minutes' };
-    }
-    return { duration: secondsDiff, unit: 'seconds' };
+  if (secondsDiff > 86400 * 30 * 10) {
+    const duration = Math.round(secondsDiff / (86400 * 365));
+    console.log('duration (years):', duration);
+    return { duration: duration, unit: 'years' };
   }
+  if (secondsDiff > 86400 * 25) {
+    const duration = Math.round(secondsDiff / (86400 * 30));
+    console.log('duration (months):', duration);
+    return { duration: duration, unit: 'months' };
+  }
+  if (secondsDiff > 3600 * 21) {
+    const duration = Math.round(secondsDiff / 86400);
+    console.log('duration (days):', duration);
+    return { duration: duration, unit: 'days' };
+  }
+  if (secondsDiff > 60 * 44) {
+    const duration = Math.round(secondsDiff / 3600);
+    console.log('duration (hours):', duration);
+    return { duration: duration, unit: 'hours' };
+  }
+  if (secondsDiff > 30) {
+    const duration = Math.round(secondsDiff / 60);
+    console.log('duration (minutes):', duration);
+    return { duration: duration, unit: 'minutes' };
+  }
+  const duration = secondsDiff;
+  console.log('duration (seconds):', duration);
+  return { duration: duration, unit: 'seconds' };
+}
 
   function updateOutput() {
     const combinedMilliseconds = dateInput.valueAsNumber + timeInput.valueAsNumber + new Date().getTimezoneOffset() * 60000;
@@ -2443,9 +2456,14 @@ function formatDiscordTimestamp() {
     const timestamp = Math.floor(selectedDate.getTime() / 1000);
     output.value = `<t:${timestamp}:${typeInput.value}>`;
 
+    console.log(selectedDate);
+    console.log(combinedMilliseconds);
+    console.log(timestamp);
+
     if (['R'].includes(typeInput.value)) {
       const formatter = new Intl.RelativeTimeFormat(navigator.language || 'en', typeFormats[typeInput.value] || {});
       const format = automaticRelativeDifference(selectedDate);
+      console.log(format.duration, format.unit);
       preview.value = formatter.format(format.duration, format.unit);
     } else {
       const formatter = new Intl.DateTimeFormat(navigator.language || 'en', typeFormats[typeInput.value] || {});
