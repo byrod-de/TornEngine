@@ -182,7 +182,7 @@ function callTornStatsAPI(apiKey, id, selection, cacheStats) {
             + '<br />Please make sure to use the same API Key as confiured in <a href="https://beta.tornstats.com/settings/general" target="_blank">TornStats</a>.';
         } else {
           if (jsonData.spy.message.includes("Spy not found.")) {
-  
+
             let statsModalBody = '';
 
             statsModalBody = '<div class="alert alert-info"><strong>Warning: </strong>Spy not found on Tornstats.</div>';
@@ -746,11 +746,11 @@ function parseMembers(statusData, selection, element, membersList, ranked_wars, 
     + '';
   table = table + '</div></b>';
   table += '<div class="col-sm-12 badge-secondary" ><img alt="Reload" title="Reload" src="images/svg-icons/refresh.svg" height="25" onclick="userSubmit(\'members\')">'
-   + '&nbsp;<img alt="select table content" title="select table content" src="images/svg-icons/text-selection.svg" height="25" onclick="selectElementContents(document.getElementById(\'members\'));">';
+    + '&nbsp;<img alt="select table content" title="select table content" src="images/svg-icons/text-selection.svg" height="25" onclick="selectElementContents(document.getElementById(\'members\'));">';
 
-   if (integrateFactionStats) table += '&nbsp;<img alt="Get Faction Stats" title="Get Faction Stats from TornStats" src="images/svg-icons/stats.svg" height="25" onclick="callTornStatsAPI(\'' + trustedApiKey + '\', ' + statusData.ID + ', \'faction\', ' + cacheStats + ')"';
+  if (integrateFactionStats) table += '&nbsp;<img alt="Get Faction Stats" title="Get Faction Stats from TornStats" src="images/svg-icons/stats.svg" height="25" onclick="callTornStatsAPI(\'' + trustedApiKey + '\', ' + statusData.ID + ', \'faction\', ' + cacheStats + ')"';
 
-   table += '</div></div>'; 
+  table += '</div></div>';
 
   //if (integrateFactionStats) table = table + '<div class="float-right"><button type="button" onclick="callTornStatsAPI(\'' + trustedApiKey + '\', ' + statusData.ID + ', \'faction\', ' + cacheStats + ')" class="btn btn-primary btn-sm">Get Faction Stats</button></div>';
 
@@ -994,7 +994,7 @@ function parseMembers(statusData, selection, element, membersList, ranked_wars, 
 
   const summary = `<span class="text-primary">${filteredMembers} members out of ${countMembers} total members filtered.</span> <span class="text-muted">Last refreshed: ${formatted_date}</span><div class="war-info"></div>`;
   document.getElementById('summary').innerHTML = summary;
-  
+
   let war_info = '';
   const rankedWar = Object.values(ranked_wars)[0];
   if (rankedWar) {
@@ -2384,11 +2384,15 @@ function formatDiscordTimestamp() {
   const output = document.getElementById('outputCode');
   const preview = document.getElementById('outputDate');
   const copyButton = document.getElementById('copyButton');
+  const useGmtCheckbox = document.getElementById('useGmtCheckbox');
+
+  const localTimezoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
 
   dateInput.addEventListener('input', updateOutput);
   timeInput.addEventListener('input', updateOutput);
   typeInput.addEventListener('input', updateOutput);
-  output.addEventListener('mouseover', function () { this.select(); });
+  useGmtCheckbox.addEventListener('change', updateOutput);
+  output.addEventListener('mouseover', function() { this.select(); });
   copyButton.addEventListener('click', async () => {
     updateOutput();
     try {
@@ -2416,42 +2420,43 @@ function formatDiscordTimestamp() {
     'F': { dateStyle: 'full', timeStyle: 'short' },
     'R': { style: 'long', numeric: 'auto' },
   };
-function automaticRelativeDifference(d) {
-  const secondsDiff = Math.round((new Date() - d) / 1000) * -1;
-  console.log('secondsDiff:', secondsDiff);
+  function automaticRelativeDifference(d) {
+    const secondsDiff = Math.round((new Date() - d) / 1000) * -1;
+    console.log('secondsDiff:', secondsDiff);
 
-  if (secondsDiff > 86400 * 30 * 10) {
-    const duration = Math.round(secondsDiff / (86400 * 365));
-    console.log('duration (years):', duration);
-    return { duration: duration, unit: 'years' };
+    if (secondsDiff > 86400 * 30 * 10) {
+      const duration = Math.round(secondsDiff / (86400 * 365));
+      console.log('duration (years):', duration);
+      return { duration: duration, unit: 'years' };
+    }
+    if (secondsDiff > 86400 * 25) {
+      const duration = Math.round(secondsDiff / (86400 * 30));
+      console.log('duration (months):', duration);
+      return { duration: duration, unit: 'months' };
+    }
+    if (secondsDiff > 3600 * 21) {
+      const duration = Math.round(secondsDiff / 86400);
+      console.log('duration (days):', duration);
+      return { duration: duration, unit: 'days' };
+    }
+    if (secondsDiff > 60 * 44) {
+      const duration = Math.round(secondsDiff / 3600);
+      console.log('duration (hours):', duration);
+      return { duration: duration, unit: 'hours' };
+    }
+    if (secondsDiff > 30) {
+      const duration = Math.round(secondsDiff / 60);
+      console.log('duration (minutes):', duration);
+      return { duration: duration, unit: 'minutes' };
+    }
+    const duration = secondsDiff;
+    console.log('duration (seconds):', duration);
+    return { duration: duration, unit: 'seconds' };
   }
-  if (secondsDiff > 86400 * 25) {
-    const duration = Math.round(secondsDiff / (86400 * 30));
-    console.log('duration (months):', duration);
-    return { duration: duration, unit: 'months' };
-  }
-  if (secondsDiff > 3600 * 21) {
-    const duration = Math.round(secondsDiff / 86400);
-    console.log('duration (days):', duration);
-    return { duration: duration, unit: 'days' };
-  }
-  if (secondsDiff > 60 * 44) {
-    const duration = Math.round(secondsDiff / 3600);
-    console.log('duration (hours):', duration);
-    return { duration: duration, unit: 'hours' };
-  }
-  if (secondsDiff > 30) {
-    const duration = Math.round(secondsDiff / 60);
-    console.log('duration (minutes):', duration);
-    return { duration: duration, unit: 'minutes' };
-  }
-  const duration = secondsDiff;
-  console.log('duration (seconds):', duration);
-  return { duration: duration, unit: 'seconds' };
-}
 
   function updateOutput() {
-    const combinedMilliseconds = dateInput.valueAsNumber + timeInput.valueAsNumber + new Date().getTimezoneOffset() * 60000;
+    const selectedTimeZone = useGmtCheckbox.checked ? 0 : localTimezoneOffset;
+    const combinedMilliseconds = dateInput.valueAsNumber + timeInput.valueAsNumber + selectedTimeZone;
     const selectedDate = new Date(combinedMilliseconds);
     const timestamp = Math.floor(selectedDate.getTime() / 1000);
     output.value = `<t:${timestamp}:${typeInput.value}>`;
