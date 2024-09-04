@@ -1459,6 +1459,7 @@ function parsePayouts(crimeData, element, membersList) {
   var memberMoney = {};
   var memberSuccess = {};
   var memberFailed = {};
+  var memberIds = {};
   var factionMoney = 0;
   var factionSuccess = 0;
   var factionFailed = 0;
@@ -1518,7 +1519,6 @@ function parsePayouts(crimeData, element, membersList) {
         var failed = 0;
         var success = 0;
         var participants = '';
-        var tmp = '';
         var countRank = 0;
         var prefix = '';
 
@@ -1549,10 +1549,12 @@ function parsePayouts(crimeData, element, membersList) {
                 memberMoney[memberName] = memberMoney[memberName] + (crime.money_gain / splitFactor);
                 memberSuccess[memberName] = memberSuccess[memberName] + success;
                 memberFailed[memberName] = memberFailed[memberName] + failed;
+                memberIds[memberName] = memberID;
               } else {
                 memberMoney[memberName] = (crime.money_gain / splitFactor);
                 memberSuccess[memberName] = success;
                 memberFailed[memberName] = failed;
+                memberIds[memberName] = memberID;
               }
             } else {
               memberName = memberID;
@@ -1569,10 +1571,17 @@ function parsePayouts(crimeData, element, membersList) {
             }
 
             if (participants === '') {
-              participants = memberName;
-
+              let tmpName = memberName;
+              if (!weightedPerRank) {
+                tmpName = `<a href="https://www.torn.com/factions.php?step=your#/tab=controls&addMoneyTo=${memberID}&money=${memberMoney[memberName]}" target="_blank">${memberName}</a>`;
+              }
+              participants = tmpName;
             } else {
-              participants = participants + ', ' + memberName;
+              let tmpName = memberName;
+              if (!weightedPerRank) {
+                tmpName = `<a href="https://www.torn.com/factions.php?step=your#/tab=controls&addMoneyTo=${memberID}&money=${memberMoney[memberName]}" target="_blank">${memberName}</a>`;
+              }
+              participants = participants + ', ' + tmpName;
             }
           });
         });
@@ -1607,20 +1616,31 @@ function parsePayouts(crimeData, element, membersList) {
   if (factionFailed > 0) { badgeFailed = 'badge-danger'; }
   if (factionSuccess > 0) { badgeSuccess = 'badge-success'; }
 
-  table += `<tr class="table-dark">`
-    + `<td colspan = "3">Totals</td>`
+  table += `</tbody><tfoot><tr class="table-dark">`
+    + `<td>Totals</td>`
+    + `<td></td>`
+    + `<td></td>`
     + `<td>`
     + `<span class="badge badge-pill ${badgeFailed}">${factionFailed}</span>-`
     + `<span class="badge badge-pill ${badgeSuccess}">${factionSuccess}</span>`
     + `</td>`
     + `<td>$${totalMoney.toLocaleString('en-US')}</td>`
     + `<td>${totalRespect}</td>`
-    + `</tr>`;
+    + `</tr></tfoot>`;
 
-  table = table + '</tbody></table>';
+  table = table + '</table>';
   document.getElementById(element).innerHTML = table;
 
 
+  $(document).ready(function () {
+    $('#totals').DataTable({
+      "paging": false,
+      "order": [[0, "asc"]],
+      "info": false,
+      "stateSave": true,
+      "footer": true
+    });
+  });
 
   var multiplier = 0;
   var numberOfTeams = paLeads.split(';').length - 1;
@@ -1652,7 +1672,7 @@ function parsePayouts(crimeData, element, membersList) {
     if (name.startsWith('4|')) multiplier = 0.1 / numberOfTeams;
 
     summary = summary + '<tr>'
-      + '<td>' + name + '</td>';
+      + '<td>' + `<a href="https://www.torn.com/factions.php?step=your#/tab=controls&addMoneyTo=${memberIds[name]}&money=${memberMoney[name]}" target="_blank">${name}</a>` + '</td>';
 
     if (!weightedPerRank) {
       summary = summary + '<td>' + ' $' + memberMoney[name].toLocaleString('en-US') + '</td>';
@@ -1670,17 +1690,24 @@ function parsePayouts(crimeData, element, membersList) {
   badgeFailed = 'badge-dark';
   if (factionFailed > 0) { badgeFailed = 'badge-danger'; }
   if (factionSuccess > 0) { badgeSuccess = 'badge-success'; }
-  summary = summary + '<tr class="table-dark">'
+  summary = summary + '</tbody><tfoot><tr class="table-dark">'
     + '<td>Faction totals</td>'
     + '<td>' + ' $' + factionMoney.toLocaleString('en-US') + '</td>'
     + '<td><span class="badge badge-pill ' + badgeFailed + '">' + factionFailed + '</span></td>'
     + '<td><span class="badge badge-pill ' + badgeSuccess + '">' + factionSuccess + '</span></td>'
-    + '</tr>';
-  summary = summary + '</tbody></table>';
-
-
+    + '</tr></tfoot>';
+  summary = summary + '</table>';
 
   document.getElementById('summary').innerHTML = summary;
+
+  $(document).ready(function () {
+    $('#individual').DataTable({
+      "paging": false,
+      "order": [[0, "asc"]],
+      "info": false,
+      "stateSave": true
+    });
+  });
 
 
 }
