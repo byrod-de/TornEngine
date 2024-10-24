@@ -72,6 +72,11 @@ function userSubmit(selection) {
   if (trustedApiKey === '') {
     printAlert('Warning', 'You might want to enter your API key if you expect this to work...');
   } else {
+
+    if (selection == 'pa_planner') {
+      callTornAPI(trustedApiKey, 'faction', 'basic,crimeexp', 'pa_planner');
+    }
+
     if (selection == 'pa_payouts') {
 
       var today = new Date();
@@ -366,6 +371,16 @@ function callTornAPI(key, part, selection, source, fromTS = '', toTS = '') {
         }
       } else {
 
+        if (selection === 'basic,crimeexp' && source === 'pa_planner') {
+          if (jsonData.hasOwnProperty('crimeexp') && jsonData.hasOwnProperty('members')) {
+            printAlert('Success', 'The API Call successful, find the results below.');
+
+            parseCrimeexp(jsonData['crimeexp'], 'output', jsonData['members']);
+          } else {
+            printAlert('Warning', 'Ask your faction leader for faction API permissions.');
+          }
+        }
+
         if (selection === 'basic,crimes' && source === 'pa_payouts') {
           if (jsonData.hasOwnProperty('crimes') && jsonData.hasOwnProperty('members')) {
             printAlert('Success', 'The API Call successful, find the results below.');
@@ -640,6 +655,107 @@ function parseKeyInfo(keyInfoData, selection, element, keyInfo) {
   document.getElementById(element).innerHTML = table;
 }
 
+
+function parseCrimeexp(crimeexp, element, membersList) {
+
+  var numberOfTeams = document.getElementById('numberOfTeams').innerHTML;
+  var carriedTeams = document.getElementById('carriedTeams').innerHTML;
+
+  function groupEntries(ids, numGroups, carriedTeam) {
+    const groups = [];
+    const numEntries = numGroups * 4;
+  
+    for (let i = 0; i < carriedTeam; i++) {
+      const carriedGroup = [];
+      carriedGroup.push(ids[0], ids[numEntries - 3 - i * 4], ids[numEntries - 2 - i * 4], ids[numEntries - 1 - i * 4]);
+      groups.push(carriedGroup);
+      ids = ids.slice(1);
+    }
+  
+    for (let i = 0; i < numGroups - carriedTeam; i++) {
+      const group = [];
+      const start = i;
+  
+      group.push(ids[start]); // first element
+      group.push(ids[(numGroups - carriedTeam) * 4 - 1 - i]); // last element
+      group.push(ids[Math.floor(((numGroups - carriedTeam) * 4) / 2) - 1 - i]); // middle element (before)
+      group.push(ids[Math.floor(((numGroups - carriedTeam) * 4) / 2) + i]); // middle element (after)
+  
+      groups.push(group);
+    }
+  
+    return groups;
+  }
+
+  // Function to generate a color scale
+  function getColorScale(numColors) {
+    const colors = [];
+    const colorScheme = [
+      '#df691a', '#ff9900', '#ffcc00', '#ffff00',
+      '#ccff00', '#99ff00', '#66ff00', '#33ff00',
+      '#00ff33', '#00ff66', '#00ff99', '#00ffcc',
+      '#00ffff', '#00ccff', '#0099ff', '#0066ff',
+      '#0033ff', '#3300ff', '#6600ff', '#9900ff',
+      '#cc00ff', '#ff00ff', '#ff00cc', '#ff0099',
+      '#ff0066', '#ff0033'
+    ];
+  
+    for (let i = 0; i < numColors; i++) {
+      const color = colorScheme[i % colorScheme.length];
+      colors.push(color);
+    }
+  
+    return colors;
+  }
+
+  const groupedEntries = groupEntries(crimeexp, numberOfTeams, carriedTeams);	
+
+
+  // Get the number of groups
+  const numGroups = groupedEntries.length;
+
+  // Generate the color scale
+  const colorScale = getColorScale(numGroups);
+
+  var table = `<div class="col-sm-12 badge-primary"><b>Member List by Crime Experience</b> <input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents(document.getElementById('members'));"></div>`;
+  table += '<br />';
+  table += '<table class="table table-hover" id="members"><thead><tr>'
+    + '<th>CE Rank</th>'
+    + '<th>Member</th>'
+    + '<th>PA Team</th>'
+    + '</tr></thead><tbody>';
+
+
+  for (let i = 0; i < crimeexp.length; i++) {
+    const rank = i + 1;
+    const member = membersList[crimeexp[i]].name;
+    const groupIndex = groupedEntries.findIndex((group) => group.includes(crimeexp[i]));
+
+    let paTeamName = '';
+    if (groupIndex >= 0) {
+      paTeamName = `PA Team ${groupIndex + 1}`;
+    } else {
+      paTeamName = '<span class="text-secondary">No PA Team</span>';
+    }
+    const color = colorScale[groupIndex];
+
+    let entry = `<tr><td>${rank}</td><td><a href="https://www.torn.com/profiles.php?XID=${crimeexp[i]}" target="_blank">${member} [${crimeexp[i]}]</a></td><td style="color: ${color}">${paTeamName}</td></tr>`;
+    table += entry;
+  }
+
+  table = table + '</tbody></table>';
+
+  $(document).ready(function () {
+    $('#members').DataTable({
+      "paging": false,
+      "order": [[0, "asc"]],
+      "info": false,
+      "stateSave": false
+    });
+  });
+
+  document.getElementById(element).innerHTML = table;
+}
 
 function parseFactionSpies(faction, cacheStats) {
   var membersList = faction['members'];
@@ -1573,13 +1689,13 @@ function parsePayouts(crimeData, element, membersList) {
             if (participants === '') {
               let tmpName = memberName;
               if (!weightedPerRank) {
-                tmpName = `<a href="https://www.torn.com/factions.php?step=your#/tab=controls&addMoneyTo=${memberID}&money=${memberMoney[memberName]}" target="_blank">${memberName}</a>`;
+                tmpName = `<a href="https://www.torn.com/factions.php?step=your#/tab=controls&addMoneyTo=${memberID}&money=${memberMoney[memberName]}" target="_blank">${memberName} [${memberID}]</a>`;
               }
               participants = tmpName;
             } else {
               let tmpName = memberName;
               if (!weightedPerRank) {
-                tmpName = `<a href="https://www.torn.com/factions.php?step=your#/tab=controls&addMoneyTo=${memberID}&money=${memberMoney[memberName]}" target="_blank">${memberName}</a>`;
+                tmpName = `<a href="https://www.torn.com/factions.php?step=your#/tab=controls&addMoneyTo=${memberID}&money=${memberMoney[memberName]}" target="_blank">${memberName} [${memberID}]</a>`;
               }
               participants = participants + ', ' + tmpName;
             }
@@ -2419,7 +2535,7 @@ function formatDiscordTimestamp() {
   timeInput.addEventListener('input', updateOutput);
   typeInput.addEventListener('input', updateOutput);
   useGmtCheckbox.addEventListener('change', updateOutput);
-  output.addEventListener('mouseover', function() { this.select(); });
+  output.addEventListener('mouseover', function () { this.select(); });
   copyButton.addEventListener('click', async () => {
     updateOutput();
     try {

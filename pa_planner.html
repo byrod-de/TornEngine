@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+	
 <head>
 <title>Torn Engine - A collection of more or less useful things</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
-<link rel="icon" type="image/png" href="images/mstile-144x144.png"
-	sizes="32x32" />
+<link rel="icon" type="image/png" href="images/mstile-144x144.png" sizes="32x32" />
 <meta name="msapplication-TileColor" content="#ffffff" />
 <meta name="msapplication-TileImage" content="images/logo-144x144.png" />
 
@@ -21,8 +21,15 @@
 <script src="script/custom.js"></script>
 <script src="script/jquery.dataTables.min.js"></script>
 
+
+<link rel="stylesheet" href="ext/nouislider.css">
+<script src="ext/nouislider.js"></script>
+<script src="ext/wNumb.js"></script>
+
+<link rel="stylesheet" href="css/custom.css" />
+
 </head>
-<body onload="loadKeyFromSession('rankedwars')">
+<body onload="loadKeyFromSession('pa_payouts')">
 
 	<div class="container-fluid">
 		<br />
@@ -42,7 +49,8 @@
 			<div class="col-sm-4 badge-primary">
 				<b>Faction Tools</b>
 			</div>
-			<div class="col-sm-8 badge-secondary">Ranked war overwiev</div>
+			<div class="col-sm-8 badge-secondary">Something about PA
+				Payouts</div>
 		</div>
 		<br />
 
@@ -57,7 +65,7 @@
 						<div class="dropdown-menu ">
 							<a class="dropdown-item" href="pa_payouts.html"><img alt="PA Payouts" src="images/svg-icons/pa_payouts.svg" height="20"> PA Payouts</a>
 							<a class="dropdown-item" href="oc_overview.html"><img alt="OC Overview" src="images/svg-icons/oc_overview.svg" height="20"> OC Overview</a>
-							<a class="dropdown-item" href="pa_planner.html"><img alt="PA Payouts" src="images/svg-icons/pa_planner.svg" height="20"> PA Planner</a>
+							<a class="dropdown-item active" href="pa_planner.html"><img alt="PA Payouts" src="images/svg-icons/pa_planner_active.svg" height="20"> PA Planner</a>
 							<a class="dropdown-item" href="news.html"><img alt="Faction News" src="images/svg-icons/news.svg" height="20"> News</a>
 						</div>
 					</li>
@@ -66,7 +74,7 @@
 							href="#" role="button" aria-haspopup="true" aria-expanded="true">Warring Tools</a>
 						<div class="dropdown-menu ">
 							<a class="dropdown-item" href="members.html"><img alt="Member Status" src="images/svg-icons/members.svg" height="20"> Member Status</a>
-							<a class="dropdown-item active" href="rankedwars.html"><img alt="Ranked Wars" src="images/svg-icons/rankedwars_active.svg" height="20"> Ranked Wars <sup class="badge badge-pill badge-secondary">BETA</sup></a>
+							<a class="dropdown-item" href="rankedwars.html"><img alt="Ranked Wars" src="images/svg-icons/rankedwars.svg" height="20"> Ranked Wars <sup class="badge badge-pill badge-secondary">BETA</sup></a>
 							<a class="dropdown-item" href="citymap.html"><img alt="City Map" src="images/svg-icons/citymap.svg" height="20"> City Map <sup class="badge badge-pill badge-warning">Experimental</sup></a>
 						</div>
 					</li>
@@ -85,83 +93,67 @@
 		<br />
 
 		<!-- Here comes the content *sings* -->
-		<form id="userForm" netlify>
+		<form id="userForm">
 			<div class="row">
 
 				<div class="form-group col-sm-3">
 					<label for="trustedkey">API Key *</label> <input type="input"
 						class="form-control" id="trustedkey" name="trustedkey"
-						placeholder="API Key" maxlength="16"/> <small id="hint"
-						class="form-text text-muted">API key with <i>Public
-							Only</i> access is sufficient
+						placeholder="API Key" maxlength="16" /> <small id="hint"
+						class="form-text text-muted">API key with <i>Full
+							Access</i> and faction AA permission required
 					</small>
 				</div>
 
 
-				<div class="form-group col-sm-2">
-					<legend>Select ranked war status</legend>
+				<div class="form-group col-sm-5">
+
+					<legend>Select Number of PA Teams</legend>
 					<div class="form-check">
-						<label class="form-check-label"> <input type="checkbox"
-							class="form-check-input" id="scheduled" name="warStatus"
-							value="scheduled"> Scheduled
-						</label>
-					</div>
-					<div class="form-check">
-						<label class="form-check-label"> <input type="checkbox"
-							class="form-check-input" id="ongoing" name="warStatus"
-							value="ongoing" checked=""> Ongoing
-						</label>
-					</div>
-					<div class="form-check">
-						<label class="form-check-label"> <input type="checkbox"
-							class="form-check-input" id="ended" name="warStatus"
-							value="ended"> Ended
-						</label>
-					</div>
+						<label for="Teams" class="form-label">Number of Teams: <span id="numberOfTeams" class="badge badge-pill badge-primary numberOfTeams"></span><br />Carried Teams: <span id="carriedTeams" class="badge badge-pill badge-secondary carriedTeams"></span></label>
+						<div class="slider-styled" id="slider"></div>
+					  </div>
 				</div>
 			</div>
-			<div class="row">
-				<div class="form-group col-sm-3" id="alert"></div>
-				<div class="form-group col-sm-2"></div>
 
-			</div>
+			<script>
+
+				noUiSlider.create(slider, {
+				  start: [0, 5],
+				  connect: true,
+				  tooltips: false,
+				  range: {
+					'min': 0,
+					'max': 25
+				  },
+				  format: wNumb({ decimals: 0 })
+				});
+
+				//var sliderInput = document.getElementById('teamRange');
+				slider.noUiSlider.on('update', function (values, handle, unencoded) {
+				  var teamRange = slider.noUiSlider.get();
+				  $('span.numberOfTeams').text(teamRange[1]);
+				  $('span.carriedTeams').text(teamRange[0]);
+
+				});
+		  
+			  </script>
 		</form>
 
 		<div class="row">
 			<div class="form-group col-sm-1">
-				<button onclick="userSubmit('rankedwars')" class="btn btn-primary"
+				<button onclick="userSubmit('pa_planner')" class="btn btn-primary"
 					id="submit">Submit</button>
 			</div>
 			<div class="form-group col-sm-7" id="alert"></div>
 		</div>
 
-		<p id="summary"></p>
-		<br />
 		<p id="output"></p>
 		<br />
+		<p id="summary"></p>
+		<br />
+		
 
-		<!-- Modal -->
-		<div class="modal fade" id="rankedWarModal" tabindex="-1"
-			role="dialog" aria-labelledby="rankedWarModal" aria-hidden="true">
-			<div
-				class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title" id="rankedWarModalLabel">Calling
-							TornStats API</h5>
-						<button type="button" class="close" data-dismiss="modal"
-							aria-label="Close">
-							<span aria-hidden="true">&times;</span>
-						</button>
-					</div>
-					<div class="modal-body" id="rankedWarModalBody">Please hold
-						the line...</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
-					</div>
-				</div>
-			</div>
-		</div>
 
 		<div class="card border-primary mb-3" style="max-width: 100%;">
 			<div class="card-header" id="contact">Fineprint</div>
