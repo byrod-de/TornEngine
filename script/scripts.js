@@ -514,7 +514,7 @@ function callTornAPIv2(key, part, selection, source, category = '') {
               printAlert('Success', 'The API Call successful, find the results below.');
             } else {
               console.log('OC 1.0 detected');
-              printAlert('Warning', 'You are trying to access OC 2.0 data, but your faction has not yet migrated.');
+              printAlert('ACHTUNG', 'You are trying to access OC 2.0 data, but your faction has not yet migrated.');
             }
 
             parseOC2(jsonData, 'output');
@@ -2206,6 +2206,7 @@ function printAlert(alertType, alertText) {
   if (alertType === 'Success') { alertClass = 'alert-success'; apiKeyForm = 'form-control is-valid'; };
   if (alertType === 'Info') { alertClass = 'alert-info'; apiKeyForm = 'form-control is-valid'; };
   if (alertType === 'Warning') { alertClass = 'alert-warning'; apiKeyForm = 'form-control is-invalid'; };
+  if (alertType === 'ACHTUNG') { alertClass = 'alert-warning'; apiKeyForm = 'form-control is-invalid'; };
   if (alertType === '#chedded') { alertClass = 'alert-danger'; apiKeyForm = 'form-control is-invalid'; };
 
   document.getElementById('alert').innerHTML = '<div class="alert ' + alertClass + '"><strong>' + alertType + ':</strong> ' + alertText + '</div>';
