@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-	
 <head>
 <title>Torn Engine - A collection of more or less useful things</title>
 <meta charset="utf-8">
@@ -21,15 +20,8 @@
 <script src="script/custom.js"></script>
 <script src="script/jquery.dataTables.min.js"></script>
 
-
-<link rel="stylesheet" href="ext/nouislider.css">
-<script src="ext/nouislider.js"></script>
-<script src="ext/wNumb.js"></script>
-
-<link rel="stylesheet" href="css/custom.css" />
-
 </head>
-<body onload="loadKeyFromSession('pa_payouts')">
+<body onload="loadKeyFromSession('oc_overview')">
 
 	<div class="container-fluid">
 		<br />
@@ -49,8 +41,7 @@
 			<div class="col-sm-4 badge-primary">
 				<b>Faction Tools</b>
 			</div>
-			<div class="col-sm-8 badge-secondary">Something about PA
-				Payouts</div>
+			<div class="col-sm-8 badge-secondary">Organized Crimes Summary</div>
 		</div>
 		<br />
 
@@ -65,9 +56,9 @@
 						<div class="dropdown-menu ">
 							<a class="dropdown-item" href="pa_payouts.html"><img alt="PA Payouts" src="images/svg-icons/pa_payouts.svg" height="20"> PA Payouts</a>
 							<a class="dropdown-item" href="oc_overview.html"><img alt="OC Overview" src="images/svg-icons/oc_overview.svg" height="20"> OC Overview</a>
-							<a class="dropdown-item active" href="pa_planner.html"><img alt="PA Payouts" src="images/svg-icons/pa_planner_active.svg" height="20"> PA Planner</a>
+							<a class="dropdown-item" href="pa_planner.html"><img alt="PA Payouts" src="images/svg-icons/pa_planner.svg" height="20"> PA Planner</a>
 							<a class="dropdown-item" href="news.html"><img alt="Faction News" src="images/svg-icons/news.svg" height="20"> News</a>
-							<a class="dropdown-item" href="oc2_center.html"><img alt="Faction News" src="images/svg-icons/oc2.svg" height="20"> OC 2.0 <sup class="badge badge-pill badge-warning">Experimental</sup></a>
+							<a class="dropdown-item active" href="oc2_center.html"><img alt="Faction News" src="images/svg-icons/oc2_active.svg" height="20"> OC 2.0 <sup class="badge badge-pill badge-warning">Experimental</sup></a>
 						</div>
 					</li>
 
@@ -109,51 +100,77 @@
 
 				<div class="form-group col-sm-5">
 
-					<legend>Select Number of PA Teams</legend>
-					<div class="form-check">
-						<label for="Teams" class="form-label">Number of Teams: <span id="numberOfTeams" class="badge badge-pill badge-primary numberOfTeams"></span><br />Carried Teams: <span id="carriedTeams" class="badge badge-pill badge-secondary carriedTeams"></span></label>
-						<div class="slider-styled" id="slider"></div>
-					  </div>
-				</div>
+					<legend>Category</legend>
+					<fieldset class="form-group">
+						<div class="form-check">
+							<input class="form-check-input" type="radio" name="categoryRadio" value="all"
+								id="all" checked=""> <label class="form-check-label"
+								for="all"> All (Recruiting, Planning &amp; Completed) </label>
+						</div>
+						<div class="form-check">
+							<input class="form-check-input" type="radio" name="categoryRadio" value="available"
+								id="available" checked=""> <label class="form-check-label"
+								for="available"> Available (Recruiting &amp; Planning) </label>
+						</div>
+						<div class="form-check">
+							<input class="form-check-input" type="radio" name="categoryRadio" value="recruiting"
+								id="recruiting"> <label class="form-check-label"
+								for="recruiting"> Recruiting </label>
+						</div>
+						<div class="form-check">
+							<input class="form-check-input" type="radio" name="categoryRadio" value="planning"
+								id="planning"> <label class="form-check-label"
+								for="planning"> Planning </label>
+						</div>
+
+						<div class="form-check">
+							<input class="form-check-input" type="radio" name="categoryRadio" value="completed"
+								id="completed"> <label class="form-check-label"
+								for="completed"> Completed (successful &amp; failure) </label>
+						</div>
+
+						<div class="form-check">
+							<input class="form-check-input" type="radio" name="categoryRadio" value="successful"
+								id="successful"> <label class="form-check-label"
+								for="successful"> Successful </label>
+						</div>
+						
+						<div class="form-check">
+							<input class="form-check-input" type="radio" name="categoryRadio" value="failed"
+								id="failed"> <label class="form-check-label"
+								for="failed"> Failed </label>
+						</div>
+
+
+					</fieldset>
+				</div >
 			</div>
 
-			<script>
+			<div class="row">
+				<div class="form-group col-sm-3" id="alert"></div>
+				<div class="form-group col-sm-2">
+				</div>
 
-				noUiSlider.create(slider, {
-				  start: [0, 5],
-				  connect: true,
-				  tooltips: false,
-				  range: {
-					'min': 0,
-					'max': 25
-				  },
-				  format: wNumb({ decimals: 0 })
-				});
-
-				//var sliderInput = document.getElementById('teamRange');
-				slider.noUiSlider.on('update', function (values, handle, unencoded) {
-				  var teamRange = slider.noUiSlider.get();
-				  $('span.numberOfTeams').text(teamRange[1]);
-				  $('span.carriedTeams').text(teamRange[0]);
-
-				});
-		  
-			  </script>
+			</div>
 		</form>
 
 		<div class="row">
 			<div class="form-group col-sm-1">
-				<button onclick="userSubmit('pa_planner')" class="btn btn-primary"
+				<button onclick="userSubmit('oc2_center')" class="btn btn-primary"
 					id="submit">Submit</button>
 			</div>
 			<div class="form-group col-sm-7" id="alert"></div>
 		</div>
 
-		<p id="output"></p>
-		<br />
 		<p id="summary"></p>
 		<br />
-		
+		<div class="container-fluid">
+			<div id="cardsContainer" class="row">
+
+			</div>
+		</div>
+		<p id="output"></p>
+		<br />
 
 
 		<div class="card border-primary mb-3" style="max-width: 100%;">

@@ -114,6 +114,16 @@ function userSubmit(selection) {
 
     }
 
+    if (selection == 'oc2_center') {
+      const category = document.getElementsByName('categoryRadio');
+      let selectedCategory = '';
+      for (let radio of category) {
+        if (radio.checked) selectedCategory = radio.value;
+      }
+      console.log(selectedCategory);
+      callTornAPIv2(trustedApiKey, 'faction', 'basic,crimes,members', 'oc2_center', selectedCategory);
+    }
+
     if (selection == 'reports') {
       callTornAPI(trustedApiKey, 'faction', 'basic,reports', 'reports');
     }
@@ -286,6 +296,7 @@ function callTornStatsAPI(apiKey, id, selection, cacheStats) {
   }
 
 }
+
 
 function callRankedWarDetails(key, id) {
   document.getElementById('rankedWarModalLabel').innerHTML = 'Calling TornStats API';
@@ -467,6 +478,156 @@ function callTornAPI(key, part, selection, source, fromTS = '', toTS = '') {
   request.send();
 }
 
+function callTornAPIv2(key, part, selection, source, category = '') {
+
+  let cat = '';
+
+  if (category !== '') cat = `&cat=${category}`;
+
+  var url = 'https://api.torn.com/v2/' + part + '/' + selection +'?key=' + key + cat + '&comment=tornengine';
+  console.log(url);
+
+  var request = new XMLHttpRequest();
+
+  request.open('GET', url, true);
+
+  request.onload = function () {
+
+    var jsonData = JSON.parse(this.response);
+
+    if (request.status >= 200 && request.status < 400) {
+
+      if (jsonData.hasOwnProperty('error')) {
+        if (jsonData['error'].code === 7) {
+          printAlert('Warning', 'You are trying to access sensible faction data, but are not allowed to. Ask your faction leader for faction API permissions.');
+        } else if (jsonData['error'].code === 2) {
+          printAlert('Error', 'You are using an incorrect API key.');
+        } else {
+          printAlert('Error', 'Torn API returned the following error: ' + jsonData['error'].error);
+        }
+      } else {
+
+        if (selection === 'basic,crimes,members' && source === 'oc2_center') {
+          if (jsonData.hasOwnProperty('crimes') && jsonData.hasOwnProperty('basic') && jsonData.hasOwnProperty('members')) {
+            printAlert('Success', 'The API Call successful, find the results below.');
+
+            parseOC2(jsonData, 'output');
+          } else {
+            printAlert('Warning', 'Ask your faction leader for faction API permissions.');
+          }
+        }
+      }
+    } else {
+      printAlert('#chedded', 'Torn API is currently not available.');
+    }
+  }
+  request.send();
+}
+
+function parseOC2(oc2Data, element) {
+  var crimes = oc2Data['crimes'];
+  var basic = oc2Data['basic'];
+  var members = oc2Data['members'];
+
+  const cardsContainer = document.getElementById('cardsContainer');
+  cardsContainer.innerHTML = '';
+
+  for (crime in crimes) {
+    let crimeData = crimes[crime];
+
+    const slots = crimeData.slots; //slots is an array of objects
+    let slotsString = '';
+    for (const slot of slots) {
+        let badgeSuccessChance = 'badge-success';
+        let badgeItemRequirement = 'badge-secondary';
+        //members is an array of objects, the member id is in the element id
+        const member = members.find(member => member.id === slot.user_id);
+        let memberName = ''; 
+        
+        if (member !== undefined) memberName = '<a href="https://www.torn.com/profiles.php?XID=' + slot.user_id + '" target="_blank">' + member.name + ' [' + slot.user_id + ']</a>';
+        if (member === undefined) memberName = '<span class="badge badge-pill badge-warning">no member assigned</span>';
+
+        if (slot.success_chance >= 75) badgeSuccessChance = 'badge-success';
+        if (slot.success_chance >= 50 && slot.success_chance < 75) badgeSuccessChance = 'badge-warning';
+        if (slot.success_chance < 50) badgeSuccessChance = 'badge-danger';
+        if (slot.user_id === null) badgeSuccessChance = 'badge-secondary';
+
+        const succesIcon = '<span class="badge badge-pill ' + badgeSuccessChance + '">' + slot.success_chance + '</span>';
+
+        let itemIconText = 'no item required';
+        if (slot.item_requirement !== null) {
+            if (slot.item_requirement.is_available === false) {
+              badgeItemRequirement = 'badge-danger';
+              itemIconText = 'item not available';
+            }
+            if (slot.item_requirement.is_available === true) {
+              badgeItemRequirement = 'badge-success';
+              itemIconText = 'item available';
+            }
+        }
+        const itemIcon = '<span class="badge badge-pill ' + badgeItemRequirement + '">' + itemIconText + '</span>';
+        let progressbar = '';
+        let userDetails = '';
+        if (slot.user !== null) {
+          userDetails = `${succesIcon} | ${itemIcon}`;
+          progressbar = '<div class="progress"><div class="progress-bar progress-bar-striped bg-info" role="progressbar" style="width: ' + slot.user.progress + '%" aria-valuenow="' + slot.user.progress + '" aria-valuemin="0" aria-valuemax="100">' + slot.user.progress + '</div></div>';
+        }
+        
+       
+
+        slotsString += `<b>${slot.position}</b> - ${memberName}<br />${userDetails}<br />${progressbar}<br />`;
+    }
+
+    //create card for each crime
+    const header = crimeData.name;
+    let color = 'primary';
+    switch (crimeData.status) {
+      case 'Recruiting': color = 'primary'; break;
+      case 'Planning': color = 'info'; break;
+      case 'Successful': color = 'success'; break;
+      case 'Failed': color = 'warning'; break;
+      default: color = 'primary'; break;
+    }
+
+    let formatted_date = 'N/A';
+    formatted_date = 'Created at ' + new Date(crimeData.created_at * 1000).toISOString().replace('T', ' ').replace('.000Z', '') + '<br />';
+
+    if (crimeData.ready_at > 0 && crimeData.ready_at !== null) {
+       formatted_date += 'Ready at ' + new Date(crimeData.ready_at * 1000).toISOString().replace('T', ' ').replace('.000Z', '');
+    }
+    const title = 'ID: ' + crimeData.id + ' - <span class="badge badge-pill badge-' + color + '">Status: ' + crimeData.status + '</span>';
+    const text = formatted_date + '<br />' + slotsString;
+
+    const card = document.createElement('div');
+    card.classList.add('card', `border-${color}`, 'mb-4');
+    card.style.maxWidth = '20rem';
+
+    const cardHeader = document.createElement('div');
+    cardHeader.classList.add('card-header', `bg-${color}`, 'text-white');
+    cardHeader.textContent = header;
+    card.appendChild(cardHeader);
+
+    const cardBody = document.createElement('div');
+    cardBody.classList.add('card-body');
+    card.appendChild(cardBody);
+
+    const cardTitle = document.createElement('strong');
+    cardTitle.classList.add('card-title');
+    cardTitle.innerHTML = title;
+    cardBody.appendChild(cardTitle);
+
+    const cardText = document.createElement('p');
+    cardText.classList.add('card-text');
+    cardText.innerHTML = text;
+    cardBody.appendChild(cardText);
+
+    const col = document.createElement('div');
+    col.classList.add('col-md-3', 'mb-3');
+    col.appendChild(card);
+    cardsContainer.appendChild(col);
+  }
+
+}
 
 function parsePropertyInfo(propertyInfoData, selection, element) {
   let countOwn = 0;
