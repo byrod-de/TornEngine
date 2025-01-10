@@ -509,7 +509,13 @@ function callTornAPIv2(key, part, selection, source, category = '') {
 
         if (selection === 'basic,crimes,members' && source === 'oc2_center') {
           if (jsonData.hasOwnProperty('crimes') && jsonData.hasOwnProperty('basic') && jsonData.hasOwnProperty('members')) {
-            printAlert('Success', 'The API Call successful, find the results below.');
+            if (jsonData['crimes'][0]?.slots ?? undefined != undefined) {
+              console.log('OC 2.0 detected');
+              printAlert('Success', 'The API Call successful, find the results below.');
+            } else {
+              console.log('OC 1.0 detected');
+              printAlert('Warning', 'You are trying to access OC 2.0 data, but your faction has not yet migrated.');
+            }
 
             parseOC2(jsonData, 'output');
           } else {
