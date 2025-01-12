@@ -69,7 +69,7 @@ function getMembersFilters() {
 function userSubmit(selection) {
   var trustedApiKey = getApiKey();
 
-  if (trustedApiKey === '') {
+  if (trustedApiKey === '' || trustedApiKey == null || trustedApiKey == undefined || trustedApiKey == 'null') {
     printAlert('Warning', 'You might want to enter your API key if you expect this to work...');
   } else {
 
@@ -514,7 +514,7 @@ function callTornAPIv2(key, part, selection, source, category = '') {
               printAlert('Success', 'The API Call successful, find the results below.');
             } else {
               console.log('OC 1.0 detected');
-              printAlert('ACHTUNG', 'You are trying to access OC 2.0 data, but your faction has not yet migrated.');
+              printAlert('ACHTUNG', 'Your selection did not return a valid OC 2.0 result, are you sure you migrated yet?');
             }
 
             parseOC2(jsonData, 'output');
