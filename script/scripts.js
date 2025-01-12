@@ -584,6 +584,15 @@ function parseOC2(oc2Data, element) {
         slotsString += `<b>${slot.position}</b> - ${memberName}<br />${userDetails}<br />${progressbar}<br />`;
     }
 
+    let rewards = '';
+    if (crimeData.status === 'Successful') {
+      const money = crimeData.rewards.money;
+      let items = crimeData.rewards.items.join(', ');
+      if (items === '') items = '<i>no items</i>';
+      const respect = crimeData.rewards.respect;
+      rewards = '<span class="text-success">Rewards: $' + abbreviateNumber(money) + ', ' + items + ', ' + respect + ' respect</span><br />';
+    }
+
     //create card for each crime
     const header = crimeData.name;
     let color = 'primary';
@@ -592,6 +601,7 @@ function parseOC2(oc2Data, element) {
       case 'Planning': color = 'info'; break;
       case 'Successful': color = 'success'; break;
       case 'Failed': color = 'warning'; break;
+      case 'Expired': color = 'secondary'; break;
       default: color = 'primary'; break;
     }
 
@@ -602,7 +612,7 @@ function parseOC2(oc2Data, element) {
        formatted_date += 'Ready at ' + new Date(crimeData.ready_at * 1000).toISOString().replace('T', ' ').replace('.000Z', '');
     }
     const title = 'ID: ' + crimeData.id + ' - <span class="badge badge-pill badge-' + color + '">Status: ' + crimeData.status + '</span>';
-    const text = formatted_date + '<br />' + slotsString;
+    const text = rewards + formatted_date + '<br />' + slotsString;
 
     const card = document.createElement('div');
     card.classList.add('card', `border-${color}`, 'mb-4');
