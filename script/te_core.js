@@ -109,7 +109,7 @@ function printAlert(alertType, alertText) {
     if (alertType === 'ACHTUNG') { alertClass = 'alert-warning'; apiKeyForm = 'form-control is-invalid'; }
     if (alertType === '#chedded') { alertClass = 'alert-danger'; apiKeyForm = 'form-control is-invalid'; }
 
-    document.getElementById('alert').innerHTML = '<div class="alert ' + alertClass + '"><strong>' + alertType + ':</strong> ' + alertText + '</div>';
+    document.getElementById('alert').innerHTML = '<div class="alert alert-dismissible ' + alertClass + '"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>' + alertType + ':</strong> ' + alertText + '</div>';
     document.getElementById('trustedkey').className = apiKeyForm;
 }
 
