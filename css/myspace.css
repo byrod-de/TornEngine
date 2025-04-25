@@ -1,0 +1,88 @@
+body {
+    background: url('https://i.gifer.com/7VE.gif') repeat;
+    color: lime;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    text-align: center;
+    animation: bgScroll 60s linear infinite;
+  }
+  
+  @keyframes bgScroll {
+    0% { background-position: 0 0; }
+    100% { background-position: 5000px 0; }
+  }
+  
+  .navbar {
+    background: linear-gradient(to right, purple, red) !important;
+    border-bottom: 4px dashed yellow;
+  }
+  
+  .navbar a {
+    color: cyan !important;
+    font-weight: bold;
+    text-shadow: 1px 1px magenta;
+  }
+  
+  .card {
+    background: url('https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExdjhuZjdtOWk3eHlmano4b25qaDBmZmw1NGY1OGIzeXBjOGY5N3M1byZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/S3bkh4BuHMyfC/giphy.gif') repeat !important;
+    border: 4px double fuchsia !important;
+    box-shadow: 0 0 20px hotpink;
+    color: yellow;
+  }
+  
+  .card-header {
+    background-color: magenta !important;
+    color: black;
+    font-weight: bold;
+  }
+  
+  .badge-primary {
+    background-color: blue !important;
+    color: white !important;
+  }
+  
+  .badge-secondary {
+    background-color: orange !important;
+    color: black !important;
+  }
+  
+  h1, h2, h3 {
+    color: yellow;
+    text-shadow: 2px 2px red;
+    font-size: 3em;
+  }
+  
+  a {
+    color: cyan !important;
+    text-decoration: none;
+  }
+  
+  a:hover {
+    text-decoration: underline wavy hotpink;
+  }
+  
+  .marquee {
+    font-size: 2em;
+    animation: blink 1s steps(1, start) infinite;
+  }
+  
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+  
+  .cursor-sparkle {
+    cursor: url('https://www.rw-designer.com/cursor-view/104646.png'), auto;
+  }
+  
+  /* Fake visitor counter styles */
+  #visitor-counter {
+    font-size: 1.5em;
+    background-color: black;
+    color: lime;
+    padding: 15px;
+    border: 3px ridge gold;
+    margin: 20px auto;
+    width: 300px;
+    text-align: center;
+    animation: blink 1.8s step-start infinite;
+  }
+  
