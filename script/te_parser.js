@@ -1,3 +1,15 @@
+/**
+ * Parses property information and updates the specified HTML element with a summary.
+ *
+ * @param {Object} data - The data containing property information of a player.
+ * @param {string} selection - The key to access specific property data within the data object.
+ * @param {string} elementId - The ID of the HTML element where the summary will be inserted.
+ *
+ * This function counts the number of trailers owned by a player and their spouse,
+ * then generates an HTML snippet summarizing these counts and inserts it into the
+ * specified HTML element. The summary includes a link to the player's profile.
+ */
+
 function parsePropertyInfo(data, selection, elementId) {
     let countOwn = 0;
     let countSpouse = 0;
