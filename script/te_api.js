@@ -129,6 +129,14 @@ function handleApiData(data, part, selections) {
           printAlert('Warning', 'Faction API permissions may be missing.');
         }
       }
+      if (part === 'faction' && selections === 'basic,crimes') {
+        if (data.crimes && data.members) {
+          parsePayouts(data.crimes, 'output', data.members);
+        } else {
+          printAlert('Warning', 'Faction API permissions may be missing.');
+        }
+      }
+      
       
 
     // other cases (members, attacks, etc.)

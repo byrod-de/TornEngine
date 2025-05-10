@@ -384,3 +384,262 @@ function parsePropertyInfo(data, selection, elementId) {
   
     document.getElementById(element).innerHTML = table;
   }
+
+
+  function parsePayouts(crimeData, element, membersList) {
+
+    var memberMoney = {};
+    var memberSuccess = {};
+    var memberFailed = {};
+    var memberIds = {};
+    var factionMoney = 0;
+    var factionSuccess = 0;
+    var factionFailed = 0;
+    var totalRespect = 0;
+    var totalMoney = 0;
+  
+    let badgeSuccess = 'badge-dark';
+    let badgeFailed = 'badge-dark';
+  
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const PA_CRIME_ID = 8;
+  
+    var firstDayOfMonth, lastDayOfMonth;
+  
+    var selectedMonthValue = document.getElementById('monthSelect').value;
+    var selectedMonthValue = document.getElementById('monthSelect').value;
+  
+    // Calculate the month offset based on selectedMonthValue
+    var monthOffset = parseInt(selectedMonthValue);
+  
+    // Calculate timestamps using the offset
+    var timestamps = calculateMonthTimestamps(today, currentMonth - monthOffset);
+    var firstDayOfMonth = timestamps.firstDay;
+    var lastDayOfMonth = timestamps.lastDay;
+  
+    var splitFactor = document.getElementById('range').value;
+    var weightedPerRank = document.getElementById('weighted').checked;
+    var paLeads = '';
+  
+    var selectElement = document.getElementById('monthSelect');
+    var selectedOption = selectElement.options[selectElement.selectedIndex];
+    var selectedMonthText = selectedOption.text;
+  
+  
+    var table = `<div class="col-sm-12 badge-primary"><b>PA Details for ${selectedMonthText}</b> <input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents(document.getElementById('totals'));"></div>`;
+    table += '<br />';
+    table += '<table class="table table-hover" id="totals"><thead><tr>'
+      + '<th>Date</th>'
+      + '<th>Participants</th>'
+      + '<th>Crime Type</th>'
+      + '<th>Result</th>'
+      + '<th>Money Gained<br/>'
+      + '<th>Respect Gained</th>'
+      + '</tr></thead><tbody>';
+  
+    for (var id in crimeData) {
+      var crime = crimeData[id];
+  
+      if (crime.crime_id === PA_CRIME_ID) {
+  
+        var ts = new Date(crime.time_completed * 1000);
+  
+        if (crime.initiated === 1 & crime.time_completed >= firstDayOfMonth && crime.time_completed <= lastDayOfMonth) {
+  
+          var crimeResult = '';
+          var failed = 0;
+          var success = 0;
+          var participants = '';
+          var countRank = 0;
+          var prefix = '';
+  
+          if (crime.success === 0) {
+            crimeResult = '<span class="badge badge-pill badge-danger">Failed</span>';
+            failed = 1;
+          } else {
+            crimeResult = '<span class="badge badge-pill badge-success">Success</span>';
+            success = 1;
+          }
+  
+          crime.participants.forEach(obj => {
+            Object.entries(obj).forEach(([key, value]) => {
+              var memberID = `${key}`;
+              countRank = countRank + 1;
+              if (weightedPerRank) {
+                prefix = countRank + '| ';
+              }
+  
+              var memberName = '';
+              if (membersList.hasOwnProperty(memberID)) {
+                memberName = prefix + membersList[memberID].name;
+                if (weightedPerRank && prefix === '1| ') {
+                  if (!paLeads.includes(memberName))
+                    paLeads = memberName + ';' + paLeads;
+                }
+                if (memberName in memberMoney) {
+                  memberMoney[memberName] = memberMoney[memberName] + (crime.money_gain / splitFactor);
+                  memberSuccess[memberName] = memberSuccess[memberName] + success;
+                  memberFailed[memberName] = memberFailed[memberName] + failed;
+                  memberIds[memberName] = memberID;
+                } else {
+                  memberMoney[memberName] = (crime.money_gain / splitFactor);
+                  memberSuccess[memberName] = success;
+                  memberFailed[memberName] = failed;
+                  memberIds[memberName] = memberID;
+                }
+              } else {
+                memberName = memberID;
+  
+                if (memberName in memberMoney) {
+                  memberMoney[memberName] = memberMoney[memberName] + (crime.money_gain / splitFactor);
+                  memberSuccess[memberName] = memberSuccess[memberName] + success;
+                  memberFailed[memberName] = memberFailed[memberName] + failed;
+                } else {
+                  memberMoney[memberName] = (crime.money_gain / splitFactor);
+                  memberSuccess[memberName] = success;
+                  memberFailed[memberName] = failed;
+                }
+              }
+  
+              if (participants === '') {
+                let tmpName = memberName;
+                if (!weightedPerRank) {
+                  tmpName = `<a href="https://www.torn.com/factions.php?step=your#/tab=controls&addMoneyTo=${memberID}&money=${memberMoney[memberName]}" target="_blank">${memberName} [${memberID}]</a>`;
+                }
+                participants = tmpName;
+              } else {
+                let tmpName = memberName;
+                if (!weightedPerRank) {
+                  tmpName = `<a href="https://www.torn.com/factions.php?step=your#/tab=controls&addMoneyTo=${memberID}&money=${memberMoney[memberName]}" target="_blank">${memberName} [${memberID}]</a>`;
+                }
+                participants = participants + ', ' + tmpName;
+              }
+            });
+          });
+  
+          if (weightedPerRank)
+            factionMoney = factionMoney + (crime.money_gain)
+  
+          else {
+            if (splitFactor == 5) { factionMoney = factionMoney + (crime.money_gain / splitFactor); }
+            if (splitFactor == 4) { factionMoney = 0; }
+          }
+  
+          factionSuccess = factionSuccess + success;
+          factionFailed = factionFailed + failed;
+          totalRespect = totalRespect + crime.respect_gain;
+          totalMoney = totalMoney + crime.money_gain;
+  
+          var formatted_date = ts.toISOString().replace('T', ' ').replace('.000Z', '');
+  
+          table += '<tr>'
+            + `<td>${formatted_date}</td>`
+            + `<td>${participants}</td>`
+            + `<td>${crime.crime_name}</td>`
+            + `<td>${crimeResult}</td>`
+            + `<td>$${crime.money_gain.toLocaleString('en-US')}</td>`
+            + `<td>${crime.respect_gain}</td>`
+            + `</tr>`;
+        }
+      }
+    }
+  
+    if (factionFailed > 0) { badgeFailed = 'badge-danger'; }
+    if (factionSuccess > 0) { badgeSuccess = 'badge-success'; }
+  
+    table += `</tbody><tfoot><tr class="table-dark">`
+      + `<td>Totals</td>`
+      + `<td></td>`
+      + `<td></td>`
+      + `<td>`
+      + `<span class="badge badge-pill ${badgeFailed}">${factionFailed}</span>-`
+      + `<span class="badge badge-pill ${badgeSuccess}">${factionSuccess}</span>`
+      + `</td>`
+      + `<td>$${totalMoney.toLocaleString('en-US')}</td>`
+      + `<td>${totalRespect}</td>`
+      + `</tr></tfoot>`;
+  
+    table = table + '</table>';
+    document.getElementById(element).innerHTML = table;
+  
+  
+    $(document).ready(function () {
+      $('#totals').DataTable({
+        "paging": false,
+        "order": [[0, "asc"]],
+        "info": false,
+        "stateSave": true,
+        "footer": true
+      });
+    });
+  
+    var multiplier = 0;
+    var numberOfTeams = paLeads.split(';').length - 1;
+  
+    var summary = `<div class="col-sm-12 badge-primary" ><b>Individual results for ${selectedMonthText}</b> <input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents( document.getElementById('individual') );"></div>`;
+    summary += '<br />';
+    summary += '<table class="table table-hover" id="individual"><thead><tr>'
+      + '<th>Name</th>';
+  
+    if (weightedPerRank) {
+      summary += '<th>Money earned (weighted per PA rank)</th>';
+    } else {
+      summary += `<th>Money earned (<sup>1</sup>/<sub>${splitFactor}</sub>th of result)</th>`;
+    }
+  
+    summary += '<th>Fail</th>'
+      + '<th>Success</th>'
+      + '</tr></thead><tbody>';
+  
+    memberMoney = sortObj(memberMoney);
+  
+    for (var name in memberMoney) {
+      if (memberFailed[name] > 0) { badgeFailed = 'badge-danger'; } else { badgeFailed = 'badge-dark'; }
+      if (memberSuccess[name] > 0) { badgeSuccess = 'badge-success'; } else { badgeSuccess = 'badge-dark'; }
+  
+      if (name.startsWith('1|')) multiplier = 0.4 / numberOfTeams;
+      if (name.startsWith('2|')) multiplier = 0.3 / numberOfTeams;
+      if (name.startsWith('3|')) multiplier = 0.2 / numberOfTeams;
+      if (name.startsWith('4|')) multiplier = 0.1 / numberOfTeams;
+  
+      summary = summary + '<tr>'
+        + '<td>' + `<a href="https://www.torn.com/factions.php?step=your#/tab=controls&addMoneyTo=${memberIds[name]}&money=${memberMoney[name]}" target="_blank">${name}</a>` + '</td>';
+  
+      if (!weightedPerRank) {
+        summary = summary + '<td>' + ' $' + memberMoney[name].toLocaleString('en-US') + '</td>';
+      }
+      else {
+        summary = summary + '<td>' + ' $' + (factionMoney * multiplier).toLocaleString('en-US') + '</td>';
+      }
+  
+      summary = summary + '<td><span class="badge badge-pill ' + badgeFailed + '">' + memberFailed[name] + '</span></td>'
+        + '<td><span class="badge badge-pill ' + badgeSuccess + '">' + memberSuccess[name] + '</span></td>'
+        + '</tr>';
+  
+    }
+    badgeSuccess = 'badge-dark';
+    badgeFailed = 'badge-dark';
+    if (factionFailed > 0) { badgeFailed = 'badge-danger'; }
+    if (factionSuccess > 0) { badgeSuccess = 'badge-success'; }
+    summary = summary + '</tbody><tfoot><tr class="table-dark">'
+      + '<td>Faction totals</td>'
+      + '<td>' + ' $' + factionMoney.toLocaleString('en-US') + '</td>'
+      + '<td><span class="badge badge-pill ' + badgeFailed + '">' + factionFailed + '</span></td>'
+      + '<td><span class="badge badge-pill ' + badgeSuccess + '">' + factionSuccess + '</span></td>'
+      + '</tr></tfoot>';
+    summary = summary + '</table>';
+  
+    document.getElementById('summary').innerHTML = summary;
+  
+    $(document).ready(function () {
+      $('#individual').DataTable({
+        "paging": false,
+        "order": [[0, "asc"]],
+        "info": false,
+        "stateSave": true
+      });
+    });
+  
+  
+  }
