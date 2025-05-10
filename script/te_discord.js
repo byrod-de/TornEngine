@@ -20,14 +20,21 @@ document.addEventListener('DOMContentLoaded', () => {
     useGmtCheckbox.addEventListener('change', updateOutput);
     output.addEventListener('mouseover', function () { this.select(); });
     copyButton.addEventListener('click', async () => {
-      //updateOutput();
       try {
         await navigator.clipboard.writeText(output.value);
-        output.className = 'form-control is-valid';
+    
+        const confirm = document.getElementById('copyConfirm');
+        if (confirm) {
+          confirm.style.display = 'inline';
+          output.className = 'form-control is-valid';
+          setTimeout(() => output.className = 'form-control', 2000);
+          setTimeout(() => confirm.style.display = 'none', 2000);
+        }
       } catch (e) {
         alert(e);
       }
     });
+    
   
     const onload = _ => {
       const now = new Date();
