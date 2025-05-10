@@ -2,19 +2,24 @@ const menuData = [
     {
       category: "Faction Tools",
       items: [
-        { name: "PA Payouts", icon: "pa_payouts", href: "pa_payouts.html" },
-        { name: "OC Overview", icon: "oc_overview", href: "oc_overview.html" },
-        { name: "PA Planner", icon: "pa_planner", href: "pa_planner.html" },
+        { name: "PA Payouts", icon: "pa_payouts", href: "pa_payouts.html", badge: "Deprecated" },
+        { name: "OC Overview", icon: "oc_overview", href: "oc_overview.html", badge: "Deprecated" },
+        { name: "PA Planner", icon: "pa_planner", href: "pa_planner.html", badge: "Deprecated"  },
         { name: "News", icon: "news", href: "news.html" },
-        { name: "OC 2.0", icon: "oc2", href: "oc2_center.html", badge: "Experimental" }
+      ]
+    },
+    {
+      category: "OC 2.0 Tools",
+      items: [
+        { name: "OC 2.0", icon: "oc2", href: "oc2_center.html", badge: "Alpha" }
       ]
     },
     {
       category: "Warring Tools",
       items: [
         { name: "Member Status", icon: "members", href: "members.html" },
-        { name: "Ranked Wars", icon: "rankedwars", href: "rankedwars.html", badge: "BETA" },
-        { name: "City Map", icon: "citymap", href: "citymap.html", badge: "BETA" }
+        { name: "Ranked Wars", icon: "rankedwars", href: "rankedwars.html"},
+        { name: "City Map", icon: "citymap", href: "citymap.html"}
       ]
     },
     {
@@ -69,15 +74,21 @@ const menuData = [
         img.height = 20;
   
         link.appendChild(img);
-        link.append(' ' + item.name);
+        
   
         if (item.badge) {
           const badge = document.createElement('sup');
-          badge.className = 'badge badge-pill badge-warning';
+          let badgeClass = 'badge badge-pill badge-info';
+          if (item.badge === 'Deprecated') {
+            badgeClass = 'badge badge-pill badge-primary';
+          }
+          badge.className = badgeClass;
           badge.innerText = item.badge;
           link.append(' ');
           link.appendChild(badge);
         }
+
+        link.append(' ' + item.name);
   
         dropdown.appendChild(link);
       });
@@ -129,6 +140,18 @@ const menuData = [
   
         cardBody.appendChild(img);
         cardBody.appendChild(divText);
+  
+        if (item.badge) {
+          const badge = document.createElement('sup');
+          let badgeClass = 'badge badge-pill badge-info';
+          if (item.badge === 'Deprecated') {
+            badgeClass = 'badge badge-pill badge-primary';
+          }
+          badge.className = badgeClass;
+          badge.innerText = item.badge;
+          cardBody.append(' ');
+          cardBody.appendChild(badge);
+        }
         link.appendChild(cardBody);
         card.appendChild(link);
         colDiv.appendChild(card);

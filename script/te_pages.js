@@ -11,6 +11,14 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        const today = new Date();
+        const monthOffset = document.getElementById('monthSelect')?.value
+            ? parseInt(document.getElementById('monthSelect').value)
+            : 0;
+        const currentMonth = today.getMonth();
+        const { firstDay, lastDay } = calculateMonthTimestamps(today, currentMonth - monthOffset, 192);
+
+
         switch (page) {
             case 'trailers':
                 const playerId = document.getElementById('playerid').value.trim() || '';
@@ -22,9 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
 
             case 'pa_payouts':
-                const today = new Date();
-                const monthOffset = parseInt(document.getElementById('monthSelect').value);
-                const { firstDay, lastDay } = calculateMonthTimestamps(today, today.getMonth() - monthOffset, 192);
                 callTornAPI({ apiKey: key, part: 'faction', selections: 'basic,crimes', from: firstDay, to: lastDay });
                 break;
 
@@ -32,7 +37,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 callTornAPI({ apiKey: key, part: 'torn', selections: 'rankedwars' });
                 break;
 
-            // add more cases if needed
+            case 'oc_overview':
+                callTornAPI({ apiKey: key, part: 'faction', selections: 'basic,crimes', from: firstDay, to: lastDay });
+                break;
         }
     });
 });

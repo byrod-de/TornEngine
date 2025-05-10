@@ -205,7 +205,7 @@ function monthToText(month) {
       referenceDate.setMonth(referenceDate.getMonth() - 1);
     }
   
-    return monthOptions.reverse();
+    return monthOptions;
   }
   
 /**

@@ -643,3 +643,183 @@ function parsePropertyInfo(data, selection, elementId) {
   
   
   }
+
+
+  function parseOCs(crimeData, element, membersList) {
+
+    var memberStatus = {};
+    var memberSuccess = {};
+    var memberFailed = {};
+    var factionSuccess = 0;
+    var factionFailed = 0;
+    var totalRespect = 0;
+    var totalMoney = 0;
+  
+    var badgeSuccess = 'badge-dark';
+    var badgeFailed = 'badge-dark';
+  
+    const today = new Date();
+    const currentMonth = today.getMonth();
+  
+    var firstDayOfMonth, lastDayOfMonth;
+  
+    var selectedMonthValue = document.getElementById('monthSelect').value;
+    var selectedMonthValue = document.getElementById('monthSelect').value;
+  
+    // Calculate the month offset based on selectedMonthValue
+    var monthOffset = parseInt(selectedMonthValue);
+  
+    // Calculate timestamps using the offset
+    var timestamps = calculateMonthTimestamps(today, currentMonth - monthOffset);
+    var firstDayOfMonth = timestamps.firstDay;
+    var lastDayOfMonth = timestamps.lastDay;
+  
+    var selectElement = document.getElementById('monthSelect');
+    var selectedOption = selectElement.options[selectElement.selectedIndex];
+    var selectedMonthText = selectedOption.text;
+  
+    var crimeList = '';
+    if (document.getElementById('PoliticalAssassination').checked) {
+      crimeList = document.getElementById('PoliticalAssassination').value + ',' + crimeList;
+    }
+    if (document.getElementById('PlaneHijacking').checked) {
+      crimeList = document.getElementById('PlaneHijacking').value + ',' + crimeList;
+    }
+    if (document.getElementById('TakeOverACruiseLiner').checked) {
+      crimeList = document.getElementById('TakeOverACruiseLiner').value + ',' + crimeList;
+    }
+    if (document.getElementById('RobbingOfAMoneyTrain').checked) {
+      crimeList = document.getElementById('RobbingOfAMoneyTrain').value + ',' + crimeList;
+    }
+    if (document.getElementById('PlannedRobbery').checked) {
+      crimeList = document.getElementById('PlannedRobbery').value + ',' + crimeList;
+    }
+    if (document.getElementById('BombThreat').checked) {
+      crimeList = document.getElementById('BombThreat').value + ',' + crimeList;
+    }
+    if (document.getElementById('Kidnapping').checked) {
+      crimeList = document.getElementById('Kidnapping').value + ',' + crimeList;
+    }
+    if (document.getElementById('Blackmailing').checked) {
+      crimeList = document.getElementById('Blackmailing').value + ',' + crimeList;
+    }
+  
+    var table = '<div class="col-sm-12 badge-primary" ><b>Organized Crime Overview for ' + selectedMonthText + '</b> <input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents( document.getElementById(\'totals\') );"></div>';
+    table = table + '<br />';
+  
+    table = table + '<table class="table table-hover" id="organizedcrimes"><thead><tr>'
+      + '<th>Date</th>'
+      + '<th>Participants</th>'
+      + '<th>Crime Type</th>'
+      + '<th>Result</th>'
+      + '<th>Money Gained<br/>'
+      + '<th>Respect Gained</th>'
+      + '</tr></thead><tbody>';
+  
+  
+    for (var id in crimeData) {
+      var crime = crimeData[id];
+  
+      if (crimeList.includes(crime.crime_id)) {
+        // 8 = Political Assassination
+        // 7 = Plane hijacking
+        // 6 = Take over a cruise liner
+        // 5 = Robbing of a money train
+        // 4 = Planned robbery
+        // 3 = Bomb Threat
+        // 2 = Kidnapping
+        // 1 = Blackmailing
+        var ts = new Date(crime.time_completed * 1000);
+  
+  
+        if (crime.initiated === 1 & crime.time_completed >= firstDayOfMonth && crime.time_completed <= lastDayOfMonth) {
+  
+          var crimeResult = '';
+          var failed = 0;
+          var success = 0;
+          var participants = '';
+          var tmp = '';
+  
+          if (crime.success === 0) {
+            crimeResult = '<span class="badge badge-pill badge-danger">Failed</span>';
+            failed = 1;
+          } else {
+            crimeResult = '<span class="badge badge-pill badge-success">Success</span>';
+            success = 1;
+          }
+  
+          crime.participants.forEach(obj => {
+            Object.entries(obj).forEach(([key, value]) => {
+              var memberID = `${key}`;
+  
+              var memberName = '';
+              if (membersList.hasOwnProperty(memberID)) {
+                memberName = membersList[memberID].name;
+                if (memberName in memberStatus) {
+                  memberStatus[memberName] = memberStatus[memberName] + 1;
+                  memberSuccess[memberName] = memberSuccess[memberName] + success;
+                  memberFailed[memberName] = memberFailed[memberName] + failed;
+                } else {
+                  memberStatus[memberName] = 1;
+                  memberSuccess[memberName] = success;
+                  memberFailed[memberName] = failed;
+                }
+              } else {
+                memberName = memberID;
+              }
+  
+              if (participants === '') {
+                participants = memberName;
+  
+              } else {
+                participants = participants + ', ' + memberName;
+              }
+            });
+          });
+  
+          factionSuccess = factionSuccess + success;
+          factionFailed = factionFailed + failed;
+          totalRespect = totalRespect + crime.respect_gain;
+          totalMoney = totalMoney + crime.money_gain;
+  
+          var formatted_date = ts.toISOString().replace('T', ' ').replace('.000Z', '');
+  
+          table = table + '<tr>'
+            + '<td>' + formatted_date + '</td>'
+            + '<td>' + participants + '</td>'
+            + '<td>' + crime.crime_name + '</td>'
+            + '<td>' + crimeResult + '</td>'
+            + '<td>$' + crime.money_gain.toLocaleString('en-US') + '</td>'
+            + '<td>' + crime.respect_gain + '</td>'
+            + '</tr>';
+        }
+      }
+    }
+  
+    if (factionFailed > 0) { badgeFailed = 'badge-danger'; }
+    if (factionSuccess > 0) { badgeSuccess = 'badge-success'; }
+  
+    table = table + '</tbody><tfoot><tr class="table-dark">'
+      + '<td colspan="3">Totals</td>'
+      + '<td>'
+      + '<span class="badge badge-pill ' + badgeFailed + '">' + factionFailed + '</span>-'
+      + '<span class="badge badge-pill ' + badgeSuccess + '">' + factionSuccess + '</span>'
+      + '</td>'
+      + '<td>$' + totalMoney.toLocaleString('en-US') + '</td>'
+      + '<td>' + totalRespect + '</td>'
+      + '</tr>';
+  
+    table = table + '</tfoot></table>';
+  
+    $(document).ready(function () {
+      $('#organizedcrimes').DataTable({
+        "paging": false,
+        "order": [[1, "asc"]],
+        "info": false,
+        "stateSave": true
+      });
+    });
+  
+    document.getElementById(element).innerHTML = table;
+  
+  }
