@@ -273,4 +273,114 @@ function parsePropertyInfo(data, selection, elementId) {
     document.getElementById('rankedWarModalLabel').textContent = 'War Details';
   }
   
+  /**
+   * Parses the crime experience data and generates a table summarizing the member list by crime experience.
+   *
+   * @param {array} crimeexp - The array of crime experience IDs from the API.
+   * @param {string} element - The ID of the HTML element where the table will be inserted.
+   * @param {Object} membersList - An object containing the member information from the API.
+   *
+   * This function generates an HTML table displaying the member list sorted by crime experience rank.
+   * The table includes the crime experience rank, member name, and PA team name (if applicable).
+   * The table is inserted into the specified HTML element and formatted for display.
+   */
+  function parseCrimeexp(crimeexp, element, membersList) {
+
+    var numberOfTeams = document.getElementById('numberOfTeams').innerHTML;
+    var carriedTeams = document.getElementById('carriedTeams').innerHTML;
   
+    function groupEntries(ids, numGroups, carriedTeam) {
+      const groups = [];
+      const numEntries = numGroups * 4;
+    
+      for (let i = 0; i < carriedTeam; i++) {
+        const carriedGroup = [];
+        carriedGroup.push(ids[0], ids[numEntries - 3 - i * 4], ids[numEntries - 2 - i * 4], ids[numEntries - 1 - i * 4]);
+        groups.push(carriedGroup);
+        ids = ids.slice(1);
+      }
+    
+      for (let i = 0; i < numGroups - carriedTeam; i++) {
+        const group = [];
+        const start = i;
+    
+        group.push(ids[start]); // first element
+        group.push(ids[(numGroups - carriedTeam) * 4 - 1 - i]); // last element
+        group.push(ids[Math.floor(((numGroups - carriedTeam) * 4) / 2) - 1 - i]); // middle element (before)
+        group.push(ids[Math.floor(((numGroups - carriedTeam) * 4) / 2) + i]); // middle element (after)
+    
+        groups.push(group);
+      }
+    
+      return groups;
+    }
+  
+    // Function to generate a color scale
+    function getColorScale(numColors) {
+      const colors = [];
+      const colorScheme = [
+        '#df691a', '#ff9900', '#ffcc00', '#ffff00',
+        '#ccff00', '#99ff00', '#66ff00', '#33ff00',
+        '#00ff33', '#00ff66', '#00ff99', '#00ffcc',
+        '#00ffff', '#00ccff', '#0099ff', '#0066ff',
+        '#0033ff', '#3300ff', '#6600ff', '#9900ff',
+        '#cc00ff', '#ff00ff', '#ff00cc', '#ff0099',
+        '#ff0066', '#ff0033'
+      ];
+    
+      for (let i = 0; i < numColors; i++) {
+        const color = colorScheme[i % colorScheme.length];
+        colors.push(color);
+      }
+    
+      return colors;
+    }
+  
+    const groupedEntries = groupEntries(crimeexp, numberOfTeams, carriedTeams);	
+  
+  
+    // Get the number of groups
+    const numGroups = groupedEntries.length;
+  
+    // Generate the color scale
+    const colorScale = getColorScale(numGroups);
+  
+    var table = `<div class="col-sm-12 badge-primary"><b>Member List by Crime Experience</b> <input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents(document.getElementById('members'));"></div>`;
+    table += '<br />';
+    table += '<table class="table table-hover" id="members"><thead><tr>'
+      + '<th>CE Rank</th>'
+      + '<th>Member</th>'
+      + '<th>PA Team</th>'
+      + '</tr></thead><tbody>';
+  
+  
+    for (let i = 0; i < crimeexp.length; i++) {
+      const rank = i + 1;
+      const member = membersList[crimeexp[i]].name;
+      const groupIndex = groupedEntries.findIndex((group) => group.includes(crimeexp[i]));
+  
+      let paTeamName = '';
+      if (groupIndex >= 0) {
+        paTeamName = `PA Team ${groupIndex + 1}`;
+      } else {
+        paTeamName = '<span class="text-secondary">No PA Team</span>';
+      }
+      const color = colorScale[groupIndex];
+  
+      let entry = `<tr><td>${rank}</td><td><a href="https://www.torn.com/profiles.php?XID=${crimeexp[i]}" target="_blank">${member} [${crimeexp[i]}]</a></td><td style="color: ${color}">${paTeamName}</td></tr>`;
+      table += entry;
+    }
+  
+    table = table + '</tbody></table>';
+  
+    $(document).ready(function () {
+      $('#members').DataTable({
+        "paging": false,
+        "order": [[0, "asc"]],
+        "info": false,
+        "stateSave": false
+      });
+    });
+  
+    document.getElementById(element).innerHTML = table;
+  }

@@ -122,6 +122,14 @@ function handleApiData(data, part, selections) {
             document.getElementById('rankedWarModalBody').innerHTML = '<div class="alert alert-warning">No report data found for this war.</div>';
         }
     }
+    if (part === 'faction' && selections === 'basic,crimeexp') {
+        if (data.crimeexp && data.members) {
+          parseCrimeexp(data.crimeexp, 'output', data.members);
+        } else {
+          printAlert('Warning', 'Faction API permissions may be missing.');
+        }
+      }
+      
 
     // other cases (members, attacks, etc.)
 }
