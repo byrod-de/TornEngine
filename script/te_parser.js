@@ -11,37 +11,36 @@
  */
 
 function parsePropertyInfo(data, selection, elementId) {
-    let countOwn = 0;
-    let countSpouse = 0;
-  
-    const name = data['name'];
-    const player_id = data['player_id'];
-    const properties = data[selection];
-  
-    for (const key in properties) {
-      const property = properties[key].property;
-      const status = properties[key].status;
-      if (property === 'Trailer') {
-        if (status === 'Owned by them') {
-          countOwn++;
-        }
-        if (status === 'Owned by their spouse') {
-          countSpouse++;
-        }
+  let countOwn = 0;
+  let countSpouse = 0;
+
+  const name = data['name'];
+  const player_id = data['player_id'];
+  const properties = data[selection];
+
+  for (const key in properties) {
+    const property = properties[key].property;
+    const status = properties[key].status;
+    if (property === 'Trailer') {
+      if (status === 'Owned by them') {
+        countOwn++;
+      }
+      if (status === 'Owned by their spouse') {
+        countSpouse++;
       }
     }
-  
-    const html = `
+  }
+
+  const html = `
       <div class="alert alert-secondary">
         <a class="alert-link" href="https://www.torn.com/profiles.php?XID=${player_id}" target="_blank">${name} [${player_id}]</a>:<br />
         There are <span class="badge badge-primary">${countOwn}</span> trailer(s) owned by them and
         <span class="badge badge-light">${countSpouse}</span> trailer(s) owned by their spouse.
       </div>
     `;
-  
-    document.getElementById(elementId).innerHTML = html;
-  }
-  
+
+  document.getElementById(elementId).innerHTML = html;
+}
 
 /**
  * Parses ranked war data and updates the specified HTML element with a table of war details.
@@ -56,164 +55,176 @@ function parsePropertyInfo(data, selection, elementId) {
  * The table is inserted into the specified HTML element and formatted for display.
  */
 
-  function parseRankedWars(rankedWarData, element) {
- 
-    var trustedApiKey = document.getElementById("trustedkey").value;
-  
-    var warStatusList = '';
-  
-    var markedCheckbox = document.getElementsByName('warStatus');
-    for (var checkbox of markedCheckbox) {
-      if (checkbox.checked)
-        warStatusList = warStatusList + checkbox.value + ',';
-    }
-  
-  
-  
-    var table = '<div class="col-sm-12 badge-primary" ><b> Ranked War Details </b></div>';
-    table = table + '<br /><table class="table table-hover text-center" id="wars"><thead><tr>'
-      + '<th class="align-middle">Start Time</th>'
-      // + '<th>Duration</th>'
-      + '<th class="align-middle">Status<br />Progress</th>'
-      + '<th class="align-middle">Target</th>'
-      // + '<th>Progress</th>'
-      + '<th class="align-middle">Lead</th>'
-      + '<th class="align-middle">Faction 1<br />(Member Status)</th>'
-      + '<th class="align-middle">Score #1</th>'
-      + '<th class="align-middle">Score #2</th>'
-      + '<th class="align-middle">Faction 2<br />(Member Status)</th>'
-      + '<th class="align-middle">Details</th>'
-  
-      ;
-  
-    table = table + '</tr></thead><tbody>';
+function parseRankedWars(rankedWarData, element) {
 
-    const rankedWars = rankedWarData.rankedwars;
-  
-    for (var id in rankedWars) {
-  
-      var rankedWar = rankedWars[id];
-      var ts = new Date(rankedWar.war.start * 1000);
-      var formatted_date = ts.toISOString().replace('T', ' ').replace('.000Z', '');
-      var faction1Name = '', faction2Name = '';
-      var faction1ID = '', faction2ID = '';
-      var faction1Score = '', faction2Score = '';
-      var faction1StyleClass = '', faction2StyleClass = '';
-      var counter = 0;
-      var warStatus = '', warStatusStyleClass = '', duration = 0, durationString = '', progressBarStyleClass, detailsButton = '';
-      var currentTimeStamp = Math.floor(Date.now() / 1000);
-  
-      if (rankedWar.war.end == 0) {
-        if (currentTimeStamp < rankedWar.war.start) {
-          warStatusStyleClass = '<span class="badge badge-pill badge-info">Scheduled</span>';
-          warStatus = 'scheduled';
-          progressBarStyleClass = 'class="progress-bar progress-bar-striped progress-bar-animated bg-info"';
-        } else {
-          warStatusStyleClass = '<span class="badge badge-pill badge-primary">Ongoing</span>';
-          warStatus = 'ongoing';
-          progressBarStyleClass = 'class="progress-bar progress-bar-striped progress-bar-animated bg-primary"';
-          duration = currentTimeStamp - rankedWar.war.start;
-        }
-      } else {
-        warStatusStyleClass = '<span class="badge badge-pill badge-success">Ended</span>';
-        warStatus = 'ended';
-        progressBarStyleClass = 'class="progress-bar bg-success"';
-        detailsButton = '<button type="button" onclick="callRankedWarDetails(\'' + trustedApiKey + '\', ' + id + ')" class="btn btn-secondary" data-toggle="modal" data-target="#rankedWarModal">Show Details</button>';
-        duration = rankedWar.war.end - rankedWar.war.start;
-      }
-  
-      dateObj = new Date(duration * 1000);
-  
-      hours = dateObj.getUTCHours();
-      minutes = dateObj.getUTCMinutes();
-      seconds = dateObj.getSeconds();
-  
-      durationString = hours.toString().padStart(2, '0') + ':' +
-        minutes.toString().padStart(2, '0') + ':' +
-        seconds.toString().padStart(2, '0');
-  
-      if (warStatusList.includes(warStatus)) {
-  
-        for (var factionID in rankedWar.factions) {
-  
-          var faction = rankedWar.factions[factionID];
-  
-          if (counter == 0) {
-            faction1Name = faction.name;
-            faction1Score = faction.score;
-            faction1ID = factionID;
-            counter = 1;
-          } else {
-            faction2Name = faction.name;
-            faction2Score = faction.score;
-            faction2ID = factionID;
-          }
-        }
-  
-  
-        if ((faction1ID === rankedWar.war.winner) || (faction1Score > faction2Score)) {
-          faction1StyleClass = ' class="text-success"';
-          faction2StyleClass = ' class="text-danger"';
-        }
-        if ((faction2ID === rankedWar.war.winner) || (faction1Score < faction2Score)) {
-          faction1StyleClass = ' class="text-danger"';
-          faction2StyleClass = ' class="text-success"';
-        }
-  
-        var percentage = Math.abs(faction1Score - faction2Score) / rankedWar.war.target * 100;
-  
-        table = table + '<tr>'
-          + '<td class="align-middle">' + formatted_date + '</td>'
-          + '<td class="align-middle">' + warStatusStyleClass + ''
-          + '<br /><div class="progress"><div ' + progressBarStyleClass + ' role="progressbar" aria-valuenow="' + percentage + '" aria-valuemin="0" aria-valuemax="100" style="width: ' + percentage + '%;"></div></div></td>'
-  
-          + '<td class="align-middle">' + rankedWar.war.target + '</td>'
-          + '<td class="align-middle">' + Math.abs(faction1Score - faction2Score) + '</td>'
-          + '<td class="align-middle"><a href="https://www.torn.com/factions.php?step=profile&ID=' + faction1ID + '" target="_blank" ' + faction1StyleClass + '>' + faction1Name + '</a>'
-          + '<br /><a href="members.html?factionID=' + faction1ID + '"><button type="button" class="btn btn-secondary btn-sm">Show Members</button></a></td>'
-          + '<td class="align-middle">' + faction1Score + '</td>'
-          + '<td class="align-middle">' + faction2Score + '</td>'
-          + '<td class="align-middle"><a href="https://www.torn.com/factions.php?step=profile&ID=' + faction2ID + '" target="_blank" ' + faction2StyleClass + '>' + faction2Name + '</a>'
-          + '<br /><a href="members.html?factionID=' + faction2ID + '"><button type="button" class="btn btn-secondary btn-sm">Show Members</button></a></td>'
-          + '<td class="align-middle">' + detailsButton + '</td>'
-  
-          ;
-  
-        table = table + '</tr>';
-  
-      }
-    }
-    table = table + '</tbody></table>';
-  
-    $(document).ready(function () {
-      $('#wars').DataTable({
-        "paging": false,
-        "order": [[0, "desc"]],
-        "info": false,
-        "stateSave": true
-      });
-    });
-  
-    document.getElementById(element).innerHTML = table;
-  
-  
-  
+  var trustedApiKey = document.getElementById("trustedkey").value;
+
+  var warStatusList = '';
+
+  var markedCheckbox = document.getElementsByName('warStatus');
+  for (var checkbox of markedCheckbox) {
+    if (checkbox.checked)
+      warStatusList = warStatusList + checkbox.value + ',';
   }
 
-  function parseRankedWarDetails(details, elementId) {
-    const output = document.getElementById(elementId);
-    if (!output || !details.factions) return;
-  
-    const [f1ID, f1Data] = Object.entries(details.factions)[0];
-    const [f2ID, f2Data] = Object.entries(details.factions)[1];
-  
-    const f1Score = f1Data.score ?? 0;
-    const f2Score = f2Data.score ?? 0;
-  
-    const f1Class = f1Score >= f2Score ? 'text-success' : 'text-danger';
-    const f2Class = f2Score >= f1Score ? 'text-success' : 'text-danger';
-  
-    let html = `
+
+
+  var table = '<div class="col-sm-12 badge-primary" ><b> Ranked War Details </b></div>';
+  table = table + '<br /><table class="table table-hover text-center" id="wars"><thead><tr>'
+    + '<th class="align-middle">Start Time</th>'
+    // + '<th>Duration</th>'
+    + '<th class="align-middle">Status<br />Progress</th>'
+    + '<th class="align-middle">Target</th>'
+    // + '<th>Progress</th>'
+    + '<th class="align-middle">Lead</th>'
+    + '<th class="align-middle">Faction 1<br />(Member Status)</th>'
+    + '<th class="align-middle">Score #1</th>'
+    + '<th class="align-middle">Score #2</th>'
+    + '<th class="align-middle">Faction 2<br />(Member Status)</th>'
+    + '<th class="align-middle">Details</th>'
+
+    ;
+
+  table = table + '</tr></thead><tbody>';
+
+  const rankedWars = rankedWarData.rankedwars;
+
+  for (var id in rankedWars) {
+
+    var rankedWar = rankedWars[id];
+    var ts = new Date(rankedWar.war.start * 1000);
+    var formatted_date = ts.toISOString().replace('T', ' ').replace('.000Z', '');
+    var faction1Name = '', faction2Name = '';
+    var faction1ID = '', faction2ID = '';
+    var faction1Score = '', faction2Score = '';
+    var faction1StyleClass = '', faction2StyleClass = '';
+    var counter = 0;
+    var warStatus = '', warStatusStyleClass = '', duration = 0, durationString = '', progressBarStyleClass, detailsButton = '';
+    var currentTimeStamp = Math.floor(Date.now() / 1000);
+
+    if (rankedWar.war.end == 0) {
+      if (currentTimeStamp < rankedWar.war.start) {
+        warStatusStyleClass = '<span class="badge badge-pill badge-info">Scheduled</span>';
+        warStatus = 'scheduled';
+        progressBarStyleClass = 'class="progress-bar progress-bar-striped progress-bar-animated bg-info"';
+      } else {
+        warStatusStyleClass = '<span class="badge badge-pill badge-primary">Ongoing</span>';
+        warStatus = 'ongoing';
+        progressBarStyleClass = 'class="progress-bar progress-bar-striped progress-bar-animated bg-primary"';
+        duration = currentTimeStamp - rankedWar.war.start;
+      }
+    } else {
+      warStatusStyleClass = '<span class="badge badge-pill badge-success">Ended</span>';
+      warStatus = 'ended';
+      progressBarStyleClass = 'class="progress-bar bg-success"';
+      detailsButton = '<button type="button" onclick="callRankedWarDetails(\'' + trustedApiKey + '\', ' + id + ')" class="btn btn-secondary" data-toggle="modal" data-target="#rankedWarModal">Show Details</button>';
+      duration = rankedWar.war.end - rankedWar.war.start;
+    }
+
+    dateObj = new Date(duration * 1000);
+
+    hours = dateObj.getUTCHours();
+    minutes = dateObj.getUTCMinutes();
+    seconds = dateObj.getSeconds();
+
+    durationString = hours.toString().padStart(2, '0') + ':' +
+      minutes.toString().padStart(2, '0') + ':' +
+      seconds.toString().padStart(2, '0');
+
+    if (warStatusList.includes(warStatus)) {
+
+      for (var factionID in rankedWar.factions) {
+
+        var faction = rankedWar.factions[factionID];
+
+        if (counter == 0) {
+          faction1Name = faction.name;
+          faction1Score = faction.score;
+          faction1ID = factionID;
+          counter = 1;
+        } else {
+          faction2Name = faction.name;
+          faction2Score = faction.score;
+          faction2ID = factionID;
+        }
+      }
+
+
+      if ((faction1ID === rankedWar.war.winner) || (faction1Score > faction2Score)) {
+        faction1StyleClass = ' class="text-success"';
+        faction2StyleClass = ' class="text-danger"';
+      }
+      if ((faction2ID === rankedWar.war.winner) || (faction1Score < faction2Score)) {
+        faction1StyleClass = ' class="text-danger"';
+        faction2StyleClass = ' class="text-success"';
+      }
+
+      var percentage = Math.abs(faction1Score - faction2Score) / rankedWar.war.target * 100;
+
+      table = table + '<tr>'
+        + '<td class="align-middle">' + formatted_date + '</td>'
+        + '<td class="align-middle">' + warStatusStyleClass + ''
+        + '<br /><div class="progress"><div ' + progressBarStyleClass + ' role="progressbar" aria-valuenow="' + percentage + '" aria-valuemin="0" aria-valuemax="100" style="width: ' + percentage + '%;"></div></div></td>'
+
+        + '<td class="align-middle">' + rankedWar.war.target + '</td>'
+        + '<td class="align-middle">' + Math.abs(faction1Score - faction2Score) + '</td>'
+        + '<td class="align-middle"><a href="https://www.torn.com/factions.php?step=profile&ID=' + faction1ID + '" target="_blank" ' + faction1StyleClass + '>' + faction1Name + '</a>'
+        + '<br /><a href="members.html?factionID=' + faction1ID + '"><button type="button" class="btn btn-secondary btn-sm">Show Members</button></a></td>'
+        + '<td class="align-middle">' + faction1Score + '</td>'
+        + '<td class="align-middle">' + faction2Score + '</td>'
+        + '<td class="align-middle"><a href="https://www.torn.com/factions.php?step=profile&ID=' + faction2ID + '" target="_blank" ' + faction2StyleClass + '>' + faction2Name + '</a>'
+        + '<br /><a href="members.html?factionID=' + faction2ID + '"><button type="button" class="btn btn-secondary btn-sm">Show Members</button></a></td>'
+        + '<td class="align-middle">' + detailsButton + '</td>'
+
+        ;
+
+      table = table + '</tr>';
+
+    }
+  }
+  table = table + '</tbody></table>';
+
+  $(document).ready(function () {
+    $('#wars').DataTable({
+      "paging": false,
+      "order": [[0, "desc"]],
+      "info": false,
+      "stateSave": true
+    });
+  });
+
+  document.getElementById(element).innerHTML = table;
+
+
+
+}
+
+/**
+ * Parses the details of a ranked war and renders a table of war details and a
+ * table of member details into the specified HTML element.
+ *
+ * @param {Object} details - The data containing the ranked war details.
+ * @param {string} elementId - The ID of the HTML element where the tables will
+ *   be inserted.
+ *
+ * The first table displays the war details, including the faction names and
+ * their respective scores. The second table displays the member details, including
+ * the player name, faction name, number of attacks, and score.
+ */
+function parseRankedWarDetails(details, elementId) {
+  const output = document.getElementById(elementId);
+  if (!output || !details.factions) return;
+
+  const [f1ID, f1Data] = Object.entries(details.factions)[0];
+  const [f2ID, f2Data] = Object.entries(details.factions)[1];
+
+  const f1Score = f1Data.score ?? 0;
+  const f2Score = f2Data.score ?? 0;
+
+  const f1Class = f1Score >= f2Score ? 'text-success' : 'text-danger';
+  const f2Class = f2Score >= f1Score ? 'text-success' : 'text-danger';
+
+  let html = `
       <table class="table table-hover text-center" id="warfactions">
         <thead>
           <tr>
@@ -236,14 +247,14 @@ function parsePropertyInfo(data, selection, elementId) {
         </thead>
         <tbody>
     `;
-  
-    for (const [factionID, faction] of Object.entries(details.factions)) {
-      const factionName = faction.name;
-      const factionClass = factionID === f1ID ? f1Class : f2Class;
-      const members = faction.members ?? {};
-  
-      for (const [playerID, member] of Object.entries(members)) {
-        html += `
+
+  for (const [factionID, faction] of Object.entries(details.factions)) {
+    const factionName = faction.name;
+    const factionClass = factionID === f1ID ? f1Class : f2Class;
+    const members = faction.members ?? {};
+
+    for (const [playerID, member] of Object.entries(members)) {
+      html += `
           <tr>
             <td><a href="https://www.torn.com/profiles.php?XID=${playerID}" target="_blank">${member.name} [${playerID}]</a></td>
             <td><a href="https://www.torn.com/factions.php?step=profile&ID=${factionID}" target="_blank" class="${factionClass}">${factionName}</a></td>
@@ -251,575 +262,597 @@ function parsePropertyInfo(data, selection, elementId) {
             <td>${member.score}</td>
           </tr>
         `;
-      }
     }
-  
-    html += `
+  }
+
+  html += `
         </tbody>
       </table>
     `;
-  
-    output.innerHTML = html;
-  
-    $(document).ready(() => {
-      $('#wardetails').DataTable({
-        paging: false,
-        order: [[3, 'desc']],
-        info: false,
-        stateSave: true
-      });
-    });
-  
-    document.getElementById('rankedWarModalLabel').textContent = 'War Details';
-  }
-  
-  /**
-   * Parses the crime experience data and generates a table summarizing the member list by crime experience.
-   *
-   * @param {array} crimeexp - The array of crime experience IDs from the API.
-   * @param {string} element - The ID of the HTML element where the table will be inserted.
-   * @param {Object} membersList - An object containing the member information from the API.
-   *
-   * This function generates an HTML table displaying the member list sorted by crime experience rank.
-   * The table includes the crime experience rank, member name, and PA team name (if applicable).
-   * The table is inserted into the specified HTML element and formatted for display.
-   */
-  function parseCrimeexp(crimeexp, element, membersList) {
 
-    var numberOfTeams = document.getElementById('numberOfTeams').innerHTML;
-    var carriedTeams = document.getElementById('carriedTeams').innerHTML;
-  
-    function groupEntries(ids, numGroups, carriedTeam) {
-      const groups = [];
-      const numEntries = numGroups * 4;
-    
-      for (let i = 0; i < carriedTeam; i++) {
-        const carriedGroup = [];
-        carriedGroup.push(ids[0], ids[numEntries - 3 - i * 4], ids[numEntries - 2 - i * 4], ids[numEntries - 1 - i * 4]);
-        groups.push(carriedGroup);
-        ids = ids.slice(1);
-      }
-    
-      for (let i = 0; i < numGroups - carriedTeam; i++) {
-        const group = [];
-        const start = i;
-    
-        group.push(ids[start]); // first element
-        group.push(ids[(numGroups - carriedTeam) * 4 - 1 - i]); // last element
-        group.push(ids[Math.floor(((numGroups - carriedTeam) * 4) / 2) - 1 - i]); // middle element (before)
-        group.push(ids[Math.floor(((numGroups - carriedTeam) * 4) / 2) + i]); // middle element (after)
-    
-        groups.push(group);
-      }
-    
-      return groups;
-    }
-  
-    // Function to generate a color scale
-    function getColorScale(numColors) {
-      const colors = [];
-      const colorScheme = [
-        '#df691a', '#ff9900', '#ffcc00', '#ffff00',
-        '#ccff00', '#99ff00', '#66ff00', '#33ff00',
-        '#00ff33', '#00ff66', '#00ff99', '#00ffcc',
-        '#00ffff', '#00ccff', '#0099ff', '#0066ff',
-        '#0033ff', '#3300ff', '#6600ff', '#9900ff',
-        '#cc00ff', '#ff00ff', '#ff00cc', '#ff0099',
-        '#ff0066', '#ff0033'
-      ];
-    
-      for (let i = 0; i < numColors; i++) {
-        const color = colorScheme[i % colorScheme.length];
-        colors.push(color);
-      }
-    
-      return colors;
-    }
-  
-    const groupedEntries = groupEntries(crimeexp, numberOfTeams, carriedTeams);	
-  
-  
-    // Get the number of groups
-    const numGroups = groupedEntries.length;
-  
-    // Generate the color scale
-    const colorScale = getColorScale(numGroups);
-  
-    var table = `<div class="col-sm-12 badge-primary"><b>Member List by Crime Experience</b> <input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents(document.getElementById('members'));"></div>`;
-    table += '<br />';
-    table += '<table class="table table-hover" id="members"><thead><tr>'
-      + '<th>CE Rank</th>'
-      + '<th>Member</th>'
-      + '<th>PA Team</th>'
-      + '</tr></thead><tbody>';
-  
-  
-    for (let i = 0; i < crimeexp.length; i++) {
-      const rank = i + 1;
-      const member = membersList[crimeexp[i]].name;
-      const groupIndex = groupedEntries.findIndex((group) => group.includes(crimeexp[i]));
-  
-      let paTeamName = '';
-      if (groupIndex >= 0) {
-        paTeamName = `PA Team ${groupIndex + 1}`;
-      } else {
-        paTeamName = '<span class="text-secondary">No PA Team</span>';
-      }
-      const color = colorScale[groupIndex];
-  
-      let entry = `<tr><td>${rank}</td><td><a href="https://www.torn.com/profiles.php?XID=${crimeexp[i]}" target="_blank">${member} [${crimeexp[i]}]</a></td><td style="color: ${color}">${paTeamName}</td></tr>`;
-      table += entry;
-    }
-  
-    table = table + '</tbody></table>';
-  
-    $(document).ready(function () {
-      $('#members').DataTable({
-        "paging": false,
-        "order": [[0, "asc"]],
-        "info": false,
-        "stateSave": false
-      });
+  output.innerHTML = html;
+
+  $(document).ready(() => {
+    $('#wardetails').DataTable({
+      paging: false,
+      order: [[3, 'desc']],
+      info: false,
+      stateSave: true
     });
-  
-    document.getElementById(element).innerHTML = table;
+  });
+
+  document.getElementById('rankedWarModalLabel').textContent = 'War Details';
+}
+
+/**
+ * Parses the crime experience data and generates a table summarizing the member list by crime experience.
+ *
+ * @param {array} crimeexp - The array of crime experience IDs from the API.
+ * @param {string} element - The ID of the HTML element where the table will be inserted.
+ * @param {Object} membersList - An object containing the member information from the API.
+ *
+ * This function generates an HTML table displaying the member list sorted by crime experience rank.
+ * The table includes the crime experience rank, member name, and PA team name (if applicable).
+ * The table is inserted into the specified HTML element and formatted for display.
+ */
+function parseCrimeexp(crimeexp, element, membersList) {
+
+  var numberOfTeams = document.getElementById('numberOfTeams').innerHTML;
+  var carriedTeams = document.getElementById('carriedTeams').innerHTML;
+
+  function groupEntries(ids, numGroups, carriedTeam) {
+    const groups = [];
+    const numEntries = numGroups * 4;
+
+    for (let i = 0; i < carriedTeam; i++) {
+      const carriedGroup = [];
+      carriedGroup.push(ids[0], ids[numEntries - 3 - i * 4], ids[numEntries - 2 - i * 4], ids[numEntries - 1 - i * 4]);
+      groups.push(carriedGroup);
+      ids = ids.slice(1);
+    }
+
+    for (let i = 0; i < numGroups - carriedTeam; i++) {
+      const group = [];
+      const start = i;
+
+      group.push(ids[start]); // first element
+      group.push(ids[(numGroups - carriedTeam) * 4 - 1 - i]); // last element
+      group.push(ids[Math.floor(((numGroups - carriedTeam) * 4) / 2) - 1 - i]); // middle element (before)
+      group.push(ids[Math.floor(((numGroups - carriedTeam) * 4) / 2) + i]); // middle element (after)
+
+      groups.push(group);
+    }
+
+    return groups;
   }
 
+  // Function to generate a color scale
+  function getColorScale(numColors) {
+    const colors = [];
+    const colorScheme = [
+      '#df691a', '#ff9900', '#ffcc00', '#ffff00',
+      '#ccff00', '#99ff00', '#66ff00', '#33ff00',
+      '#00ff33', '#00ff66', '#00ff99', '#00ffcc',
+      '#00ffff', '#00ccff', '#0099ff', '#0066ff',
+      '#0033ff', '#3300ff', '#6600ff', '#9900ff',
+      '#cc00ff', '#ff00ff', '#ff00cc', '#ff0099',
+      '#ff0066', '#ff0033'
+    ];
 
-  function parsePayouts(crimeData, element, membersList) {
-
-    var memberMoney = {};
-    var memberSuccess = {};
-    var memberFailed = {};
-    var memberIds = {};
-    var factionMoney = 0;
-    var factionSuccess = 0;
-    var factionFailed = 0;
-    var totalRespect = 0;
-    var totalMoney = 0;
-  
-    let badgeSuccess = 'badge-dark';
-    let badgeFailed = 'badge-dark';
-  
-    const today = new Date();
-    const currentMonth = today.getMonth();
-    const PA_CRIME_ID = 8;
-  
-    var firstDayOfMonth, lastDayOfMonth;
-  
-    var selectedMonthValue = document.getElementById('monthSelect').value;
-    var selectedMonthValue = document.getElementById('monthSelect').value;
-  
-    // Calculate the month offset based on selectedMonthValue
-    var monthOffset = parseInt(selectedMonthValue);
-  
-    // Calculate timestamps using the offset
-    var timestamps = calculateMonthTimestamps(today, currentMonth - monthOffset);
-    var firstDayOfMonth = timestamps.firstDay;
-    var lastDayOfMonth = timestamps.lastDay;
-  
-    var splitFactor = document.getElementById('range').value;
-    var weightedPerRank = document.getElementById('weighted').checked;
-    var paLeads = '';
-  
-    var selectElement = document.getElementById('monthSelect');
-    var selectedOption = selectElement.options[selectElement.selectedIndex];
-    var selectedMonthText = selectedOption.text;
-  
-  
-    var table = `<div class="col-sm-12 badge-primary"><b>PA Details for ${selectedMonthText}</b> <input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents(document.getElementById('totals'));"></div>`;
-    table += '<br />';
-    table += '<table class="table table-hover" id="totals"><thead><tr>'
-      + '<th>Date</th>'
-      + '<th>Participants</th>'
-      + '<th>Crime Type</th>'
-      + '<th>Result</th>'
-      + '<th>Money Gained<br/>'
-      + '<th>Respect Gained</th>'
-      + '</tr></thead><tbody>';
-  
-    for (var id in crimeData) {
-      var crime = crimeData[id];
-  
-      if (crime.crime_id === PA_CRIME_ID) {
-  
-        var ts = new Date(crime.time_completed * 1000);
-  
-        if (crime.initiated === 1 & crime.time_completed >= firstDayOfMonth && crime.time_completed <= lastDayOfMonth) {
-  
-          var crimeResult = '';
-          var failed = 0;
-          var success = 0;
-          var participants = '';
-          var countRank = 0;
-          var prefix = '';
-  
-          if (crime.success === 0) {
-            crimeResult = '<span class="badge badge-pill badge-danger">Failed</span>';
-            failed = 1;
-          } else {
-            crimeResult = '<span class="badge badge-pill badge-success">Success</span>';
-            success = 1;
-          }
-  
-          crime.participants.forEach(obj => {
-            Object.entries(obj).forEach(([key, value]) => {
-              var memberID = `${key}`;
-              countRank = countRank + 1;
-              if (weightedPerRank) {
-                prefix = countRank + '| ';
-              }
-  
-              var memberName = '';
-              if (membersList.hasOwnProperty(memberID)) {
-                memberName = prefix + membersList[memberID].name;
-                if (weightedPerRank && prefix === '1| ') {
-                  if (!paLeads.includes(memberName))
-                    paLeads = memberName + ';' + paLeads;
-                }
-                if (memberName in memberMoney) {
-                  memberMoney[memberName] = memberMoney[memberName] + (crime.money_gain / splitFactor);
-                  memberSuccess[memberName] = memberSuccess[memberName] + success;
-                  memberFailed[memberName] = memberFailed[memberName] + failed;
-                  memberIds[memberName] = memberID;
-                } else {
-                  memberMoney[memberName] = (crime.money_gain / splitFactor);
-                  memberSuccess[memberName] = success;
-                  memberFailed[memberName] = failed;
-                  memberIds[memberName] = memberID;
-                }
-              } else {
-                memberName = memberID;
-  
-                if (memberName in memberMoney) {
-                  memberMoney[memberName] = memberMoney[memberName] + (crime.money_gain / splitFactor);
-                  memberSuccess[memberName] = memberSuccess[memberName] + success;
-                  memberFailed[memberName] = memberFailed[memberName] + failed;
-                } else {
-                  memberMoney[memberName] = (crime.money_gain / splitFactor);
-                  memberSuccess[memberName] = success;
-                  memberFailed[memberName] = failed;
-                }
-              }
-  
-              if (participants === '') {
-                let tmpName = memberName;
-                if (!weightedPerRank) {
-                  tmpName = `<a href="https://www.torn.com/factions.php?step=your#/tab=controls&addMoneyTo=${memberID}&money=${memberMoney[memberName]}" target="_blank">${memberName} [${memberID}]</a>`;
-                }
-                participants = tmpName;
-              } else {
-                let tmpName = memberName;
-                if (!weightedPerRank) {
-                  tmpName = `<a href="https://www.torn.com/factions.php?step=your#/tab=controls&addMoneyTo=${memberID}&money=${memberMoney[memberName]}" target="_blank">${memberName} [${memberID}]</a>`;
-                }
-                participants = participants + ', ' + tmpName;
-              }
-            });
-          });
-  
-          if (weightedPerRank)
-            factionMoney = factionMoney + (crime.money_gain)
-  
-          else {
-            if (splitFactor == 5) { factionMoney = factionMoney + (crime.money_gain / splitFactor); }
-            if (splitFactor == 4) { factionMoney = 0; }
-          }
-  
-          factionSuccess = factionSuccess + success;
-          factionFailed = factionFailed + failed;
-          totalRespect = totalRespect + crime.respect_gain;
-          totalMoney = totalMoney + crime.money_gain;
-  
-          var formatted_date = ts.toISOString().replace('T', ' ').replace('.000Z', '');
-  
-          table += '<tr>'
-            + `<td>${formatted_date}</td>`
-            + `<td>${participants}</td>`
-            + `<td>${crime.crime_name}</td>`
-            + `<td>${crimeResult}</td>`
-            + `<td>$${crime.money_gain.toLocaleString('en-US')}</td>`
-            + `<td>${crime.respect_gain}</td>`
-            + `</tr>`;
-        }
-      }
+    for (let i = 0; i < numColors; i++) {
+      const color = colorScheme[i % colorScheme.length];
+      colors.push(color);
     }
-  
-    if (factionFailed > 0) { badgeFailed = 'badge-danger'; }
-    if (factionSuccess > 0) { badgeSuccess = 'badge-success'; }
-  
-    table += `</tbody><tfoot><tr class="table-dark">`
-      + `<td>Totals</td>`
-      + `<td></td>`
-      + `<td></td>`
-      + `<td>`
-      + `<span class="badge badge-pill ${badgeFailed}">${factionFailed}</span>-`
-      + `<span class="badge badge-pill ${badgeSuccess}">${factionSuccess}</span>`
-      + `</td>`
-      + `<td>$${totalMoney.toLocaleString('en-US')}</td>`
-      + `<td>${totalRespect}</td>`
-      + `</tr></tfoot>`;
-  
-    table = table + '</table>';
-    document.getElementById(element).innerHTML = table;
-  
-  
-    $(document).ready(function () {
-      $('#totals').DataTable({
-        "paging": false,
-        "order": [[0, "asc"]],
-        "info": false,
-        "stateSave": true,
-        "footer": true
-      });
-    });
-  
-    var multiplier = 0;
-    var numberOfTeams = paLeads.split(';').length - 1;
-  
-    var summary = `<div class="col-sm-12 badge-primary" ><b>Individual results for ${selectedMonthText}</b> <input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents( document.getElementById('individual') );"></div>`;
-    summary += '<br />';
-    summary += '<table class="table table-hover" id="individual"><thead><tr>'
-      + '<th>Name</th>';
-  
-    if (weightedPerRank) {
-      summary += '<th>Money earned (weighted per PA rank)</th>';
+
+    return colors;
+  }
+
+  const groupedEntries = groupEntries(crimeexp, numberOfTeams, carriedTeams);
+
+
+  // Get the number of groups
+  const numGroups = groupedEntries.length;
+
+  // Generate the color scale
+  const colorScale = getColorScale(numGroups);
+
+  var table = `<div class="col-sm-12 badge-primary"><b>Member List by Crime Experience</b> <input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents(document.getElementById('members'));"></div>`;
+  table += '<br />';
+  table += '<table class="table table-hover" id="members"><thead><tr>'
+    + '<th>CE Rank</th>'
+    + '<th>Member</th>'
+    + '<th>PA Team</th>'
+    + '</tr></thead><tbody>';
+
+
+  for (let i = 0; i < crimeexp.length; i++) {
+    const rank = i + 1;
+    const member = membersList[crimeexp[i]].name;
+    const groupIndex = groupedEntries.findIndex((group) => group.includes(crimeexp[i]));
+
+    let paTeamName = '';
+    if (groupIndex >= 0) {
+      paTeamName = `PA Team ${groupIndex + 1}`;
     } else {
-      summary += `<th>Money earned (<sup>1</sup>/<sub>${splitFactor}</sub>th of result)</th>`;
+      paTeamName = '<span class="text-secondary">No PA Team</span>';
     }
-  
-    summary += '<th>Fail</th>'
-      + '<th>Success</th>'
-      + '</tr></thead><tbody>';
-  
-    memberMoney = sortObj(memberMoney);
-  
-    for (var name in memberMoney) {
-      if (memberFailed[name] > 0) { badgeFailed = 'badge-danger'; } else { badgeFailed = 'badge-dark'; }
-      if (memberSuccess[name] > 0) { badgeSuccess = 'badge-success'; } else { badgeSuccess = 'badge-dark'; }
-  
-      if (name.startsWith('1|')) multiplier = 0.4 / numberOfTeams;
-      if (name.startsWith('2|')) multiplier = 0.3 / numberOfTeams;
-      if (name.startsWith('3|')) multiplier = 0.2 / numberOfTeams;
-      if (name.startsWith('4|')) multiplier = 0.1 / numberOfTeams;
-  
-      summary = summary + '<tr>'
-        + '<td>' + `<a href="https://www.torn.com/factions.php?step=your#/tab=controls&addMoneyTo=${memberIds[name]}&money=${memberMoney[name]}" target="_blank">${name}</a>` + '</td>';
-  
-      if (!weightedPerRank) {
-        summary = summary + '<td>' + ' $' + memberMoney[name].toLocaleString('en-US') + '</td>';
-      }
-      else {
-        summary = summary + '<td>' + ' $' + (factionMoney * multiplier).toLocaleString('en-US') + '</td>';
-      }
-  
-      summary = summary + '<td><span class="badge badge-pill ' + badgeFailed + '">' + memberFailed[name] + '</span></td>'
-        + '<td><span class="badge badge-pill ' + badgeSuccess + '">' + memberSuccess[name] + '</span></td>'
-        + '</tr>';
-  
-    }
-    badgeSuccess = 'badge-dark';
-    badgeFailed = 'badge-dark';
-    if (factionFailed > 0) { badgeFailed = 'badge-danger'; }
-    if (factionSuccess > 0) { badgeSuccess = 'badge-success'; }
-    summary = summary + '</tbody><tfoot><tr class="table-dark">'
-      + '<td>Faction totals</td>'
-      + '<td>' + ' $' + factionMoney.toLocaleString('en-US') + '</td>'
-      + '<td><span class="badge badge-pill ' + badgeFailed + '">' + factionFailed + '</span></td>'
-      + '<td><span class="badge badge-pill ' + badgeSuccess + '">' + factionSuccess + '</span></td>'
-      + '</tr></tfoot>';
-    summary = summary + '</table>';
-  
-    document.getElementById('summary').innerHTML = summary;
-  
-    $(document).ready(function () {
-      $('#individual').DataTable({
-        "paging": false,
-        "order": [[0, "asc"]],
-        "info": false,
-        "stateSave": true
-      });
-    });
-  
-  
+    const color = colorScale[groupIndex];
+
+    let entry = `<tr><td>${rank}</td><td><a href="https://www.torn.com/profiles.php?XID=${crimeexp[i]}" target="_blank">${member} [${crimeexp[i]}]</a></td><td style="color: ${color}">${paTeamName}</td></tr>`;
+    table += entry;
   }
 
+  table = table + '</tbody></table>';
 
-  function parseOCs(crimeData, element, membersList) {
+  $(document).ready(function () {
+    $('#members').DataTable({
+      "paging": false,
+      "order": [[0, "asc"]],
+      "info": false,
+      "stateSave": false
+    });
+  });
 
-    var memberStatus = {};
-    var memberSuccess = {};
-    var memberFailed = {};
-    var factionSuccess = 0;
-    var factionFailed = 0;
-    var totalRespect = 0;
-    var totalMoney = 0;
-  
-    var badgeSuccess = 'badge-dark';
-    var badgeFailed = 'badge-dark';
-  
-    const today = new Date();
-    const currentMonth = today.getMonth();
-  
-    var firstDayOfMonth, lastDayOfMonth;
-  
-    var selectedMonthValue = document.getElementById('monthSelect').value;
-    var selectedMonthValue = document.getElementById('monthSelect').value;
-  
-    // Calculate the month offset based on selectedMonthValue
-    var monthOffset = parseInt(selectedMonthValue);
-  
-    // Calculate timestamps using the offset
-    var timestamps = calculateMonthTimestamps(today, currentMonth - monthOffset);
-    var firstDayOfMonth = timestamps.firstDay;
-    var lastDayOfMonth = timestamps.lastDay;
-  
-    var selectElement = document.getElementById('monthSelect');
-    var selectedOption = selectElement.options[selectElement.selectedIndex];
-    var selectedMonthText = selectedOption.text;
-  
-    var crimeList = '';
-    if (document.getElementById('PoliticalAssassination').checked) {
-      crimeList = document.getElementById('PoliticalAssassination').value + ',' + crimeList;
-    }
-    if (document.getElementById('PlaneHijacking').checked) {
-      crimeList = document.getElementById('PlaneHijacking').value + ',' + crimeList;
-    }
-    if (document.getElementById('TakeOverACruiseLiner').checked) {
-      crimeList = document.getElementById('TakeOverACruiseLiner').value + ',' + crimeList;
-    }
-    if (document.getElementById('RobbingOfAMoneyTrain').checked) {
-      crimeList = document.getElementById('RobbingOfAMoneyTrain').value + ',' + crimeList;
-    }
-    if (document.getElementById('PlannedRobbery').checked) {
-      crimeList = document.getElementById('PlannedRobbery').value + ',' + crimeList;
-    }
-    if (document.getElementById('BombThreat').checked) {
-      crimeList = document.getElementById('BombThreat').value + ',' + crimeList;
-    }
-    if (document.getElementById('Kidnapping').checked) {
-      crimeList = document.getElementById('Kidnapping').value + ',' + crimeList;
-    }
-    if (document.getElementById('Blackmailing').checked) {
-      crimeList = document.getElementById('Blackmailing').value + ',' + crimeList;
-    }
-  
-    var table = '<div class="col-sm-12 badge-primary" ><b>Organized Crime Overview for ' + selectedMonthText + '</b> <input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents( document.getElementById(\'totals\') );"></div>';
-    table = table + '<br />';
-  
-    table = table + '<table class="table table-hover" id="organizedcrimes"><thead><tr>'
-      + '<th>Date</th>'
-      + '<th>Participants</th>'
-      + '<th>Crime Type</th>'
-      + '<th>Result</th>'
-      + '<th>Money Gained<br/>'
-      + '<th>Respect Gained</th>'
-      + '</tr></thead><tbody>';
-  
-  
-    for (var id in crimeData) {
-      var crime = crimeData[id];
-  
-      if (crimeList.includes(crime.crime_id)) {
-        // 8 = Political Assassination
-        // 7 = Plane hijacking
-        // 6 = Take over a cruise liner
-        // 5 = Robbing of a money train
-        // 4 = Planned robbery
-        // 3 = Bomb Threat
-        // 2 = Kidnapping
-        // 1 = Blackmailing
-        var ts = new Date(crime.time_completed * 1000);
-  
-  
-        if (crime.initiated === 1 & crime.time_completed >= firstDayOfMonth && crime.time_completed <= lastDayOfMonth) {
-  
-          var crimeResult = '';
-          var failed = 0;
-          var success = 0;
-          var participants = '';
-          var tmp = '';
-  
-          if (crime.success === 0) {
-            crimeResult = '<span class="badge badge-pill badge-danger">Failed</span>';
-            failed = 1;
-          } else {
-            crimeResult = '<span class="badge badge-pill badge-success">Success</span>';
-            success = 1;
-          }
-  
-          crime.participants.forEach(obj => {
-            Object.entries(obj).forEach(([key, value]) => {
-              var memberID = `${key}`;
-  
-              var memberName = '';
-              if (membersList.hasOwnProperty(memberID)) {
-                memberName = membersList[memberID].name;
-                if (memberName in memberStatus) {
-                  memberStatus[memberName] = memberStatus[memberName] + 1;
-                  memberSuccess[memberName] = memberSuccess[memberName] + success;
-                  memberFailed[memberName] = memberFailed[memberName] + failed;
-                } else {
-                  memberStatus[memberName] = 1;
-                  memberSuccess[memberName] = success;
-                  memberFailed[memberName] = failed;
-                }
-              } else {
-                memberName = memberID;
-              }
-  
-              if (participants === '') {
-                participants = memberName;
-  
-              } else {
-                participants = participants + ', ' + memberName;
-              }
-            });
-          });
-  
-          factionSuccess = factionSuccess + success;
-          factionFailed = factionFailed + failed;
-          totalRespect = totalRespect + crime.respect_gain;
-          totalMoney = totalMoney + crime.money_gain;
-  
-          var formatted_date = ts.toISOString().replace('T', ' ').replace('.000Z', '');
-  
-          table = table + '<tr>'
-            + '<td>' + formatted_date + '</td>'
-            + '<td>' + participants + '</td>'
-            + '<td>' + crime.crime_name + '</td>'
-            + '<td>' + crimeResult + '</td>'
-            + '<td>$' + crime.money_gain.toLocaleString('en-US') + '</td>'
-            + '<td>' + crime.respect_gain + '</td>'
-            + '</tr>';
+  document.getElementById(element).innerHTML = table;
+}
+
+/**
+ * Parses payout data from crimes and updates the specified HTML element with tables of payout details.
+ *
+ * @param {Object} crimeData - The data containing information about completed crimes.
+ * @param {string} element - The ID of the HTML element where the tables will be inserted.
+ * @param {Object} membersList - An object containing member information, used to map member IDs to names.
+ *
+ * This function generates HTML tables displaying details of political assassination crimes, 
+ * including participants, crime type, results, money gained, and respect gained. It calculates 
+ * total faction payouts and individual member results, formatted for display. The tables are 
+ * inserted into the specified HTML element and summary section.
+ */
+
+function parsePayouts(crimeData, element, membersList) {
+
+  var memberMoney = {};
+  var memberSuccess = {};
+  var memberFailed = {};
+  var memberIds = {};
+  var factionMoney = 0;
+  var factionSuccess = 0;
+  var factionFailed = 0;
+  var totalRespect = 0;
+  var totalMoney = 0;
+
+  let badgeSuccess = 'badge-dark';
+  let badgeFailed = 'badge-dark';
+
+  const today = new Date();
+  const currentMonth = today.getMonth();
+  const PA_CRIME_ID = 8;
+
+  var firstDayOfMonth, lastDayOfMonth;
+
+  var selectedMonthValue = document.getElementById('monthSelect').value;
+  var selectedMonthValue = document.getElementById('monthSelect').value;
+
+  // Calculate the month offset based on selectedMonthValue
+  var monthOffset = parseInt(selectedMonthValue);
+
+  // Calculate timestamps using the offset
+  var timestamps = calculateMonthTimestamps(today, currentMonth - monthOffset);
+  var firstDayOfMonth = timestamps.firstDay;
+  var lastDayOfMonth = timestamps.lastDay;
+
+  var splitFactor = document.getElementById('range').value;
+  var weightedPerRank = document.getElementById('weighted').checked;
+  var paLeads = '';
+
+  var selectElement = document.getElementById('monthSelect');
+  var selectedOption = selectElement.options[selectElement.selectedIndex];
+  var selectedMonthText = selectedOption.text;
+
+
+  var table = `<div class="col-sm-12 badge-primary"><b>PA Details for ${selectedMonthText}</b> <input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents(document.getElementById('totals'));"></div>`;
+  table += '<br />';
+  table += '<table class="table table-hover" id="totals"><thead><tr>'
+    + '<th>Date</th>'
+    + '<th>Participants</th>'
+    + '<th>Crime Type</th>'
+    + '<th>Result</th>'
+    + '<th>Money Gained<br/>'
+    + '<th>Respect Gained</th>'
+    + '</tr></thead><tbody>';
+
+  for (var id in crimeData) {
+    var crime = crimeData[id];
+
+    if (crime.crime_id === PA_CRIME_ID) {
+
+      var ts = new Date(crime.time_completed * 1000);
+
+      if (crime.initiated === 1 & crime.time_completed >= firstDayOfMonth && crime.time_completed <= lastDayOfMonth) {
+
+        var crimeResult = '';
+        var failed = 0;
+        var success = 0;
+        var participants = '';
+        var countRank = 0;
+        var prefix = '';
+
+        if (crime.success === 0) {
+          crimeResult = '<span class="badge badge-pill badge-danger">Failed</span>';
+          failed = 1;
+        } else {
+          crimeResult = '<span class="badge badge-pill badge-success">Success</span>';
+          success = 1;
         }
+
+        crime.participants.forEach(obj => {
+          Object.entries(obj).forEach(([key, value]) => {
+            var memberID = `${key}`;
+            countRank = countRank + 1;
+            if (weightedPerRank) {
+              prefix = countRank + '| ';
+            }
+
+            var memberName = '';
+            if (membersList.hasOwnProperty(memberID)) {
+              memberName = prefix + membersList[memberID].name;
+              if (weightedPerRank && prefix === '1| ') {
+                if (!paLeads.includes(memberName))
+                  paLeads = memberName + ';' + paLeads;
+              }
+              if (memberName in memberMoney) {
+                memberMoney[memberName] = memberMoney[memberName] + (crime.money_gain / splitFactor);
+                memberSuccess[memberName] = memberSuccess[memberName] + success;
+                memberFailed[memberName] = memberFailed[memberName] + failed;
+                memberIds[memberName] = memberID;
+              } else {
+                memberMoney[memberName] = (crime.money_gain / splitFactor);
+                memberSuccess[memberName] = success;
+                memberFailed[memberName] = failed;
+                memberIds[memberName] = memberID;
+              }
+            } else {
+              memberName = memberID;
+
+              if (memberName in memberMoney) {
+                memberMoney[memberName] = memberMoney[memberName] + (crime.money_gain / splitFactor);
+                memberSuccess[memberName] = memberSuccess[memberName] + success;
+                memberFailed[memberName] = memberFailed[memberName] + failed;
+              } else {
+                memberMoney[memberName] = (crime.money_gain / splitFactor);
+                memberSuccess[memberName] = success;
+                memberFailed[memberName] = failed;
+              }
+            }
+
+            if (participants === '') {
+              let tmpName = memberName;
+              if (!weightedPerRank) {
+                tmpName = `<a href="https://www.torn.com/factions.php?step=your#/tab=controls&addMoneyTo=${memberID}&money=${memberMoney[memberName]}" target="_blank">${memberName} [${memberID}]</a>`;
+              }
+              participants = tmpName;
+            } else {
+              let tmpName = memberName;
+              if (!weightedPerRank) {
+                tmpName = `<a href="https://www.torn.com/factions.php?step=your#/tab=controls&addMoneyTo=${memberID}&money=${memberMoney[memberName]}" target="_blank">${memberName} [${memberID}]</a>`;
+              }
+              participants = participants + ', ' + tmpName;
+            }
+          });
+        });
+
+        if (weightedPerRank)
+          factionMoney = factionMoney + (crime.money_gain)
+
+        else {
+          if (splitFactor == 5) { factionMoney = factionMoney + (crime.money_gain / splitFactor); }
+          if (splitFactor == 4) { factionMoney = 0; }
+        }
+
+        factionSuccess = factionSuccess + success;
+        factionFailed = factionFailed + failed;
+        totalRespect = totalRespect + crime.respect_gain;
+        totalMoney = totalMoney + crime.money_gain;
+
+        var formatted_date = ts.toISOString().replace('T', ' ').replace('.000Z', '');
+
+        table += '<tr>'
+          + `<td>${formatted_date}</td>`
+          + `<td>${participants}</td>`
+          + `<td>${crime.crime_name}</td>`
+          + `<td>${crimeResult}</td>`
+          + `<td>$${crime.money_gain.toLocaleString('en-US')}</td>`
+          + `<td>${crime.respect_gain}</td>`
+          + `</tr>`;
       }
     }
-  
-    if (factionFailed > 0) { badgeFailed = 'badge-danger'; }
-    if (factionSuccess > 0) { badgeSuccess = 'badge-success'; }
-  
-    table = table + '</tbody><tfoot><tr class="table-dark">'
-      + '<td colspan="3">Totals</td>'
-      + '<td>'
-      + '<span class="badge badge-pill ' + badgeFailed + '">' + factionFailed + '</span>-'
-      + '<span class="badge badge-pill ' + badgeSuccess + '">' + factionSuccess + '</span>'
-      + '</td>'
-      + '<td>$' + totalMoney.toLocaleString('en-US') + '</td>'
-      + '<td>' + totalRespect + '</td>'
-      + '</tr>';
-  
-    table = table + '</tfoot></table>';
-  
-    $(document).ready(function () {
-      $('#organizedcrimes').DataTable({
-        "paging": false,
-        "order": [[1, "asc"]],
-        "info": false,
-        "stateSave": true
-      });
-    });
-  
-    document.getElementById(element).innerHTML = table;
-  
   }
+
+  if (factionFailed > 0) { badgeFailed = 'badge-danger'; }
+  if (factionSuccess > 0) { badgeSuccess = 'badge-success'; }
+
+  table += `</tbody><tfoot><tr class="table-dark">`
+    + `<td>Totals</td>`
+    + `<td></td>`
+    + `<td></td>`
+    + `<td>`
+    + `<span class="badge badge-pill ${badgeFailed}">${factionFailed}</span>-`
+    + `<span class="badge badge-pill ${badgeSuccess}">${factionSuccess}</span>`
+    + `</td>`
+    + `<td>$${totalMoney.toLocaleString('en-US')}</td>`
+    + `<td>${totalRespect}</td>`
+    + `</tr></tfoot>`;
+
+  table = table + '</table>';
+  document.getElementById(element).innerHTML = table;
+
+
+  $(document).ready(function () {
+    $('#totals').DataTable({
+      "paging": false,
+      "order": [[0, "asc"]],
+      "info": false,
+      "stateSave": true,
+      "footer": true
+    });
+  });
+
+  var multiplier = 0;
+  var numberOfTeams = paLeads.split(';').length - 1;
+
+  var summary = `<div class="col-sm-12 badge-primary" ><b>Individual results for ${selectedMonthText}</b> <input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents( document.getElementById('individual') );"></div>`;
+  summary += '<br />';
+  summary += '<table class="table table-hover" id="individual"><thead><tr>'
+    + '<th>Name</th>';
+
+  if (weightedPerRank) {
+    summary += '<th>Money earned (weighted per PA rank)</th>';
+  } else {
+    summary += `<th>Money earned (<sup>1</sup>/<sub>${splitFactor}</sub>th of result)</th>`;
+  }
+
+  summary += '<th>Fail</th>'
+    + '<th>Success</th>'
+    + '</tr></thead><tbody>';
+
+  memberMoney = sortObj(memberMoney);
+
+  for (var name in memberMoney) {
+    if (memberFailed[name] > 0) { badgeFailed = 'badge-danger'; } else { badgeFailed = 'badge-dark'; }
+    if (memberSuccess[name] > 0) { badgeSuccess = 'badge-success'; } else { badgeSuccess = 'badge-dark'; }
+
+    if (name.startsWith('1|')) multiplier = 0.4 / numberOfTeams;
+    if (name.startsWith('2|')) multiplier = 0.3 / numberOfTeams;
+    if (name.startsWith('3|')) multiplier = 0.2 / numberOfTeams;
+    if (name.startsWith('4|')) multiplier = 0.1 / numberOfTeams;
+
+    summary = summary + '<tr>'
+      + '<td>' + `<a href="https://www.torn.com/factions.php?step=your#/tab=controls&addMoneyTo=${memberIds[name]}&money=${memberMoney[name]}" target="_blank">${name}</a>` + '</td>';
+
+    if (!weightedPerRank) {
+      summary = summary + '<td>' + ' $' + memberMoney[name].toLocaleString('en-US') + '</td>';
+    }
+    else {
+      summary = summary + '<td>' + ' $' + (factionMoney * multiplier).toLocaleString('en-US') + '</td>';
+    }
+
+    summary = summary + '<td><span class="badge badge-pill ' + badgeFailed + '">' + memberFailed[name] + '</span></td>'
+      + '<td><span class="badge badge-pill ' + badgeSuccess + '">' + memberSuccess[name] + '</span></td>'
+      + '</tr>';
+
+  }
+  badgeSuccess = 'badge-dark';
+  badgeFailed = 'badge-dark';
+  if (factionFailed > 0) { badgeFailed = 'badge-danger'; }
+  if (factionSuccess > 0) { badgeSuccess = 'badge-success'; }
+  summary = summary + '</tbody><tfoot><tr class="table-dark">'
+    + '<td>Faction totals</td>'
+    + '<td>' + ' $' + factionMoney.toLocaleString('en-US') + '</td>'
+    + '<td><span class="badge badge-pill ' + badgeFailed + '">' + factionFailed + '</span></td>'
+    + '<td><span class="badge badge-pill ' + badgeSuccess + '">' + factionSuccess + '</span></td>'
+    + '</tr></tfoot>';
+  summary = summary + '</table>';
+
+  document.getElementById('summary').innerHTML = summary;
+
+  $(document).ready(function () {
+    $('#individual').DataTable({
+      "paging": false,
+      "order": [[0, "asc"]],
+      "info": false,
+      "stateSave": true
+    });
+  });
+
+
+}
+
+/**
+ * Parses the organized crime data and generates a table summarizing the member list by organized crime attempts.
+ *
+ * @param {array} crimeData - The array of organized crime IDs from the API.
+ * @param {string} element - The ID of the HTML element where the table will be inserted.
+ * @param {Object} membersList - An object containing the member information from the API.
+ *
+ * This function generates an HTML table displaying the member list sorted by organized crime attempts.
+ * The table includes the organized crime attempt date, participants, crime type, result, money gained, and respect gained.
+ * The table is inserted into the specified HTML element and formatted for display.
+ */
+function parseOCs(crimeData, element, membersList) {
+
+  var memberStatus = {};
+  var memberSuccess = {};
+  var memberFailed = {};
+  var factionSuccess = 0;
+  var factionFailed = 0;
+  var totalRespect = 0;
+  var totalMoney = 0;
+
+  var badgeSuccess = 'badge-dark';
+  var badgeFailed = 'badge-dark';
+
+  const today = new Date();
+  const currentMonth = today.getMonth();
+
+  var firstDayOfMonth, lastDayOfMonth;
+
+  var selectedMonthValue = document.getElementById('monthSelect').value;
+  var selectedMonthValue = document.getElementById('monthSelect').value;
+
+  // Calculate the month offset based on selectedMonthValue
+  var monthOffset = parseInt(selectedMonthValue);
+
+  // Calculate timestamps using the offset
+  var timestamps = calculateMonthTimestamps(today, currentMonth - monthOffset);
+  var firstDayOfMonth = timestamps.firstDay;
+  var lastDayOfMonth = timestamps.lastDay;
+
+  var selectElement = document.getElementById('monthSelect');
+  var selectedOption = selectElement.options[selectElement.selectedIndex];
+  var selectedMonthText = selectedOption.text;
+
+  var crimeList = '';
+  if (document.getElementById('PoliticalAssassination').checked) {
+    crimeList = document.getElementById('PoliticalAssassination').value + ',' + crimeList;
+  }
+  if (document.getElementById('PlaneHijacking').checked) {
+    crimeList = document.getElementById('PlaneHijacking').value + ',' + crimeList;
+  }
+  if (document.getElementById('TakeOverACruiseLiner').checked) {
+    crimeList = document.getElementById('TakeOverACruiseLiner').value + ',' + crimeList;
+  }
+  if (document.getElementById('RobbingOfAMoneyTrain').checked) {
+    crimeList = document.getElementById('RobbingOfAMoneyTrain').value + ',' + crimeList;
+  }
+  if (document.getElementById('PlannedRobbery').checked) {
+    crimeList = document.getElementById('PlannedRobbery').value + ',' + crimeList;
+  }
+  if (document.getElementById('BombThreat').checked) {
+    crimeList = document.getElementById('BombThreat').value + ',' + crimeList;
+  }
+  if (document.getElementById('Kidnapping').checked) {
+    crimeList = document.getElementById('Kidnapping').value + ',' + crimeList;
+  }
+  if (document.getElementById('Blackmailing').checked) {
+    crimeList = document.getElementById('Blackmailing').value + ',' + crimeList;
+  }
+
+  var table = '<div class="col-sm-12 badge-primary" ><b>Organized Crime Overview for ' + selectedMonthText + '</b> <input type="button" class="btn btn-outline-light btn-sm" value="select table content" onclick="selectElementContents( document.getElementById(\'totals\') );"></div>';
+  table = table + '<br />';
+
+  table = table + '<table class="table table-hover" id="organizedcrimes"><thead><tr>'
+    + '<th>Date</th>'
+    + '<th>Participants</th>'
+    + '<th>Crime Type</th>'
+    + '<th>Result</th>'
+    + '<th>Money Gained<br/>'
+    + '<th>Respect Gained</th>'
+    + '</tr></thead><tbody>';
+
+
+  for (var id in crimeData) {
+    var crime = crimeData[id];
+
+    if (crimeList.includes(crime.crime_id)) {
+      // 8 = Political Assassination
+      // 7 = Plane hijacking
+      // 6 = Take over a cruise liner
+      // 5 = Robbing of a money train
+      // 4 = Planned robbery
+      // 3 = Bomb Threat
+      // 2 = Kidnapping
+      // 1 = Blackmailing
+      var ts = new Date(crime.time_completed * 1000);
+
+
+      if (crime.initiated === 1 & crime.time_completed >= firstDayOfMonth && crime.time_completed <= lastDayOfMonth) {
+
+        var crimeResult = '';
+        var failed = 0;
+        var success = 0;
+        var participants = '';
+        var tmp = '';
+
+        if (crime.success === 0) {
+          crimeResult = '<span class="badge badge-pill badge-danger">Failed</span>';
+          failed = 1;
+        } else {
+          crimeResult = '<span class="badge badge-pill badge-success">Success</span>';
+          success = 1;
+        }
+
+        crime.participants.forEach(obj => {
+          Object.entries(obj).forEach(([key, value]) => {
+            var memberID = `${key}`;
+
+            var memberName = '';
+            if (membersList.hasOwnProperty(memberID)) {
+              memberName = membersList[memberID].name;
+              if (memberName in memberStatus) {
+                memberStatus[memberName] = memberStatus[memberName] + 1;
+                memberSuccess[memberName] = memberSuccess[memberName] + success;
+                memberFailed[memberName] = memberFailed[memberName] + failed;
+              } else {
+                memberStatus[memberName] = 1;
+                memberSuccess[memberName] = success;
+                memberFailed[memberName] = failed;
+              }
+            } else {
+              memberName = memberID;
+            }
+
+            if (participants === '') {
+              participants = memberName;
+
+            } else {
+              participants = participants + ', ' + memberName;
+            }
+          });
+        });
+
+        factionSuccess = factionSuccess + success;
+        factionFailed = factionFailed + failed;
+        totalRespect = totalRespect + crime.respect_gain;
+        totalMoney = totalMoney + crime.money_gain;
+
+        var formatted_date = ts.toISOString().replace('T', ' ').replace('.000Z', '');
+
+        table = table + '<tr>'
+          + '<td>' + formatted_date + '</td>'
+          + '<td>' + participants + '</td>'
+          + '<td>' + crime.crime_name + '</td>'
+          + '<td>' + crimeResult + '</td>'
+          + '<td>$' + crime.money_gain.toLocaleString('en-US') + '</td>'
+          + '<td>' + crime.respect_gain + '</td>'
+          + '</tr>';
+      }
+    }
+  }
+
+  if (factionFailed > 0) { badgeFailed = 'badge-danger'; }
+  if (factionSuccess > 0) { badgeSuccess = 'badge-success'; }
+
+  table = table + '</tbody><tfoot><tr class="table-dark">'
+    + '<td colspan="3">Totals</td>'
+    + '<td>'
+    + '<span class="badge badge-pill ' + badgeFailed + '">' + factionFailed + '</span>-'
+    + '<span class="badge badge-pill ' + badgeSuccess + '">' + factionSuccess + '</span>'
+    + '</td>'
+    + '<td>$' + totalMoney.toLocaleString('en-US') + '</td>'
+    + '<td>' + totalRespect + '</td>'
+    + '</tr>';
+
+  table = table + '</tfoot></table>';
+
+  $(document).ready(function () {
+    $('#organizedcrimes').DataTable({
+      "paging": false,
+      "order": [[1, "asc"]],
+      "info": false,
+      "stateSave": true
+    });
+  });
+
+  document.getElementById(element).innerHTML = table;
+
+}
