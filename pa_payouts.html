@@ -19,7 +19,8 @@
 	<script src="script/te_builder.js"></script>
 	<script src="script/te_api.js"></script>
 	<script src="script/te_parser.js"></script>
-	
+	<script src="script/te_pages.js"></script>
+
 	<script src="script/jquery.min.js"></script>
 	<script src="script/bootstrap.bundle.min.js"></script>
 	<script src="script/custom.js"></script>
@@ -29,7 +30,7 @@
 	<script src="script/te_init.js"></script>
 </head>
 
-<body onload="loadKeyFromSession('pa_payouts')">
+<body onload="loadKeyFromSession('pa_payouts')" data-page="pa_payouts">
 
 	<div class="container-fluid">
 		<br />
@@ -93,7 +94,6 @@
 			<div class="form-group col-sm-1">
 				<button type="button" class="btn btn-primary" id="submit">Submit</button>
 			</div>
-			<script src="script/te_pa_payouts.js"></script>
 
 			<div class="form-group col-sm-7" id="alert"></div>
 		</div>

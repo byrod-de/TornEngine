@@ -19,6 +19,7 @@
 	<script src="script/te_builder.js"></script>
 	<script src="script/te_api.js"></script>
 	<script src="script/te_parser.js"></script>
+	<script src="script/te_pages.js"></script>
 
 	<script src="script/jquery.min.js"></script>
 	<script src="script/bootstrap.bundle.min.js"></script>
@@ -30,7 +31,7 @@
 
 </head>
 
-<body onload="loadKeyFromSession('rankedwars')">
+<body onload="loadKeyFromSession('rankedwars')" data-page="rankedwars">
 
 	<div class="container-fluid">
 		<br />
@@ -89,7 +90,6 @@
 			<div class="form-group col-sm-1">
 				<button type="button" class="btn btn-primary" id="submit">Submit</button>
 			</div>
-			<script src="script/te_rankedwars.js"></script>
 
 			<div class="form-group col-sm-7" id="alert"></div>
 		</div>

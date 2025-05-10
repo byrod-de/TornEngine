@@ -87,6 +87,21 @@ async function callTornStatsAPI(apiKey, id) {
     }
 }
 
+
+function callRankedWarDetails(apiKey, warId) {
+    const modalTitle = document.getElementById('rankedWarModalLabel');
+    const modalBody = document.getElementById('rankedWarModalBody');
+
+    modalTitle.textContent = 'Loading...';
+    modalBody.innerHTML = '<div class="alert alert-info">Fetching war details. Please wait...</div>';
+
+    callTornAPI({
+        apiKey: apiKey,
+        selections: 'rankedwarreport',
+        customPath: `torn/${warId}`
+    });
+}
+
 // --- API Helpers ---
 
 function handleTornApiError(error) {
