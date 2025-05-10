@@ -1,10 +1,24 @@
-async function callTornAPI({ apiKey, part = '', selections = '', from = '', to = '' }) {
+/**
+ * A function to call the Torn API with specified parameters and handle the response.
+ *
+ * @param {object} options - an object containing the parameters for the API call
+ * @param {string} options.apiKey - the API key to use for the call
+ * @param {string} [options.part] - the API endpoint to call
+ * @param {string} [options.selections] - the data to select from the API response
+ * @param {string} [options.from] - the starting timestamp for the API request
+ * @param {string} [options.to] - the ending timestamp for the API request
+ * @param {string} [options.customPath] - the custom path to use for the API call
+ * @returns {void}
+ */
+
+async function callTornAPI({ apiKey, part = '', selections = '', from = '', to = '', customPath = '' }) {
+    let path = customPath || part;
+    let url = `https://api.torn.com/${path}?selections=${selections}&key=${apiKey}&comment=tornengine`;
+
+    if (from) url += `&from=${from}`;
+    if (to) url += `&to=${to}`;
+
     try {
-        let url = `https://api.torn.com/${part}?selections=${selections}&key=${apiKey}&comment=tornengine`;
-
-        if (from) url += `&from=${from}`;
-        if (to) url += `&to=${to}`;
-
         const response = await fetch(url);
         const data = await response.json();
 
@@ -12,7 +26,7 @@ async function callTornAPI({ apiKey, part = '', selections = '', from = '', to =
             if (data.error) {
                 handleTornApiError(data.error);
             } else {
-                handleApiData(data, part, selections);
+                handleApiData(data, path, selections);
             }
         } else {
             printAlert('Error', 'Torn API not available.');
@@ -22,6 +36,7 @@ async function callTornAPI({ apiKey, part = '', selections = '', from = '', to =
         printAlert('Error', 'API call failed.');
     }
 }
+
 
 // --- Torn API Call (v2) ---
 
@@ -72,30 +87,6 @@ async function callTornStatsAPI(apiKey, id) {
     }
 }
 
-// --- Ranked War Details Call (special case) ---
-
-async function callRankedWarDetails(apiKey, warId) {
-    try {
-        const url = `https://api.torn.com/torn/${warId}?selections=rankedwars&key=${apiKey}&comment=tornengine`;
-
-        const response = await fetch(url);
-        const data = await response.json();
-
-        if (response.ok) {
-            if (data.error) {
-                handleTornApiError(data.error);
-            } else {
-                handleApiData(data, 'rankedwar', warId);
-            }
-        } else {
-            printAlert('Error', 'Ranked Wars API not available.');
-        }
-    } catch (error) {
-        console.error('callRankedWarDetails error:', error);
-        printAlert('Error', 'Ranked War Details API call failed.');
-    }
-}
-
 // --- API Helpers ---
 
 function handleTornApiError(error) {
@@ -109,15 +100,29 @@ function handleTornApiError(error) {
 }
 
 function handleApiData(data, part, selections) {
-    console.log('API Data:', data);
-    console.log('Part:', part);
-    console.log('Selections:', selections);
+    const DEBUG = true;
+    if (DEBUG) {
+        console.log('API Data:', data);
+        console.log('Part:', part);
+        console.log('Selections:', selections);
+    }
     if (part.startsWith('user')) {
         if (selections === 'basic,properties') {
             printAlert('Success', 'The API Call successful, find the results below.');
             parsePropertyInfo(data, 'properties', 'output');
         }
     }
+    if (part === 'torn' && selections === 'rankedwars') {
+        parseRankedWars(data, 'output');
+    }
+    if (part.startsWith('torn/') && selections === 'rankedwarreport') {
+        if (data.rankedwarreport) {
+            parseRankedWarDetails(data.rankedwarreport, 'rankedWarModalBody');
+        } else {
+            document.getElementById('rankedWarModalBody').innerHTML = '<div class="alert alert-warning">No report data found for this war.</div>';
+        }
+    }
+
     // other cases (members, attacks, etc.)
 }
 
@@ -139,15 +144,15 @@ function storageAvailable(type) {
 function getApiKey() {
     let localStorageApiKey = "";
     if (storageAvailable('localStorage')) {
-      localStorageApiKey = localStorage.getItem('api_key');
+        localStorageApiKey = localStorage.getItem('api_key');
     }
     let trustedApiKey = document.getElementById("trustedkey").value || localStorageApiKey;
-  
+
     sessionStorage.trustedApiKey = trustedApiKey;
     localStorage.setItem('api_key', trustedApiKey);
-  
+
     return trustedApiKey;
-  }
+}
 
 // --- User Submit Handler ---
 
