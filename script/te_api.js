@@ -40,10 +40,12 @@ async function callTornAPI({ apiKey, part = '', selections = '', from = '', to =
 
 // --- Torn API Call (v2) ---
 
-async function callTornAPIv2({ apiKey, part = '', selection = '', category = '' }) {
+async function callTornAPIv2({ apiKey, part = '', selections = '', from = '', to = '', category = '' }) {
     try {
-        let url = `https://api.torn.com/v2/${part}/${selection}?key=${apiKey}&comment=tornengine`;
+        let url = `https://api.torn.com/v2/${part}/${selections}?key=${apiKey}&comment=tornengine`;
         if (category) url += `&cat=${category}`;
+        if (from) url += `&from=${from}`;
+        if (to) url += `&to=${to}`;
 
         const response = await fetch(url);
         const data = await response.json();
@@ -52,7 +54,7 @@ async function callTornAPIv2({ apiKey, part = '', selection = '', category = '' 
             if (data.error) {
                 handleTornApiError(data.error);
             } else {
-                handleApiData(data, part, selection);
+                handleApiData(data, part, selections);
             }
         } else {
             printAlert('Error', 'Torn API v2 not available.');
@@ -157,6 +159,20 @@ function handleApiData(data, part, selections) {
             break;
           case 'oc_overview':
             parseOCs(data.crimes, 'output', data.members);
+            break;
+          default:
+            printAlert('Warning', 'Unhandled page context for basic,crimes data.');
+        }
+      } else {
+        printAlert('Warning', 'Faction API permissions may be missing.');
+      }
+    }
+
+    if (part === 'faction' && selections === 'basic,crimes,members') {
+      if (data.crimes && data.members) {
+        switch (page) {
+          case 'oc2_center':
+            parseOC2(data, 'summary');
             break;
           default:
             printAlert('Warning', 'Unhandled page context for basic,crimes data.');

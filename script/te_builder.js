@@ -11,7 +11,8 @@ const menuData = [
     {
       category: "OC 2.0 Tools",
       items: [
-        { name: "OC 2.0", icon: "oc2", href: "oc2_center.html", badge: "Alpha" }
+        { name: "OC 2.0", icon: "oc2", href: "oc2_center.html", badge: "Alpha" },
+        { name: "Missing Items", icon: "missing_items", href: "missing_items.html", badge: "Alpha" }
       ]
     },
     {
@@ -75,7 +76,8 @@ const menuData = [
   
         link.appendChild(img);
         
-  
+        link.append(' ' + item.name);
+
         if (item.badge) {
           const badge = document.createElement('sup');
           let badgeClass = 'badge badge-pill badge-info';
@@ -88,7 +90,6 @@ const menuData = [
           link.appendChild(badge);
         }
 
-        link.append(' ' + item.name);
   
         dropdown.appendChild(link);
       });
@@ -150,7 +151,7 @@ const menuData = [
           badge.className = badgeClass;
           badge.innerText = item.badge;
           cardBody.append(' ');
-          cardBody.appendChild(badge);
+          //cardBody.appendChild(badge);
         }
         link.appendChild(cardBody);
         card.appendChild(link);

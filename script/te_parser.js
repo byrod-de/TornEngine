@@ -856,3 +856,183 @@ function parseOCs(crimeData, element, membersList) {
   document.getElementById(element).innerHTML = table;
 
 }
+
+/**
+ * Parses organized crime data and displays a table of crimes, including crime type, start time, status, participants, rewards, and additional details.
+ *
+ * @param {Object} oc2Data - The data containing organized crime information.
+ * @param {string} element - The ID of the HTML element where the table will be inserted.
+ *
+ * This function generates a Bootstrap card for each crime, displaying the crime type, start time, status, participants, rewards, and additional details.
+ * The cards are inserted into the specified HTML element and formatted for display.
+ */
+function parseOC2(oc2Data, element) {
+  const crimes = Object.values(oc2Data['crimes']).sort((a, b) => b.difficulty - a.difficulty);
+
+
+  var basic = oc2Data['basic'];
+  var members = oc2Data['members'];
+
+  const cardsContainer = document.getElementById('cardsContainer');
+  cardsContainer.innerHTML = '';
+
+  const summaryData = {};
+
+  for (const crimeData of crimes) {
+
+    const name = crimeData.name;
+    const pcs = crimeData.participants;
+    const key = `${crimeData.difficulty} - ${name}`;
+
+    if (!summaryData[key]) {
+      summaryData[key] = {
+        pc: pcs,
+        completions: 0,
+        successes: 0,
+        failures: 0,
+        income: 0
+      };
+    }
+
+    summaryData[key].completions++;
+    if (crimeData.status === 'Successful') {
+      summaryData[key].successes++;
+      summaryData[key].income += crimeData.rewards?.money || 0;
+    } else if (crimeData.status === 'Failed') {
+      summaryData[key].failures++;
+    }
+
+    const slots = crimeData.slots; //slots is an array of objects
+    let slotsString = '';
+    for (const slot of slots) {
+      let badgeSuccessChance = 'badge-success';
+      let badgeItemRequirement = 'badge-secondary';
+      //members is an array of objects, the member id is in the element id
+      const member = members.find(member => member.id === slot.user_id);
+      let memberName = '';
+
+      if (member !== undefined) memberName = '<a href="https://www.torn.com/profiles.php?XID=' + slot.user_id + '" target="_blank">' + member.name + ' [' + slot.user_id + ']</a>';
+      if (member === undefined) memberName = '<span class="badge badge-pill badge-warning">no member assigned</span>';
+
+      if (slot.success_chance >= 75) badgeSuccessChance = 'badge-success';
+      if (slot.success_chance >= 50 && slot.success_chance < 75) badgeSuccessChance = 'badge-warning';
+      if (slot.success_chance < 50) badgeSuccessChance = 'badge-danger';
+      if (slot.user_id === null) badgeSuccessChance = 'badge-secondary';
+
+      const succesIcon = '<span class="badge badge-pill ' + badgeSuccessChance + '">' + slot.success_chance + '</span>';
+
+      let itemIconText = 'no item required';
+      if (slot.item_requirement !== null) {
+        if (slot.item_requirement.is_available === false) {
+          badgeItemRequirement = 'badge-danger';
+          itemIconText = 'item not available';
+        }
+        if (slot.item_requirement.is_available === true) {
+          badgeItemRequirement = 'badge-success';
+          itemIconText = 'item available';
+        }
+      }
+      const itemIcon = '<span class="badge badge-pill ' + badgeItemRequirement + '">' + itemIconText + '</span>';
+      let progressbar = '';
+      let userDetails = '';
+      if (slot.user !== null) {
+        userDetails = `${succesIcon} | ${itemIcon}`;
+        progressbar = '<div class="progress"><div class="progress-bar progress-bar-striped bg-info" role="progressbar" style="width: ' + slot.user.progress + '%" aria-valuenow="' + slot.user.progress + '" aria-valuemin="0" aria-valuemax="100">' + slot.user.progress + '</div></div>';
+      }
+
+      slotsString += `<b>${slot.position}</b> - ${memberName}<br />${userDetails}<br />${progressbar}<br />`;
+    }
+
+    let rewards = '';
+    if (crimeData.status === 'Successful') {
+      const money = crimeData.rewards.money;
+      let items = crimeData.rewards.items.join(', ');
+      if (items === '') items = '<i>no items</i>';
+      const respect = crimeData.rewards.respect;
+      rewards = '<span class="text-success">Rewards: $' + abbreviateNumber(money) + ', ' + items + ', ' + respect + ' respect</span><br />';
+    }
+
+    //create card for each crime
+    const header = crimeData.difficulty + ' - ' + crimeData.name;
+    let color = 'primary';
+    switch (crimeData.status) {
+      case 'Recruiting': color = 'primary'; break;
+      case 'Planning': color = 'info'; break;
+      case 'Successful': color = 'success'; break;
+      case 'Failure': color = 'danger'; break;
+      case 'Expired': color = 'secondary'; break;
+      default: color = 'primary'; break;
+    }
+
+    let formatted_date = 'N/A';
+    formatted_date = 'Created at ' + new Date(crimeData.created_at * 1000).toISOString().replace('T', ' ').replace('.000Z', '') + '<br />';
+
+    if (crimeData.ready_at > 0 && crimeData.ready_at !== null) {
+      formatted_date += 'Ready at ' + new Date(crimeData.ready_at * 1000).toISOString().replace('T', ' ').replace('.000Z', '');
+    }
+    const title = 'ID: ' + crimeData.id + ' - <span class="badge badge-pill badge-' + color + '">Status: ' + crimeData.status + '</span>';
+    const text = rewards + formatted_date + '<br />' + slotsString;
+
+    const card = document.createElement('div');
+    card.classList.add('card', `border-${color}`, 'mb-4');
+    card.style.maxWidth = '20rem';
+
+    const cardHeader = document.createElement('div');
+    cardHeader.classList.add('card-header', `bg-${color}`, 'text-white');
+    cardHeader.textContent = header;
+    card.appendChild(cardHeader);
+
+    const cardBody = document.createElement('div');
+    cardBody.classList.add('card-body');
+    card.appendChild(cardBody);
+
+    const cardTitle = document.createElement('strong');
+    cardTitle.classList.add('card-title');
+    cardTitle.innerHTML = title;
+    cardBody.appendChild(cardTitle);
+
+    const cardText = document.createElement('p');
+    cardText.classList.add('card-text');
+    cardText.innerHTML = text;
+    cardBody.appendChild(cardText);
+
+    const col = document.createElement('div');
+    col.classList.add('col-md-3', 'mb-3');
+    col.appendChild(card);
+    cardsContainer.appendChild(col);
+  }
+
+  const category = document.getElementsByName('categoryRadio');
+  let selectedCategory = '';
+  for (let radio of category) {
+    if (radio.checked) selectedCategory = radio.value;
+  }
+  if (selectedCategory === 'completed') {
+
+    let summaryHTML = `<div class="col-sm-12 badge-primary"><b>Completed OC Overview</b></div><br>`;
+    summaryHTML += `<table class="table table-sm table-hover text-center" id="oc2summary"><thead><tr>
+  <th>Scenario</th>
+  <th>Completions</th>
+  <th>Successes</th>
+  <th>Failures</th>
+  <th>Success Rate</th>
+  <th>Income</th>
+</tr></thead><tbody>`;
+
+    for (const key of Object.keys(summaryData).sort()) {
+      const d = summaryData[key];
+      const rate = d.completions > 0 ? `${((d.successes / d.completions) * 100).toFixed(2)}%` : '-';
+      summaryHTML += `<tr>
+    <td>${key}</td>
+    <td>${d.completions}</td>
+    <td>${d.successes}</td>
+    <td>${d.failures}</td>
+    <td>${rate}</td>
+    <td>$${d.income.toLocaleString()}</td>
+  </tr>`;
+    }
+    summaryHTML += `</tbody></table><br>`;
+    document.getElementById(element).innerHTML = summaryHTML;
+  }
+
+}

@@ -40,6 +40,15 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'oc_overview':
                 callTornAPI({ apiKey: key, part: 'faction', selections: 'basic,crimes', from: firstDay, to: lastDay });
                 break;
+
+            case 'oc2_center':
+                const category = document.getElementsByName('categoryRadio');
+                let selectedCategory = '';
+                for (let radio of category) {
+                    if (radio.checked) selectedCategory = radio.value;
+                }
+                callTornAPIv2({ apiKey: key, part: 'faction', selections: 'basic,crimes,members', from: firstDay, to: lastDay, category: selectedCategory });
+                break;
         }
     });
 });
