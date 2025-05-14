@@ -119,72 +119,75 @@ function handleTornApiError(error) {
 function handleApiData(data, part, selections) {
     const DEBUG = true;
     if (DEBUG) {
-      console.log('API Data:', data);
-      console.log('Part:', part);
-      console.log('Selections:', selections);
+        console.log('API Data:', data);
+        console.log('Part:', part);
+        console.log('Selections:', selections);
     }
-  
+
     const page = document.body.dataset.page;
-  
+
     if (part.startsWith('user') && selections === 'basic,properties') {
-      printAlert('Success', 'The API Call successful, find the results below.');
-      parsePropertyInfo(data, 'properties', 'output');
+        printAlert('Success', 'The API Call successful, find the results below.');
+        parsePropertyInfo(data, 'properties', 'output');
     }
-  
+
     if (part === 'torn' && selections === 'rankedwars') {
-      parseRankedWars(data, 'output');
+        parseRankedWars(data, 'output');
     }
-  
+
     if (part.startsWith('torn/') && selections === 'rankedwarreport') {
-      if (data.rankedwarreport) {
-        parseRankedWarDetails(data.rankedwarreport, 'rankedWarModalBody');
-      } else {
-        document.getElementById('rankedWarModalBody').innerHTML = '<div class="alert alert-warning">No report data found for this war.</div>';
-      }
-    }
-  
-    if (part === 'faction' && selections === 'basic,crimeexp') {
-      if (data.crimeexp && data.members) {
-        parseCrimeexp(data.crimeexp, 'output', data.members);
-      } else {
-        printAlert('Warning', 'Faction API permissions may be missing.');
-      }
-    }
-  
-    if (part === 'faction' && selections === 'basic,crimes') {
-      if (data.crimes && data.members) {
-        switch (page) {
-          case 'pa_payouts':
-            parsePayouts(data.crimes, 'output', data.members);
-            break;
-          case 'oc_overview':
-            parseOCs(data.crimes, 'output', data.members);
-            break;
-          default:
-            printAlert('Warning', 'Unhandled page context for basic,crimes data.');
+        if (data.rankedwarreport) {
+            parseRankedWarDetails(data.rankedwarreport, 'rankedWarModalBody');
+        } else {
+            document.getElementById('rankedWarModalBody').innerHTML = '<div class="alert alert-warning">No report data found for this war.</div>';
         }
-      } else {
-        printAlert('Warning', 'Faction API permissions may be missing.');
-      }
+    }
+
+    if (part === 'faction' && selections === 'basic,crimeexp') {
+        if (data.crimeexp && data.members) {
+            parseCrimeexp(data.crimeexp, 'output', data.members);
+        } else {
+            printAlert('Warning', 'Faction API permissions may be missing.');
+        }
+    }
+
+    if (part === 'faction' && selections === 'basic,crimes') {
+        if (data.crimes && data.members) {
+            switch (page) {
+                case 'pa_payouts':
+                    parsePayouts(data.crimes, 'output', data.members);
+                    break;
+                case 'oc_overview':
+                    parseOCs(data.crimes, 'output', data.members);
+                    break;
+                default:
+                    printAlert('Warning', 'Unhandled page context for basic,crimes data.');
+            }
+        } else {
+            printAlert('Warning', 'Faction API permissions may be missing.');
+        }
     }
 
     if (part === 'faction' && selections === 'basic,crimes,members') {
-      if (data.crimes && data.members) {
-        switch (page) {
-          case 'oc2_center':
-            parseOC2(data, 'summary');
-            break;
-          default:
-            printAlert('Warning', 'Unhandled page context for basic,crimes data.');
+        if (data.crimes && data.members) {
+            switch (page) {
+                case 'oc2_center':
+                    parseOC2(data, 'summary');
+                    break;
+                case 'missing_items':
+                    parseMissingItems(data, 'output');
+                    break;
+                default:
+                    printAlert('Warning', 'Unhandled page context for basic,crimes data.');
+            }
+        } else {
+            printAlert('Warning', 'Faction API permissions may be missing.');
         }
-      } else {
-        printAlert('Warning', 'Faction API permissions may be missing.');
-      }
     }
-  
+
     // Add other pages here when needed
-  }
-  
+}
+
 
 
 // --- Key Retrieval (Storage Helpers) ---

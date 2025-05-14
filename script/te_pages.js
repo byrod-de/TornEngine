@@ -49,6 +49,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 callTornAPIv2({ apiKey: key, part: 'faction', selections: 'basic,crimes,members', from: firstDay, to: lastDay, category: selectedCategory });
                 break;
+
+            case 'missing_items':
+                let availableCategory = 'available';
+
+                callTornAPIv2({ apiKey: key, part: 'faction', selections: 'basic,crimes,members', from: firstDay, to: lastDay, category: availableCategory });
+                break;
         }
     });
 });

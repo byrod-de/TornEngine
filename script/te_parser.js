@@ -1036,3 +1036,82 @@ function parseOC2(oc2Data, element) {
   }
 
 }
+
+
+/**
+ * Parses the Organized Crime data and generates a list of members with missing items for each OC.
+ *
+ * @param {object} oc2Data - The Organized Crime data from the Torn API.
+ * @param {string} element - The HTML element ID where the list will be inserted.
+ *
+ * This function will display a list of OCs with missing items. Each OC will have a link to the OC itself and
+ * a list of members with missing items. Each member will have a link to their profile and the item they are
+ * missing. The list will be sorted by OC name.
+ */
+async function parseMissingItems(oc2Data, element) {
+  const container = document.getElementById(element);
+  container.innerHTML = '';
+
+  var crimes = oc2Data['crimes'];
+  var basic = oc2Data['basic'];
+  var members = oc2Data['members'];
+
+  let issuesFound = 0;
+  let html = `<div class="col-sm-12 badge-primary"><b>Missing Items in Active OCs</b></div><br />`;
+
+  for (const crime of Object.values(crimes)) {
+    const crimeLink = `https://www.torn.com/factions.php?step=your#/tab=crimes&crimeId=${crime.id}`;
+    const slots = crime.slots || [];
+
+    for (const slot of slots) {
+
+      const memberId = slot.user?.id || 'empty';
+      const member = members.find(member => member.id === memberId);
+      const memberName = member ? member.name : 'empty';
+      const position = slot.position;
+      console.log('memberId', memberId);
+      console.log('memberName', memberName);
+      console.log('position', position);
+
+      if (slot.item_requirement !== null && memberId !== 'empty') {
+        if (slot.item_requirement.is_available === true) {
+          issuesFound++;
+
+          const memberId = slot.user?.id || 'N/A';
+          const memberName = members.find(m => m.id === memberId)?.name || 'Unknown';
+          const position = slot.position || 'Unknown';
+
+          const itemId = slot.item_requirement.id;
+          const itemName = slot.item_requirement.name || `Item ${itemId}`;
+          const itemLink = `https://www.torn.com/page.php?sid=ItemMarket#/market/view=search&itemID=${itemId}`;
+
+          html += `
+          <div class="card border-warning mb-3">
+            <div class="card-header bg-warning text-white">
+              ${crime.name} (Level ${crime.difficulty})
+            </div>
+            <div class="card-body">
+              <p class="card-text">
+                <b>Member:</b> <a href="https://www.torn.com/profiles.php?XID=${memberId}" target="_blank">${memberName} [${memberId}]</a><br />
+                <b>Position:</b> ${position}<br />
+                <b>Missing Item:</b> <a href="${itemLink}" target="_blank">${itemName} [${itemId}]</a><br />
+                <b>OC Link:</b> <a href="${crimeLink}" target="_blank">Go to OC</a>
+              </p>
+            </div>
+          </div>
+        `;
+        }
+      }
+    }
+  }
+
+  if (issuesFound === 0) {
+    html = `
+      <div class="alert alert-success" role="alert">
+        <b>All good!</b> No missing items detected.
+      </div>
+    `;
+  }
+
+  container.innerHTML = html;
+}
