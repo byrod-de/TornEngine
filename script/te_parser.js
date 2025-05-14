@@ -1074,7 +1074,7 @@ async function parseMissingItems(oc2Data, element) {
       console.log('position', position);
 
       if (slot.item_requirement !== null && memberId !== 'empty') {
-        if (slot.item_requirement.is_available === true) {
+        if (slot.item_requirement.is_available === false) {
           issuesFound++;
 
           const memberId = slot.user?.id || 'N/A';
