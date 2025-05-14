@@ -55,6 +55,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 callTornAPIv2({ apiKey: key, part: 'faction', selections: 'basic,crimes,members', from: firstDay, to: lastDay, category: availableCategory });
                 break;
+
+            case 'members':
+                const factionId = document.getElementById('factionid').value.trim() || '';
+                callTornAPIv2({ apiKey: key, part: `faction/${factionId}`, selections: 'basic,members,wars' });
+                break;
         }
     });
 });

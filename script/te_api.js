@@ -10,7 +10,6 @@
  * @param {string} [options.customPath] - the custom path to use for the API call
  * @returns {void}
  */
-
 async function callTornAPI({ apiKey, part = '', selections = '', from = '', to = '', customPath = '' }) {
     let path = customPath || part;
     let url = `https://api.torn.com/${path}?selections=${selections}&key=${apiKey}&comment=tornengine`;
@@ -38,8 +37,18 @@ async function callTornAPI({ apiKey, part = '', selections = '', from = '', to =
 }
 
 
-// --- Torn API Call (v2) ---
-
+/**
+ * A function to call the Torn API v2 with specified parameters and handle the response.
+ *
+ * @param {object} options - an object containing the parameters for the API call
+ * @param {string} options.apiKey - the API key to use for the call
+ * @param {string} [options.part] - the API endpoint to call
+ * @param {string} [options.selections] - the data to select from the API response
+ * @param {string} [options.from] - the starting timestamp for the API request
+ * @param {string} [options.to] - the ending timestamp for the API request
+ * @param {string} [options.category] - the category to use for the API request
+ * @returns {void}
+ */
 async function callTornAPIv2({ apiKey, part = '', selections = '', from = '', to = '', category = '' }) {
     try {
         let url = `https://api.torn.com/v2/${part}/${selections}?key=${apiKey}&comment=tornengine`;
@@ -90,6 +99,12 @@ async function callTornStatsAPI(apiKey, id) {
 }
 
 
+/**
+ * Calls the Torn API to fetch the ranked war report for a specific war.
+ * The report is displayed in the ranked war modal.
+ * @param {string} apiKey - The Torn API key.
+ * @param {string} warId - The ID of the ranked war to fetch.
+ */
 function callRankedWarDetails(apiKey, warId) {
     const modalTitle = document.getElementById('rankedWarModalLabel');
     const modalBody = document.getElementById('rankedWarModalBody');
@@ -104,8 +119,12 @@ function callRankedWarDetails(apiKey, warId) {
     });
 }
 
-// --- API Helpers ---
 
+/**
+ * Handles errors returned by the Torn API.
+ *
+ * @param {object} error - The error object returned by the Torn API.
+ */
 function handleTornApiError(error) {
     if (error.code === 2) {
         printAlert('Error', 'Incorrect API Key.');
@@ -116,6 +135,15 @@ function handleTornApiError(error) {
     }
 }
 
+/**
+ * Handles the response data from a Torn API call. This function is the central
+ * point for processing the data returned by the Torn API. It will parse the
+ * data and update the relevant page elements with the fetched data.
+ *
+ * @param {object} data - The response data from the Torn API.
+ * @param {string} part - The part of the Torn API that was called.
+ * @param {string} selections - The selections criteria used in the API call.
+ */
 function handleApiData(data, part, selections) {
     const DEBUG = true;
     if (DEBUG) {
@@ -132,11 +160,13 @@ function handleApiData(data, part, selections) {
     }
 
     if (part === 'torn' && selections === 'rankedwars') {
+        printAlert('Success', 'The API Call successful, find the results below.');
         parseRankedWars(data, 'output');
     }
 
     if (part.startsWith('torn/') && selections === 'rankedwarreport') {
         if (data.rankedwarreport) {
+            printAlert('Success', 'The API Call successful, find the results below.');
             parseRankedWarDetails(data.rankedwarreport, 'rankedWarModalBody');
         } else {
             document.getElementById('rankedWarModalBody').innerHTML = '<div class="alert alert-warning">No report data found for this war.</div>';
@@ -145,6 +175,7 @@ function handleApiData(data, part, selections) {
 
     if (part === 'faction' && selections === 'basic,crimeexp') {
         if (data.crimeexp && data.members) {
+            printAlert('Success', 'The API Call successful, find the results below.');
             parseCrimeexp(data.crimeexp, 'output', data.members);
         } else {
             printAlert('Warning', 'Faction API permissions may be missing.');
@@ -155,9 +186,11 @@ function handleApiData(data, part, selections) {
         if (data.crimes && data.members) {
             switch (page) {
                 case 'pa_payouts':
+                    printAlert('Success', 'The API Call successful, find the results below.');
                     parsePayouts(data.crimes, 'output', data.members);
                     break;
                 case 'oc_overview':
+                    printAlert('Success', 'The API Call successful, find the results below.');
                     parseOCs(data.crimes, 'output', data.members);
                     break;
                 default:
@@ -172,9 +205,11 @@ function handleApiData(data, part, selections) {
         if (data.crimes && data.members) {
             switch (page) {
                 case 'oc2_center':
+                    printAlert('Success', 'The API Call successful, find the results below.');
                     parseOC2(data, 'summary');
                     break;
                 case 'missing_items':
+                    printAlert('Success', 'The API Call successful, find the results below.');
                     parseMissingItems(data, 'output');
                     break;
                 default:
@@ -185,25 +220,25 @@ function handleApiData(data, part, selections) {
         }
     }
 
+    if (part.startsWith('faction/') && selections === 'basic,members,wars') {
+        if (data.members && data.wars) {
+            printAlert('Success', 'The API Call successful, find the results below.');
+            parseMembers(data, 'output');
+        } else {
+            printAlert('Warning', 'Faction API permissions may be missing.');
+        }
+    }
+
     // Add other pages here when needed
 }
 
-
-
-// --- Key Retrieval (Storage Helpers) ---
-
-function storageAvailable(type) {
-    try {
-        const storage = window[type];
-        const testKey = '__storage_test__';
-        storage.setItem(testKey, testKey);
-        storage.removeItem(testKey);
-        return true;
-    } catch (e) {
-        return false;
-    }
-}
-
+/**
+ * Retrieves the trusted API key from localStorage and sets it to sessionStorage.
+ * If the trusted key in localStorage is empty, it will use the value in the
+ * "trustedkey" input element.
+ *
+ * @return {string} The trusted API key
+ */
 function getApiKey() {
     let localStorageApiKey = "";
     if (storageAvailable('localStorage')) {
@@ -216,8 +251,6 @@ function getApiKey() {
 
     return trustedApiKey;
 }
-
-// --- User Submit Handler ---
 
 function userSubmit() {
     const key = document.getElementById('apiKeyInput').value.trim();

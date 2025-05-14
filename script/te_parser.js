@@ -1069,9 +1069,6 @@ async function parseMissingItems(oc2Data, element) {
       const member = members.find(member => member.id === memberId);
       const memberName = member ? member.name : 'empty';
       const position = slot.position;
-      console.log('memberId', memberId);
-      console.log('memberName', memberName);
-      console.log('position', position);
 
       if (slot.item_requirement !== null && memberId !== 'empty') {
         if (slot.item_requirement.is_available === false) {
@@ -1114,4 +1111,336 @@ async function parseMissingItems(oc2Data, element) {
   }
 
   container.innerHTML = html;
+}
+
+
+function parseMembers(factionData, element) {
+
+  getMembersFilters();
+
+  const factionWars = factionData['wars'];
+  const membersList = factionData['members'];
+  const basicData = factionData['basic'];
+
+  const ranked_wars = factionWars['ranked'];
+  const raid_wars = factionWars['raid'];
+
+  var trustedApiKey = document.getElementById("trustedkey").value;
+
+  var statusList = '';
+  var markedCheckboxStatus = document.getElementsByName('status');
+  for (var checkbox of markedCheckboxStatus) {
+    if (checkbox.checked) statusList = statusList + checkbox.value + ',';
+  }
+
+  var detailsList = '';
+  var markedCheckboxDetails = document.getElementsByName('details');
+  for (var checkbox of markedCheckboxDetails) {
+    if (checkbox.checked) detailsList = detailsList + checkbox.value + ',';
+  }
+
+  var advancedFilterList = '';
+  var markedCheckboxAdvanced = document.getElementsByName('advanced');
+  for (var checkbox of markedCheckboxAdvanced) {
+    if (checkbox.checked) advancedFilterList = advancedFilterList + checkbox.value + ',';
+  }
+
+  var filterMinutesHosp = false;
+  if (document.getElementById('MinutesHosp').checked) {
+    filterMinutesHosp = true;
+  }
+
+  var filterMinutesAction = 0;
+  if (document.getElementById('FilterActive').checked) {
+    filterMinutesAction = document.getElementById('TimeActive').value;
+  }
+
+  var integrateFactionStats = false;
+  if (document.getElementById('FactionStats').checked) {
+    integrateFactionStats = document.getElementById('FactionStats').checked;
+  }
+
+  var cacheStats = false;
+  if (integrateFactionStats) {
+    cacheStats = checkIndexedDBSupport();
+  }
+
+  var levelRange = slider.noUiSlider.get();
+
+  var printEntry = false;
+  const currentFactionId = basicData.id;
+
+  var table = '<div class="col-sm-12 badge-primary" >  <b>Members Status of <img src="https://factiontags.torn.com/'
+    + basicData.tag_image + '"> '
+    + basicData.name
+    + ' [' + currentFactionId + ']'
+    + '';
+  table = table + '</div></b>';
+  table += '<div class="col-sm-12 badge-secondary" ><img alt="Reload" title="Reload" src="images/svg-icons/refresh.svg" height="25" onclick="userSubmit(\'members\')">'
+    + '&nbsp;<img alt="select table content" title="select table content" src="images/svg-icons/text-selection.svg" height="25" onclick="selectElementContents(document.getElementById(\'members\'));">';
+
+  if (integrateFactionStats) table += '&nbsp;<img alt="Get Faction Stats" title="Get Faction Stats from TornStats" src="images/svg-icons/stats.svg" height="25" onclick="callTornStatsAPI(\'' + trustedApiKey + '\', ' + factionWars.ID + ', \'faction\', ' + cacheStats + ')"';
+
+  table += '</div></div>';
+
+  //if (integrateFactionStats) table = table + '<div class="float-right"><button type="button" onclick="callTornStatsAPI(\'' + trustedApiKey + '\', ' + statusData.ID + ', \'faction\', ' + cacheStats + ')" class="btn btn-primary btn-sm">Get Faction Stats</button></div>';
+
+
+
+  table = table + '<br /><table class="table table-hover" id="members"><thead><tr>'
+    + '<th>Name&nbsp;&nbsp;</th>'
+    + '<th>Icons&nbsp;&nbsp;</th>'
+    + '<th>Attack Link&nbsp;&nbsp;</th>'
+    + '<th>Status&nbsp;&nbsp;</th>'
+    + '<th>Details&nbsp;&nbsp;</th>'
+    + '<th>Description&nbsp;&nbsp;</th>'
+    + '<th>Last Action&nbsp;&nbsp;</th>'
+    + '<th>Level&nbsp;&nbsp;</th>'
+    + '<th>Position&nbsp;&nbsp;</th>';
+  if (integrateFactionStats) table = table + '<th>Torn Stats&nbsp;&nbsp;</th>';
+  table = table + '<th>Stats Popup&nbsp;&nbsp;</th>'
+
+  table = table + '</tr></thead><tbody>';
+
+  var statusFormat = '';
+  var detailFormat = '';
+  var countMembers = 0;
+  var filteredMembers = 0;
+  var statusDescriptionText = '';
+  var uniquePositions = new Set();
+
+  var timeStamp = Math.floor(Date.now() / 1000);
+  var timeDifference = 0;
+
+  for (var entryId in membersList) {
+
+    printEntry = false;
+    statusDescriptionText = '';
+
+    var member = membersList[entryId];
+    const id = member.id;
+    var memberStatusState = member.status.state;
+    var hospitalTime = '';
+
+    uniquePositions.add(member.position);
+
+    if ((filterMinutesHosp && memberStatusState == 'Hospital')
+      || (!filterMinutesHosp && memberStatusState == 'Hospital')
+      || (member.status.state !== 'Hospital')) {
+
+      if (filterMinutesHosp && memberStatusState == 'Hospital') {
+        timeDifference = (member.status.until - timeStamp) / 60;
+        if (timeDifference < 15) {
+          printEntry = true;
+        }
+      } else {
+        printEntry = true;
+      }
+    }
+
+    if (memberStatusState === 'Hospital') {
+      const timeDifference = member.status.until - timeStamp;
+
+      const days = Math.floor(timeDifference / 86400);
+      const hours = Math.floor((timeDifference % 86400) / 3600);
+      const minutes = Math.floor((timeDifference % 3600) / 60);
+      const seconds = timeDifference % 60;
+
+      const segments = [
+        { val: days, label: 'd:' },
+        { val: hours, label: 'h:' },
+        { val: minutes, label: 'm:' },
+        { val: seconds, label: 's' }
+      ];
+
+      let leading = true;
+      const timeString = segments.map(({ val, label }) => {
+        const str = val.toString().padStart(2, '0') + label;
+        if (leading && val === 0) {
+          return `<span class="text-secondary">${str}</span>`;
+        } else {
+          leading = false;
+          return str;
+        }
+      }).join('');
+
+      const unformattedTime = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+
+      statusDescriptionText = 'In hospital for ' + timeString;
+      hospitalTime = ' out in ' + unformattedTime;
+    }
+
+    else {
+      statusDescriptionText = member.status.description.replace('to Torn ', '');
+    }
+
+    var memberLastActionTimestamp = (timeStamp - member.last_action.timestamp);
+    var memberLastAction = '';
+
+    if (filterMinutesAction > memberLastActionTimestamp / 60) {
+      printEntry = false;
+    }
+
+
+
+    const time = memberLastActionTimestamp;
+
+    const days = Math.floor(time / 86400);
+    const hours = Math.floor((time % 86400) / 3600);
+    const minutes = Math.floor((time % 3600) / 60);
+    const seconds = time % 60;
+
+    const segments = [
+      { val: days, label: 'd:' },
+      { val: hours, label: 'h:' },
+      { val: minutes, label: 'm:' },
+      { val: seconds, label: 's' }
+    ];
+
+    let leading = true;
+    memberLastAction = segments.map(({ val, label }) => {
+      const str = val.toString().padStart(2, '0') + label;
+      if (leading && val === 0) {
+        return `<span class="text-secondary">${str}</span>`;
+      } else {
+        leading = false;
+        return str;
+      }
+    }).join('');
+
+
+
+    var icon = '';
+    var detail = '';
+    if (member.last_action.status == 'Online') statusFormat = 'badge-success';
+    if (member.last_action.status == 'Idle') statusFormat = 'badge-warning';
+    if (member.last_action.status == 'Offline') statusFormat = 'badge-dark';
+
+    if (memberStatusState == 'Hospital') {
+      detailFormat = 'badge-danger';
+      icon = icon + '<img src="images/icon_hosp.png" alt="Hospital" title="Hospital" width="20" height="20"/>&nbsp;';
+      detail = '<span class="badge badge-pill ' + detailFormat + '">' + memberStatusState + '</span>';
+      if (member.status.description.includes('In a')) {
+        memberStatusState = 'Abroad';
+      }
+    }
+    if (memberStatusState == 'Okay') {
+      detailFormat = 'badge-success';
+      detail = '<span class="badge badge-pill ' + detailFormat + '">' + memberStatusState + '</span>';
+    }
+    if (memberStatusState == 'Jail') {
+      detailFormat = 'badge-warning';
+      icon = icon + '<img src="images/icon_jail.png" alt="Jail" title="Jail" width="20" height="20"/>&nbsp;';
+      detail = '<span class="badge badge-pill ' + detailFormat + '">' + memberStatusState + '</span>';
+    }
+    if (memberStatusState == 'Traveling') {
+      detailFormat = 'badge-dark';
+      icon = icon + '<img src="images/icon_travel.png" alt="Traveling" title="Traveling" width="20" height="20"/>&nbsp;';
+      detail = '<span class="badge badge-pill ' + detailFormat + '">' + memberStatusState + '</span>';
+    }
+    if (memberStatusState == 'Abroad') {
+      detailFormat = 'badge-info';
+      icon = icon + '<img src="images/icon_abroad.png" alt="Abroad" title="Abroad" width="20" height="20"/>&nbsp;';
+      detail = detail + '<span class="badge badge-pill ' + detailFormat + '">' + memberStatusState + '</span>';
+    }
+
+    if (member.is_revivable) {
+      detail = detail + '<span class="badge badge-pill badge-primary">Revivable</span>';
+      if (advancedFilterList.includes('Revivable')) printEntry = true; else printEntry = false;
+    }
+    if (member.has_early_discharge) {
+      detail = detail + '<span class="badge badge-pill badge-primary">Early Discharge</span>';
+    }
+    if (member.is_on_wall) {
+      detail = detail + '<span class="badge badge-pill badge-primary">On Wall</span>';
+    }
+
+    if (statusList.includes(member.last_action.status)
+      && detailsList.includes(memberStatusState)
+      && printEntry
+      && (!document.getElementById(member.position) || document.getElementById(member.position).checked)
+      && (member.level >= levelRange[0] && member.level <= levelRange[1])) {
+
+      var copyableText = ' >> ' + member.name + ' << ' + hospitalTime + ' || https://www.torn.com/loader.php?sid=attack&user2ID=' + id;
+
+      table = table + '<tr>'
+
+        + '<td class="align-middle"><a href="https://www.torn.com/profiles.php?XID=' + id + '" target="_blank">' + member.name + '<br/>[' + id + ']</a><br/></td>'
+        + '<td class="align-middle">' + icon + '</td>'
+        + '<td class="align-middle">'
+        + '<div class="link-group" role="group">'
+        + '<a class="btn btn-link btn-sm" role="button" href="https://www.torn.com/loader.php?sid=attack&user2ID=' + id + '" target="_blank"><img alt="Attack" title="Attack" src="images/svg-icons/attack2.svg" height="25"></a>&nbsp;'
+        //+ '<button type="button" onclick="copyButton(' + id + ')" class="btn btn-secondary btn-sm" id="copy-button' + id + '" data-toggle="tooltip" data-placement="button" title="Copy for Faction Chat">'
+        + '<img alt="Copy" title="Copy" src="images/svg-icons/copy.svg" height="25" onclick="copyButton(' + id + ')">'
+        + '</div>'
+        + '<input type="hidden" class="form-control" value="' + copyableText + '" placeholder="..." id="copy-input-' + id + '">'
+        //+ 'Copy</button>'
+        + '</td>'
+        + '<td class="align-middle">' + '<span class="badge badge-pill ' + statusFormat + '">' + member.last_action.status + '</span>' + '</td>'
+        + '<td class="align-middle">' + detail + '</td>'
+        + '<td class="align-middle">' + statusDescriptionText + '</td>'
+        + '<td class="align-middle">' + memberLastAction + '</td>'
+        + '<td class="align-middle">' + member.level + '</td>'
+        + '<td class="align-middle"><pre>' + member.position + '</pre></td>'
+
+
+      if (integrateFactionStats) {
+        var stat = '';
+        if (cacheStats) {
+          indexedDBRequest = openIndexedDB('TornEngine_pst', 1);
+
+          initializeIndexedDB(indexedDBRequest, 'Stats');
+          stat = getPlayerById(indexedDBRequest, 'Stats', id);
+        }
+        table = table + '<td class="align-middle" id="stats_' + id + '" >' + stat + '</td>';
+      }
+
+      table = table + '<td class="align-middle">'
+        + '<img alt="Show Stats" title="Show Stats" src="images/svg-icons/stats.svg" height="25" onclick="callTornStatsAPI(\'' + trustedApiKey + '\', ' + id + ', \'user\', false)" data-toggle="modal" data-target="#statsModal">'
+        //+ '<button type="button" onclick="callTornStatsAPI(\'' + trustedApiKey + '\', ' + id + ', \'user\', false)" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#statsModal">Show Stats</button>'
+        + '</td>'
+
+      filteredMembers++;
+    }
+
+    table = table + '</tr>';
+    countMembers++;
+  }
+  table = table + '</tbody></table>';
+
+  $(document).ready(function () {
+    $('#members').DataTable({
+      "paging": false,
+      "order": [[5, "asc"]],
+      "info": false,
+      "stateSave": true
+    });
+  });
+
+  if (!document.getElementById(member.position)) generatePositionCheckboxes(uniquePositions);
+
+  document.getElementById(element).innerHTML = table;
+
+  var ts = new Date(timeStamp * 1000);
+  var formatted_date = ts.toISOString().replace('T', ' ').replace('.000Z', '');
+
+  const summary = `<span class="text-primary">${filteredMembers} members out of ${countMembers} total members filtered.</span> <span class="text-muted">Last refreshed: ${formatted_date}</span><div class="war-info"></div>`;
+  document.getElementById('summary').innerHTML = summary;
+
+  let war_info = '';
+  if (ranked_wars) {
+    const factions = ranked_wars.factions;
+    const faction1ID = factions[0].id;
+    const faction2ID = factions[1].id;
+    const faction1Name = factions[0].name;
+    const faction2Name = factions[1].name;
+
+    if (faction1ID != currentFactionId) war_info += `<div>Ranked war opponent: <a href="members.html?factionID=${faction1ID}">${faction1Name} [${faction1ID}]</a></div>`;
+    if (faction2ID != currentFactionId) war_info += `<div>Ranked war opponent: <a href="members.html?factionID=${faction2ID}">${faction2Name} [${faction2ID}]</a></div>`;
+  }
+
+  if (war_info.length > 0) {
+    const button = `<button onclick="hideElementByID('war-details')" class="btn btn-outline-secondary btn-sm" id="btnHideWarDetails">Hide&nbsp;Details</button>`;
+    document.getElementById('war-info').innerHTML = '<div class="war-details" id="war-details">' + war_info + '</div>' + button;
+  }
 }
