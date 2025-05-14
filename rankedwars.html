@@ -62,27 +62,25 @@
 
 				<div class="form-group col-sm-2">
 					<legend>Select ranked war status</legend>
-					<div class="form-check">
-						<label class="form-check-label"> <input type="checkbox" class="form-check-input" id="scheduled"
-								name="warStatus" value="scheduled"> Scheduled
+					<div class="custom-control custom-checkbox">
+						<input type="checkbox" class="custom-control-input" id="scheduled"
+								name="warStatus" value="scheduled"> <label class="custom-control-label" for="scheduled"> Scheduled
 						</label>
 					</div>
-					<div class="form-check">
-						<label class="form-check-label"> <input type="checkbox" class="form-check-input" id="ongoing"
-								name="warStatus" value="ongoing" checked=""> Ongoing
+					<div class="custom-control custom-checkbox">
+						<input type="checkbox" class="custom-control-input" id="ongoing"
+								name="warStatus" value="ongoing" checked=""> <label class="custom-control-label" for="ongoing"> Ongoing
 						</label>
 					</div>
-					<div class="form-check">
-						<label class="form-check-label"> <input type="checkbox" class="form-check-input" id="ended"
-								name="warStatus" value="ended"> Ended
+					<div class="custom-control custom-checkbox">
+						<input type="checkbox" class="custom-control-input" id="ended"
+								name="warStatus" value="ended"> <label class="custom-control-label" for="ended"> Ended
 						</label>
 					</div>
 				</div>
 			</div>
 			<div class="row">
-				<div class="form-group col-sm-3" id="alert"></div>
 				<div class="form-group col-sm-2"></div>
-
 			</div>
 		</form>
 
@@ -90,8 +88,7 @@
 			<div class="form-group col-sm-1">
 				<button type="button" class="btn btn-primary" id="submit">Submit</button>
 			</div>
-
-			<div class="form-group col-sm-7" id="alert"></div>
+			<div class="form-group col-sm-8" id="alert"></div>
 		</div>
 
 		<p id="summary"></p>
