@@ -5,7 +5,6 @@ const menuData = [
         { name: "PA Payouts", icon: "pa_payouts", href: "pa_payouts.html", badge: "Deprecated" },
         { name: "OC Overview", icon: "oc_overview", href: "oc_overview.html", badge: "Deprecated" },
         { name: "PA Planner", icon: "pa_planner", href: "pa_planner.html", badge: "Deprecated"  },
-        { name: "News", icon: "news", href: "news.html" },
       ]
     },
     {
