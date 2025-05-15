@@ -1179,7 +1179,7 @@ function parseMembers(factionData, element) {
   table += '<div class="col-sm-12 badge-secondary" ><img alt="Reload" title="Reload" src="images/svg-icons/refresh.svg" height="25" onclick="userSubmit(\'members\')">'
     + '&nbsp;<img alt="select table content" title="select table content" src="images/svg-icons/text-selection.svg" height="25" onclick="selectElementContents(document.getElementById(\'members\'));">';
 
-  if (integrateFactionStats) table += '&nbsp;<img alt="Get Faction Stats" title="Get Faction Stats from TornStats" src="images/svg-icons/stats.svg" height="25" onclick="callTornStatsAPI(\'' + trustedApiKey + '\', ' + factionWars.ID + ', \'faction\', ' + cacheStats + ')"';
+  if (integrateFactionStats) table += '&nbsp;<img alt="Get Faction Stats" title="Get Faction Stats from TornStats" src="images/svg-icons/stats.svg" height="25" onclick="callTornStatsAPI(\'' + trustedApiKey + '\', \'spy\', ' + currentFactionId + ',  \'faction\', ' + cacheStats + ')"';
 
   table += '</div></div>';
 
@@ -1392,11 +1392,11 @@ function parseMembers(factionData, element) {
           initializeIndexedDB(indexedDBRequest, 'Stats');
           stat = getPlayerById(indexedDBRequest, 'Stats', id);
         }
-        table = table + '<td class="align-middle" id="stats_' + id + '" >' + stat + '</td>';
+        table = table + `<td class="align-middle" id="stats_${id}" data-order="0"></td>`;
       }
 
       table = table + '<td class="align-middle">'
-        + '<img alt="Show Stats" title="Show Stats" src="images/svg-icons/stats.svg" height="25" onclick="callTornStatsAPI(\'' + trustedApiKey + '\', ' + id + ', \'user\', false)" data-toggle="modal" data-target="#statsModal">'
+        + '<img alt="Show Stats" title="Show Stats" src="images/svg-icons/stats.svg" height="25" onclick="callTornStatsAPI(\'' + trustedApiKey + '\', \'spy\',' + id + ', \'user\')" data-toggle="modal" data-target="#statsModal">'
         //+ '<button type="button" onclick="callTornStatsAPI(\'' + trustedApiKey + '\', ' + id + ', \'user\', false)" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#statsModal">Show Stats</button>'
         + '</td>'
 
@@ -1442,5 +1442,93 @@ function parseMembers(factionData, element) {
   if (war_info.length > 0) {
     const button = `<button onclick="hideElementByID('war-details')" class="btn btn-outline-secondary btn-sm" id="btnHideWarDetails">Hide&nbsp;Details</button>`;
     document.getElementById('war-info').innerHTML = '<div class="war-details" id="war-details">' + war_info + '</div>' + button;
+  }
+}
+
+
+// Parses a single user spy result
+function parseUserSpy(data, element) {
+  const spyData = data.spy || data.spyData;
+  const compareData = data.compare || null;
+
+  console.log('Spy Data:', spyData);
+  console.log('Compare Data:', compareData);
+
+  if (!spyData || !spyData.player_id) {
+    document.getElementById('statsModalLabel').innerHTML = 'Spy Not Found';
+    document.getElementById('statsModalBody').innerHTML = '<div class="alert alert-info">No spy data available for this user.</div>';
+    return;
+  }
+
+  const { player_name, player_id, strength, defense, speed, dexterity, total, timestamp, type } = spyData;
+  const ts = new Date(timestamp * 1000);
+
+  let modalBody = '';
+  document.getElementById('statsModalLabel').innerHTML = `Player: ${player_name} [${player_id}] <a href="https://www.torn.com/loader.php?sid=attack&user2ID=${player_id}" target="_blank"><img src="images/svg-icons/attack2.svg" height="25" alt="Attack" title="Attack" /></a>`;
+
+  modalBody += `<div class="text-muted"><strong>Strength:</strong> ${strength.toLocaleString()}</div>`;
+  modalBody += `<div class="text-muted"><strong>Defense:</strong> ${defense.toLocaleString()}</div>`;
+  modalBody += `<div class="text-muted"><strong>Speed:</strong> ${speed.toLocaleString()}</div>`;
+  modalBody += `<div class="text-muted"><strong>Dexterity:</strong> ${dexterity.toLocaleString()}</div>`;
+  modalBody += `<div class="text-primary"><strong>Total:</strong> ${total.toLocaleString()}</div><br/>`;
+  modalBody += `<div class="text-muted"><em>Update: ${ts.toISOString().split('T')[0]} (${type})</em></div><br/>`;
+
+  if (compareData && compareData.data) {
+    const relevant = ['Xanax Taken', 'Refills'];
+    for (const key of relevant) {
+      if (compareData.data[key]) {
+        modalBody += `<div class="text-muted"><strong>${key}:</strong> ${compareData.data[key].amount}</div>`;
+      }
+    }
+  }
+
+  document.getElementById('statsModalBody').innerHTML = modalBody;
+}
+
+
+function parseFactionSpy(data, cacheStats = false) {
+
+  factionData = data.faction || null;
+  if (!factionData || typeof factionData !== 'object') {
+    printAlert('Error', 'Invalid faction data from TornStats.');
+    return;
+  }
+
+  const membersList = factionData.members || {};
+
+  for (const id in membersList) {
+    const entry = membersList[id];
+    console.log('Entry:', entry);
+    if (!entry || !entry.id || !entry.spy) continue;
+
+    
+
+    const player = {
+      playerID: entry.id,
+      strength: entry.spy.strength,
+      defense: entry.spy.defense,
+      speed: entry.spy.speed,
+      dexterity: entry.spy.dexterity,
+      total: entry.spy.total,
+      timestamp: entry.spy.timestamp
+    };
+
+    console.log('Player Data:', player);
+    console.log('Cache Stats:', cacheStats);
+
+    if (cacheStats) {
+      const request = openIndexedDB('TornEngine_pst', 1);
+      initializeIndexedDB(request, 'Stats');
+      insertPlayer(request, 'Stats', player);
+    } else {
+      const ts = new Date(player.timestamp * 1000);
+      const stats = `Dex: ${abbreviateNumber(player.dexterity)}, Def: ${abbreviateNumber(player.defense)}, Str: ${abbreviateNumber(player.strength)}, Spd: ${abbreviateNumber(player.speed)}`;
+
+      const statText = `${abbreviateNumber(player.total)} <span class="text-muted">${stats}</span><div class="text-secondary">${ts.toISOString().split('T')[0]}</div>`;
+      const elementId = `stats_${player.playerID}`;
+
+      const el = document.getElementById(elementId);
+      if (el) el.innerHTML = statText;
+    }
   }
 }

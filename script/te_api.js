@@ -76,9 +76,9 @@ async function callTornAPIv2({ apiKey, part = '', selections = '', from = '', to
 
 // --- TornStats API Call ---
 
-async function callTornStatsAPI(apiKey, id) {
+async function callTornStatsAPI(apiKey, part, selection, category, cacheStats = false) {
     try {
-        const url = `https://www.tornstats.com/api/v3/user/${id}?selections=profile&key=${apiKey}`;
+        const url = `https://www.tornstats.com/api/v2/${apiKey}/${part}/${category}/${selection}`;
 
         const response = await fetch(url);
         const data = await response.json();
@@ -87,7 +87,7 @@ async function callTornStatsAPI(apiKey, id) {
             if (data.error) {
                 printAlert('Error', data.error);
             } else {
-                handleApiData(data, 'tornstats', 'user');
+                handleApiData(data, 'tornstats', category, cacheStats);
             }
         } else {
             printAlert('Error', 'TornStats API not available.');
@@ -144,7 +144,7 @@ function handleTornApiError(error) {
  * @param {string} part - The part of the Torn API that was called.
  * @param {string} selections - The selections criteria used in the API call.
  */
-function handleApiData(data, part, selections) {
+function handleApiData(data, part, selections, cacheStats = false) {
     const DEBUG = true;
     if (DEBUG) {
         console.log('API Data:', data);
@@ -229,6 +229,23 @@ function handleApiData(data, part, selections) {
         }
     }
 
+    if (part === 'tornstats' && selections === 'user') {
+        if (data) {
+            printAlert('Success', 'TornStats API Call successful, find the results below.');
+            parseUserSpy(data, 'user');
+        } else {
+            printAlert('Warning', 'TornStats API permissions may be missing.');
+        }
+    }
+
+        if (part === 'tornstats' && selections === 'faction') {
+        if (data) {
+            printAlert('Success', 'TornStats API Call successful, find the results below.');
+            parseFactionSpy(data, cacheStats);
+        } else {
+            printAlert('Warning', 'TornStats API permissions may be missing.');
+        }
+    }
     // Add other pages here when needed
 }
 

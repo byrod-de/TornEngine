@@ -62,7 +62,6 @@ function insertPlayer(request, object, player) {
 
 }
 
-
 function getPlayerById(request, object, id) {
   request.onsuccess = (event) => {
     const db = event.target.result;
@@ -88,12 +87,19 @@ function getPlayerById(request, object, id) {
           + ',&nbsp;Spd:&nbsp;' + abbreviateNumber(result.speed).toLocaleString('en-US');
 
 
-        document.getElementById('stats_' + id).innerHTML =
-          abbreviateNumber(result.total).toLocaleString('en-US')
-          + '&nbsp;<span class="text-muted">' + stats + '</div>'
-          + '<div class="text-secondary">' + ts.toISOString().substring(0, ts.toISOString().indexOf('T')) + '</div>'
-          ;
+        const statCell = document.getElementById('stats_' + id);
+        if (statCell) {
+          statCell.innerHTML =
+            abbreviateNumber(result.total).toLocaleString('en-US')
+            + '&nbsp;<span class="text-muted">' + stats + '</div>'
+            + '<div class="text-secondary">' + ts.toISOString().substring(0, ts.toISOString().indexOf('T')) + '</div>';
 
+          statCell.setAttribute('data-order', result.total);
+
+          const row = statCell.closest('tr');
+          const table = $('#members').DataTable();
+          table.row(row).invalidate().draw(false);
+        }
       }
     };
 
