@@ -1,86 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<title>Torn Engine - A collection of more or less useful things</title>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Torn Engine - A collection of more or less useful things</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-<link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
-<link rel="icon" type="image/png" href="images/mstile-144x144.png"
-	sizes="32x32" />
-<meta name="msapplication-TileColor" content="#ffffff" />
-<meta name="msapplication-TileImage" content="images/logo-144x144.png" />
+	<link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
+	<link rel="icon" type="image/png" href="images/mstile-144x144.png" sizes="32x32" />
+	<meta name="msapplication-TileColor" content="#ffffff" />
+	<meta name="msapplication-TileImage" content="images/logo-144x144.png" />
 
-<link rel="stylesheet" href="css/bootstrap.min.css">
-<link rel="stylesheet" href="css/bootstrap.css">
-<link rel="stylesheet" href="css/dataTables.min.css">
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/bootstrap.css">
+	<link rel="stylesheet" href="css/dataTables.min.css">
 
-<script src="script/scripts.js"></script>
-<script src="script/jquery.min.js"></script>
-<script src="script/bootstrap.bundle.min.js"></script>
-<script src="script/custom.js"></script>
-<script src="script/jquery.dataTables.min.js"></script>
+	<script src="script/te_core.js"></script>
+	<script src="script/te_builder.js"></script>
+	<script src="script/te_api.js"></script>
+	<script src="script/te_parser.js"></script>
+	<script src="script/te_pages.js"></script>>
+
+	<script src="script/jquery.min.js"></script>
+	<script src="script/bootstrap.bundle.min.js"></script>
+	<script src="script/custom.js"></script>
+	<script src="script/jquery.dataTables.min.js"></script>
+
+	<!-- Page Loader -->
+	<script src="script/te_init.js"></script>
 
 </head>
+
 <body onload="loadKeyFromSession('keycheck');">
 
 	<div class="container-fluid">
 		<br />
-		<div class="row">
-			<div class="col-sm-2">
-				<br /> <br />
-				<h1>
-					Torn Engine <small></small>
-				</h1>
-			</div>
-			<div class="col-sm-2">
-				<img alt="Logo" src="images/logo-100x100.png">
-			</div>
-		</div>
-		<br />
-		<div class="row">
-			<div class="col-sm-4 badge-primary">
-				<b>API Tools</b>
-			</div>
-			<div class="col-sm-8 badge-secondary">Check your API Key Access Level</div>
-		</div>
-		<br />
+		<div id="headerContainer"></div>
 
 		<!-- Navbar -->
 		<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
 			<a class="navbar-brand" href="index.html">Home</a>
 
 			<div class="navbar-collapse" id="navbarColor01">
-				<ul class="navbar-nav mr-auto">
-					<li class="nav-item dropdown show"><a class="nav-link dropdown-toggle" data-toggle="dropdown"
-							href="#" role="button" aria-haspopup="true" aria-expanded="true">Faction Tools</a>
-						<div class="dropdown-menu ">
-							<a class="dropdown-item" href="pa_payouts.html"><img alt="PA Payouts" src="images/svg-icons/pa_payouts.svg" height="20"> PA Payouts</a>
-							<a class="dropdown-item" href="oc_overview.html"><img alt="OC Overview" src="images/svg-icons/oc_overview.svg" height="20"> OC Overview</a>
-							<a class="dropdown-item" href="pa_planner.html"><img alt="PA Payouts" src="images/svg-icons/pa_planner.svg" height="20"> PA Planner</a>
-							<a class="dropdown-item" href="news.html"><img alt="Faction News" src="images/svg-icons/news.svg" height="20"> News</a>
-							<a class="dropdown-item" href="oc2_center.html"><img alt="Faction News" src="images/svg-icons/oc2.svg" height="20"> OC 2.0 <sup class="badge badge-pill badge-warning">Experimental</sup></a>
-						</div>
-					</li>
-
-					<li class="nav-item dropdown show"><a class="nav-link dropdown-toggle" data-toggle="dropdown"
-							href="#" role="button" aria-haspopup="true" aria-expanded="true">Warring Tools</a>
-						<div class="dropdown-menu ">
-							<a class="dropdown-item" href="members.html"><img alt="Member Status" src="images/svg-icons/members.svg" height="20"> Member Status</a>
-							<a class="dropdown-item" href="rankedwars.html"><img alt="Ranked Wars" src="images/svg-icons/rankedwars.svg" height="20"> Ranked Wars <sup class="badge badge-pill badge-secondary">BETA</sup></a>
-							<a class="dropdown-item" href="citymap.html"><img alt="City Map" src="images/svg-icons/citymap.svg" height="20"> City Map <sup class="badge badge-pill badge-warning">Experimental</sup></a>
-						</div>
-					</li>
-
-					<li class="nav-item dropdown show"><a class="nav-link dropdown-toggle" data-toggle="dropdown"
-							href="#" role="button" aria-haspopup="true" aria-expanded="true">Helpful Tools</a>
-						<div class="dropdown-menu ">
-							<a class="dropdown-item active" href="keycheck.html"><img alt="Keycheck" src="images/svg-icons/keycheck_active.svg" height="20"> API Key Check</a>
-							<a class="dropdown-item" href="discord.html"><img alt="Discord" src="images/svg-icons/discord.svg" height="20"> Timestamp</a>
-							<a class="dropdown-item" href="trailers.html"><img alt="Trailers" src="images/svg-icons/trailers.svg" height="20"> Trailers <sup class="badge badge-pill badge-warning">Experimental</sup></a>
-						</div>
-					</li>
-				</ul>
+				<!-- Filled dynamically -->
 			</div>
 		</nav>
 		<br />
@@ -91,20 +53,16 @@
 
 				<div class="form-group col-sm-3">
 					<label for="trustedkey">API Key *</label>
-					<input type="input"
-						class="form-control"
-						id="trustedkey"
-						name="trustedkey"
-						placeholder="API Key"
-					/>
-					<small id="hint"
-						class="form-text text-muted">Enter any API key to see details about the access level
+					<input type="input" class="form-control" id="trustedkey" name="trustedkey" placeholder="API Key" />
+					<small id="hint" class="form-text text-muted">Enter any API key to see details about the access
+						level
 					</small>
 				</div>
 
 				<div class="form-group col-sm-5">
-					<br/>
-					Here you can check the access level of your API key. Enter the key, and see to which sections of the API it has access to.
+					<br />
+					Here you can check the access level of your API key. Enter the key, and see to which sections of the
+					API it has access to.
 				</div>
 
 				<div class="form-group col-sm-5">
@@ -119,8 +77,7 @@
 		</form>
 		<div class="row">
 			<div class="form-group col-sm-3">
-				<button onclick="userSubmit('keycheck')" class="btn btn-primary"
-					id="submit">Submit</button>
+				<button onclick="userSubmit('keycheck')" class="btn btn-primary" id="submit">Submit</button>
 			</div>
 
 
@@ -131,25 +88,11 @@
 		<p id="output"></p>
 		<br />
 
-		<div class="card border-primary mb-3" style="max-width: 100%;">
-			<div class="card-header" id="contact">Fineprint</div>
-			<div class="card-body">
-				<p class="card-text">
-					Let me (<a
-						href="https://www.torn.com/profiles.php?XID=1132772"
-						class="card-link" target="_blank"> byrod [1132772] </a>) know
-					about any issues. Thanks!<br /> * Your API key will not be stored
-					or logged, and is only used to call <a href="https://api.torn.com"
-						class="card-link" target="_blank">https://api.torn.com</a>.
-				</p>
-			</div>
-		</div>
-
-		<a href="https://ko-fi.com/N4N6L8OBN" target="_blank"><img height="36" style="border:0px;height:36px;" src="https://storage.ko-fi.com/cdn/kofi2.png?v=3" alt="Buy Me a Coffee at ko-fi.com" /></a>
-	</div>
-	<br />
-	<br />
+		<div id="footerContainer"></div>
+		<br />
+		<br />
 
 
 </body>
+
 </html>
