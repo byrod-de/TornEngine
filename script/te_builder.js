@@ -279,7 +279,7 @@ function buildFooter() {
             <strong class="text-primary">tl;dr: How Torn Engine handles your data:</strong><br>
             I don’t see anything you do with Torn Engine. All your data stays in your browser, nothing gets sent to me (byrod) or any server. <br>
             Your API key, filters, and spy data are stored only on your device to make the tools work better for you.
-            I never have access to your raw info, I'm just offering tools so you can see your API data more easily using your access.<br><br>
+            I never have access to your data, I'm just offering tools so you can see your API data more easily using your access.<br><br>
 
             <strong class="text-primary">Data Storage:</strong><br>
             API data is not stored permanently. All processing is done locally in your browser. Spy data from TornStats, and your selected filters from the Members section, are stored temporarily in session/local storage to enhance your session. No data is stored on external servers.<br><br>
