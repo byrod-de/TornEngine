@@ -1113,7 +1113,17 @@ async function parseMissingItems(oc2Data, element) {
   container.innerHTML = html;
 }
 
-
+/**
+ * Parses the Faction Members data and generates a list of members with a filterable table.
+ *
+ * @param {object} factionData - The Faction data from the Torn API.
+ * @param {string} element - The HTML element ID where the list will be inserted.
+ *
+ * This function will display a list of members with filter options for their status, level, and position.
+ * The list will be sorted by level in ascending order. The function will also generate a summary at the top
+ * of the page with the total number of members and the number of members filtered. The summary will also
+ * include a link to the faction's ranked war opponent, if applicable.
+ */
 function parseMembers(factionData, element) {
 
   getMembersFilters();
@@ -1176,8 +1186,7 @@ function parseMembers(factionData, element) {
     + ' [' + currentFactionId + ']'
     + '';
   table = table + '</div></b>';
-  table += '<div class="col-sm-12 badge-secondary" ><img alt="Reload" title="Reload" src="images/svg-icons/refresh.svg" height="25" onclick="userSubmit(\'members\')">'
-    + '&nbsp;<img alt="select table content" title="select table content" src="images/svg-icons/text-selection.svg" height="25" onclick="selectElementContents(document.getElementById(\'members\'));">';
+  table += '<div class="col-sm-12 badge-secondary" ><img alt="select table content" title="select table content" src="images/svg-icons/text-selection.svg" height="25" onclick="selectElementContents(document.getElementById(\'members\'));">';
 
   if (integrateFactionStats) table += '&nbsp;<img alt="Get Faction Stats" title="Get Faction Stats from TornStats" src="images/svg-icons/stats.svg" height="25" onclick="callTornStatsAPI(\'' + trustedApiKey + '\', \'spy\', ' + currentFactionId + ',  \'faction\', ' + cacheStats + ')"';
 
@@ -1239,36 +1248,15 @@ function parseMembers(factionData, element) {
     }
 
     if (memberStatusState === 'Hospital') {
-      const timeDifference = member.status.until - timeStamp;
+      const rawTimestamp = member.status.until;
 
-      const days = Math.floor(timeDifference / 86400);
-      const hours = Math.floor((timeDifference % 86400) / 3600);
-      const minutes = Math.floor((timeDifference % 3600) / 60);
-      const seconds = timeDifference % 60;
+      // Initially blank — will be filled by the countdown updater
+      const timePlaceholder = `<span class="hospital-timer" data-hospital-until="${rawTimestamp}"></span>`;
 
-      const segments = [
-        { val: days, label: 'd:' },
-        { val: hours, label: 'h:' },
-        { val: minutes, label: 'm:' },
-        { val: seconds, label: 's' }
-      ];
-
-      let leading = true;
-      const timeString = segments.map(({ val, label }) => {
-        const str = val.toString().padStart(2, '0') + label;
-        if (leading && val === 0) {
-          return `<span class="text-secondary">${str}</span>`;
-        } else {
-          leading = false;
-          return str;
-        }
-      }).join('');
-
-      const unformattedTime = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-
-      statusDescriptionText = 'In hospital for ' + timeString;
-      hospitalTime = ' out in ' + unformattedTime;
+      statusDescriptionText = `Out of hospital in ${timePlaceholder}`;
+      hospitalTime = ` out in ${timePlaceholder}`;
     }
+
 
     else {
       statusDescriptionText = member.status.description.replace('to Torn ', '');
@@ -1361,7 +1349,7 @@ function parseMembers(factionData, element) {
       && (!document.getElementById(member.position) || document.getElementById(member.position).checked)
       && (member.level >= levelRange[0] && member.level <= levelRange[1])) {
 
-      var copyableText = ' >> ' + member.name + ' << ' + hospitalTime + ' || https://www.torn.com/loader.php?sid=attack&user2ID=' + id;
+      var copyableText = ' >> ' + member.name + ' << https://www.torn.com/loader.php?sid=attack&user2ID=' + id;
 
       table = table + '<tr>'
 
@@ -1371,7 +1359,6 @@ function parseMembers(factionData, element) {
         + '<div class="link-group" role="group">'
         + '<a class="btn btn-link btn-sm" role="button" href="https://www.torn.com/loader.php?sid=attack&user2ID=' + id + '" target="_blank"><img alt="Attack" title="Attack" src="images/svg-icons/attack2.svg" height="25"></a>&nbsp;'
         //+ '<button type="button" onclick="copyButton(' + id + ')" class="btn btn-secondary btn-sm" id="copy-button' + id + '" data-toggle="tooltip" data-placement="button" title="Copy for Faction Chat">'
-        + '<img alt="Copy" title="Copy" src="images/svg-icons/copy.svg" height="25" onclick="copyButton(' + id + ')">'
         + '</div>'
         + '<input type="hidden" class="form-control" value="' + copyableText + '" placeholder="..." id="copy-input-' + id + '">'
         //+ 'Copy</button>'
@@ -1443,10 +1430,21 @@ function parseMembers(factionData, element) {
     const button = `<button onclick="hideElementByID('war-details')" class="btn btn-outline-secondary btn-sm" id="btnHideWarDetails">Hide&nbsp;Details</button>`;
     document.getElementById('war-info').innerHTML = '<div class="war-details" id="war-details">' + war_info + '</div>' + button;
   }
+
+  startHospitalCountdowns();
 }
 
 
-// Parses a single user spy result
+/**
+ * Parses spy data from TornStats and updates the specified HTML element with a table of user details.
+ *
+ * @param {Object} data - The data containing spy information.
+ * @param {string} element - The ID of the HTML element where the table will be inserted.
+ *
+ * This function generates an HTML table displaying details of a user, including name, ID, strength,
+ * defense, speed, dexterity, total stats, and additional details. The table is inserted into the
+ * specified HTML element and formatted for display.
+ */
 function parseUserSpy(data, element) {
   const spyData = data.spy || data.spyData;
   const compareData = data.compare || null;
@@ -1486,6 +1484,18 @@ function parseUserSpy(data, element) {
 }
 
 
+/**
+ * Parses faction spy data and updates member statistics or caches them in IndexedDB.
+ *
+ * @param {Object} data - The data containing faction spy information.
+ * @param {boolean} [cacheStats=false] - Determines if stats should be cached in IndexedDB.
+ *
+ * This function processes spy data for each member in the faction, extracting their
+ * stats such as strength, defense, speed, and dexterity. If `cacheStats` is true, it
+ * stores the stats in the IndexedDB under the 'Stats' object store. Otherwise, it
+ * updates the HTML content for each member's stats on the page. The function logs
+ * errors if the data is invalid or missing.
+ */
 function parseFactionSpy(data, cacheStats = false) {
 
   factionData = data.faction || null;
@@ -1501,7 +1511,7 @@ function parseFactionSpy(data, cacheStats = false) {
     console.log('Entry:', entry);
     if (!entry || !entry.id || !entry.spy) continue;
 
-    
+
 
     const player = {
       playerID: entry.id,

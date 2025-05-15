@@ -145,7 +145,7 @@ function handleTornApiError(error) {
  * @param {string} selections - The selections criteria used in the API call.
  */
 function handleApiData(data, part, selections, cacheStats = false) {
-    const DEBUG = true;
+    const DEBUG = false;
     if (DEBUG) {
         console.log('API Data:', data);
         console.log('Part:', part);
@@ -269,6 +269,13 @@ function getApiKey() {
     return trustedApiKey;
 }
 
+/**
+ * Saves the user-provided API key to sessionStorage and checks its validity.
+ * If the key is invalid, an error alert is shown. If the key is valid, a
+ * success alert is shown and the key is stored to sessionStorage.
+ *
+ * @return {void}
+ */
 function userSubmit() {
     const key = document.getElementById('apiKeyInput').value.trim();
 

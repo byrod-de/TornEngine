@@ -185,3 +185,61 @@ function copyFilterAsURL(selection) {
 
   }
 }
+
+function startHospitalCountdowns() {
+  const updateCountdown = () => {
+    const now = Math.floor(Date.now() / 1000);
+
+    document.querySelectorAll('.hospital-timer').forEach(el => {
+      const until = parseInt(el.dataset.hospitalUntil, 10);
+      const diff = until - now;
+
+      const days = Math.floor(diff / 86400);
+      const hours = Math.floor((diff % 86400) / 3600);
+      const minutes = Math.floor((diff % 3600) / 60);
+      const seconds = diff % 60;
+
+      const segments = [
+        { val: days, label: 'd:' },
+        { val: hours, label: 'h:' },
+        { val: minutes, label: 'm:' },
+        { val: seconds, label: 's' }
+      ];
+
+      let leading = true;
+      const formatted = segments.map(({ val, label }) => {
+        const str = val.toString().padStart(2, '0') + label;
+        if (leading && val === 0) {
+          return `<span class="text-secondary">${str}</span>`;
+        } else {
+          leading = false;
+          return str;
+        }
+      }).join('');
+
+      el.innerHTML = formatted;
+    });
+  };
+
+  updateCountdown(); // Initial run
+  setInterval(updateCountdown, 5000); // Update 5 seconds
+}
+
+function copyButton(memberID, factionID = '') {
+
+  var statsElement = document.getElementById('stats_a_' + memberID);
+  var stats = '';
+
+  if (statsElement) {
+    stats = document.getElementById('stats_a_' + memberID).innerHTML.replaceAll(',', '');
+    stats = ' || ' + abbreviateNumber(stats);
+  }
+
+
+  userSubmit('members');
+
+  setTimeout(function () {
+    var copyText = document.getElementById('copy-input-' + memberID);
+    navigator.clipboard.writeText(copyText.value + stats);
+  }, 1000);
+}
