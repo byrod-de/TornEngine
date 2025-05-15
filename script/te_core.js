@@ -309,6 +309,16 @@ function overrideMemberFilters() {
   const activityFilter = getUrlParam('lastactive', 'NOT_SET');
   const advancedFilter = getUrlParam('advanced', 'NOT_SET');
 
+  const urlLevelMin = parseInt(getUrlParam('levelMin', ''));
+  const urlLevelMax = parseInt(getUrlParam('levelMax', ''));
+
+  console.log('urlLevelMin:', urlLevelMin);
+  console.log('urlLevelMax:', urlLevelMax);
+
+  if (!isNaN(urlLevelMin) && !isNaN(urlLevelMax)) {
+    slider.noUiSlider.set([urlLevelMin, urlLevelMax]);
+  }
+
   if (statusFilters != 'NOT_SET') {
     var markedCheckboxStatus = document.getElementsByName('status');
     for (var checkbox of markedCheckboxStatus) {
@@ -378,9 +388,9 @@ function generatePositionCheckboxes(uniquePositions) {
   positionCheckboxes += '<fieldset class="form-group">';
 
   uniquePositions.forEach(function (position) {
-    positionCheckboxes += '<div class="form-check">';
-    positionCheckboxes += '<input class="form-check-input" type="checkbox" value="' + position + '" name="position" id="' + position + '" checked />';
-    positionCheckboxes += '<label class="form-check-label" for="' + position + '">' + position + '</label>';
+    positionCheckboxes += '<div class="custom-control custom-checkbox">';
+    positionCheckboxes += '<input class="custom-control-input" type="checkbox" value="' + position + '" name="position" id="' + position + '" checked />';
+    positionCheckboxes += '<label class="custom-control-label" for="' + position + '">' + position + '</label>';
     positionCheckboxes += '</div>';
   });
 

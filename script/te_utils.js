@@ -114,77 +114,45 @@ function getPlayerById(request, object, id) {
 }
 
 function copyFilterAsURL(selection) {
+  if (selection === 'members') {
+    const siteUrl = `${location.origin}${location.pathname}`;
 
-  if (selection == 'members') {
-    var siteUrl = "https://tornengine.netlify.app/members.html";
+    const statusList = [...document.getElementsByName('status')].filter(cb => cb.checked && cb.value !== "FilterActive").map(cb => cb.value).join(',');
+    const detailsList = [...document.getElementsByName('details')].filter(cb => cb.checked).map(cb => cb.value).join(',');
+    const advancedFilter = [...document.getElementsByName('advanced')].filter(cb => cb.checked).map(cb => cb.value).join(',');
+    const activityValue = document.getElementById('FilterActive').checked ? document.getElementById('TimeActive').value : '';
+    const factionID = document.getElementById('factionid').value;
+    const levelRange = slider.noUiSlider.get(); // assuming [min, max]
 
-    const markedCheckboxStatus = document.getElementsByName('status');
-    const markedCheckboxDetails = document.getElementsByName('details');
-    const markedCheckboxAdvanced = document.getElementsByName('advanced');
-    const activityCheckbox = document.getElementById('FilterActive');
-    const factionIDInput = document.getElementById('factionid').value;
+    const params = new URLSearchParams();
+    if (statusList) params.set('status', statusList);
+    if (detailsList) params.set('details', detailsList);
+    if (advancedFilter) params.set('advanced', advancedFilter);
+    if (activityValue) params.set('lastactive', activityValue);
+    if (factionID) params.set('factionID', factionID);
+    if (levelRange) {
+      params.set('levelMin', Math.round(levelRange[0]));
+      params.set('levelMax', Math.round(levelRange[1]));
+    }
 
-
-    var statusList = "";
-    var detailsList = "";
-    var activityFilter = "";
-    var advancedFilter = "";
-    var factonID = "";
-
-    for (var checkbox of markedCheckboxStatus) {
-      if (checkbox.checked && checkbox.value != "FilterActive") {
-        statusList = statusList + checkbox.value + ",";
+    const fullUrl = `${siteUrl}?${params.toString()}`;
+    navigator.clipboard.writeText(fullUrl).then(() => {
+      const btn = document.getElementById('copyLinkBtn');
+      if (btn) {
+        btn.classList.remove('btn-outline-primary');
+        btn.classList.add('btn-success');
+        btn.textContent = 'Copied!';
+        setTimeout(() => {
+          btn.classList.remove('btn-success');
+          btn.classList.add('btn-outline-primary');
+          btn.textContent = 'Copy\u00A0Filter\u00A0Link';
+        }, 1500);
       }
-    }
-
-    for (var checkbox of markedCheckboxDetails) {
-      if (checkbox.checked) {
-        detailsList = detailsList + checkbox.value + ",";
-      }
-    }
-
-    for (var checkbox of markedCheckboxAdvanced) {
-      if (checkbox.checked) {
-        advancedFilter = advancedFilter + checkbox.value + ",";
-      }
-    }
-
-    if (activityCheckbox.checked) {
-      activityFilter = document.getElementById('TimeActive').value;
-    }
-
-    if (statusList != "") {
-      statusList = "&status=" + statusList.substring(0, statusList.length - 1);
-    }
-
-    if (detailsList != "") {
-      detailsList = "&details=" + detailsList.substring(0, detailsList.length - 1);
-    }
-
-    if (advancedFilter != "") {
-      advancedFilter = "&advanced=" + advancedFilter.substring(0, advancedFilter.length - 1);
-    } else {
-      advancedFilter = "&advanced=";
-    }
-
-    if (activityFilter != "") {
-      activityFilter = "&lastactive=" + activityFilter;
-    }
-
-    if (factionIDInput != "") {
-      factonID = "&factionID=" + factionIDInput;
-    }
-
-    siteUrl = replaceFirstAmpersandWithQuestionMark(siteUrl + statusList + detailsList + activityFilter + advancedFilter + factonID);
-
-    console.log(siteUrl);
-
-    setTimeout(function () {
-      navigator.clipboard.writeText(siteUrl);
-    }, 1000);
-
+    });
   }
 }
+
+
 
 function startHospitalCountdowns() {
   const updateCountdown = () => {

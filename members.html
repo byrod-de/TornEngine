@@ -104,12 +104,10 @@
                   value="15" />
               </div>
             </fieldset>
-            <legend>Experimental</legend>
             <div class="custom-control custom-checkbox">
               <input class="custom-control-input" type="checkbox" value="FactionStats" name="FactionStats"
                 id="FactionStats" checked="checked" />
-              <label class="custom-control-label" for="FactionStats"> TornStats integration <sup
-                  class="badge badge-pill badge-warning">Experimental</sup> </label>
+              <label class="custom-control-label" for="FactionStats"> TornStats integration</label>
             </div>
             <div class="custom-control custom-checkbox">
               <input class="custom-control-input" type="checkbox" value="Revivable" name="advanced" id="Revivable"
@@ -151,11 +149,13 @@
             </fieldset>
             <legend>Level</legend>
             <div class="custom-control custom-checkbox">
-              <label for="Level" class="form-label"><span id="levelRange" class="levelRange"></span></label>
+              <label class="form-label"><span id="levelRange" class="levelRange"></span></label>
               <div class="slider-styled" id="slider"></div>
             </div>
           </div>
-          <div class="form-group col-sm-3" id="additionalFilters">
+          <div class="form-group col-sm-3" id="additionalFilters"><legend>Positions</legend>
+            <fieldset class="form-group">
+            </fieldset>
           </div>
         </div>
       </div>
@@ -194,8 +194,7 @@
       <div class="form-group col-sm-2 link-group">
         <button onclick="hideElementByID('filter')" class="btn btn-outline-secondary"
           id="btnHideFilter">Hide&nbsp;Filter</button>&nbsp;
-        <button onclick="copyFilterAsURL('members')" class="btn btn-outline-primary"
-          id="btnHideFilter">Copy&nbsp;Filter&nbsp;as&nbsp;URL</button>
+        <button id="copyLinkBtn" class="btn btn-outline-primary" onclick="copyFilterAsURL('members')">Copy&nbsp;Filter&nbsp;Link</button>
       </div>
     </div>
 
