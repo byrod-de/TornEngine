@@ -1186,7 +1186,7 @@ function parseMembers(factionData, element) {
     + ' [' + currentFactionId + ']'
     + '';
   table = table + '</div></b>';
-  table += '<div class="col-sm-12 badge-secondary" ><img alt="select table content" title="select table content" src="images/svg-icons/text-selection.svg" height="25" onclick="selectElementContents(document.getElementById(\'members\'));">';
+  table += '<div class="col-sm-12 badge-secondary" ><img alt="Reload" title="Reload" src="images/svg-icons/refresh.svg" height="25" onclick="document.getElementById(\'submit\')?.click()"><img alt="select table content" title="select table content" src="images/svg-icons/text-selection.svg" height="25" onclick="selectElementContents(document.getElementById(\'members\'));">';
 
   if (integrateFactionStats) table += '&nbsp;<img alt="Get Faction Stats" title="Get Faction Stats from TornStats" src="images/svg-icons/stats.svg" height="25" onclick="callTornStatsAPI(\'' + trustedApiKey + '\', \'spy\', ' + currentFactionId + ',  \'faction\', ' + cacheStats + ')"';
 

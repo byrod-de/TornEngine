@@ -192,7 +192,7 @@ function startHospitalCountdowns() {
 
     document.querySelectorAll('.hospital-timer').forEach(el => {
       const until = parseInt(el.dataset.hospitalUntil, 10);
-      const diff = until - now;
+      const diff = Math.max(0, until - now);
 
       const days = Math.floor(diff / 86400);
       const hours = Math.floor((diff % 86400) / 3600);
