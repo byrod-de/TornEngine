@@ -7,5 +7,25 @@ document.addEventListener('DOMContentLoaded', () => {
   if (path === 'index.html') {
     buildCards();
   }
+
   buildFooter();
+
+  const modalToOpen = getQueryParam('openModal');
+  if (modalToOpen === 'disclaimer') {
+    const tryShowModal = () => {
+      const modal = document.getElementById('disclaimerModal');
+      if (modal) {
+        $('#disclaimerModal').modal('show');
+      } else {
+        // Retry until the modal is injected by buildFooter
+        setTimeout(tryShowModal, 50);
+      }
+    };
+    tryShowModal();
+  }
 });
+
+function getQueryParam(name) {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get(name);
+}

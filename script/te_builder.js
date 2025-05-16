@@ -1,6 +1,6 @@
 const menuData = [
   {
-    category: "Faction Tools",
+    category: "OC 1.0 Tools",
     items: [
       { name: "PA Payouts", icon: "pa_payouts", href: "pa_payouts.html", badge: "Deprecated" },
       { name: "OC Overview", icon: "oc_overview", href: "oc_overview.html", badge: "Deprecated" },
@@ -244,7 +244,7 @@ function buildFooter() {
     <div class="card-body" id="contact">
       <p class="card-text">
         Let me (<a href="https://www.torn.com/profiles.php?XID=1132772" class="card-link" target="_blank">byrod [1132772]</a>) know if you run into any issues. Thanks! 
-        Your API key is only used to call <a href="https://api.torn.com" target="_blank">https://api.torn.com</a> or <a href="https://tornstats.com" target="_blank">https://tornstats.com</a> and is only stored locally in your browser.<br /><br />
+        Your API key is only used to call <a href="https://api.torn.com" target="_blank">https://api.torn.com</a> or <a href="https://tornstats.com" target="_blank">https://tornstats.com</a> and is only stored locally in your browser. All your data stays in your browser, nothing gets sent to me or any other server.<br /><br />
         <a href="#" data-toggle="modal" data-target="#disclaimerModal">View full API disclaimer (aka: What happens with my API key?)</a>
       </p>
     </div>
