@@ -16,202 +16,40 @@
 	<link rel="stylesheet" href="css/dataTables.min.css">
 	<link rel="stylesheet" href="css/custom.css">
 
-	<script src="script/scripts.js"></script>
+	<script src="script/te_core.js"></script>
+	<script src="script/te_builder.js"></script>
+
 	<script src="script/jquery.min.js"></script>
 	<script src="script/bootstrap.bundle.min.js"></script>
 	<script src="script/custom.js"></script>
 	<script src="script/jquery.dataTables.min.js"></script>
 
+	<!-- Page Loader -->
+	<script src="script/te_init.js"></script>
+
 </head>
 
-<body>
+<body data-page="index">
 
 	<div class="container-fluid">
 		<br />
-		<div class="row">
-			<div class="col-sm-2">
-				<br /> <br />
-				<h1>
-					Torn Engine <small></small>
-				</h1>
-			</div>
-			<div class="col-sm-2">
-				<img alt="Logo" src="images/logo-100x100.png">
-			</div>
-		</div>
-		<br />
-		<div class="row">
-			<div class="col-sm-4 badge-primary">
-				<b>Torn Engine</b>
-			</div>
-			<div class="col-sm-8 badge-secondary">A collection of more or
-				less useful things</div>
-		</div>
-		<br />
+		<div id="headerContainer"></div>
+
 
 		<!-- Navbar -->
 		<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
 			<a class="navbar-brand active" href="index.html">Home</a>
 
 			<div class="navbar-collapse" id="navbarColor01">
-				<ul class="navbar-nav mr-auto">
-					<li class="nav-item dropdown show"><a class="nav-link dropdown-toggle" data-toggle="dropdown"
-							href="#" role="button" aria-haspopup="true" aria-expanded="true">Faction Tools</a>
-						<div class="dropdown-menu ">
-							<a class="dropdown-item" href="pa_payouts.html"><img alt="PA Payouts" src="images/svg-icons/pa_payouts.svg" height="20"> PA Payouts</a>
-							<a class="dropdown-item" href="oc_overview.html"><img alt="OC Overview" src="images/svg-icons/oc_overview.svg" height="20"> OC Overview</a>
-							<a class="dropdown-item" href="pa_planner.html"><img alt="PA Payouts" src="images/svg-icons/pa_planner.svg" height="20"> PA Planner</a>
-							<a class="dropdown-item" href="news.html"><img alt="Faction News" src="images/svg-icons/news.svg" height="20"> News</a>
-							<a class="dropdown-item" href="oc2_center.html"><img alt="Faction News" src="images/svg-icons/oc2.svg" height="20"> OC 2.0 <sup class="badge badge-pill badge-warning">Experimental</sup></a>
-						</div>
-					</li>
-
-					<li class="nav-item dropdown show"><a class="nav-link dropdown-toggle" data-toggle="dropdown"
-							href="#" role="button" aria-haspopup="true" aria-expanded="true">Warring Tools</a>
-						<div class="dropdown-menu ">
-							<a class="dropdown-item" href="members.html"><img alt="Member Status" src="images/svg-icons/members.svg" height="20"> Member Status</a>
-							<a class="dropdown-item" href="rankedwars.html"><img alt="Ranked Wars" src="images/svg-icons/rankedwars.svg" height="20"> Ranked Wars <sup class="badge badge-pill badge-secondary">BETA</sup></a>
-							<a class="dropdown-item" href="citymap.html"><img alt="City Map" src="images/svg-icons/citymap.svg" height="20"> City Map <sup class="badge badge-pill badge-warning">Experimental</sup></a>
-						</div>
-					</li>
-
-					<li class="nav-item dropdown show"><a class="nav-link dropdown-toggle" data-toggle="dropdown"
-							href="#" role="button" aria-haspopup="true" aria-expanded="true">Helpful Tools</a>
-						<div class="dropdown-menu ">
-							<a class="dropdown-item" href="keycheck.html"><img alt="Keycheck" src="images/svg-icons/keycheck.svg" height="20"> API Key Check</a>
-							<a class="dropdown-item" href="discord.html"><img alt="Discord" src="images/svg-icons/discord.svg" height="20"> Timestamp</a>
-							<a class="dropdown-item" href="trailers.html"><img alt="Trailers" src="images/svg-icons/trailers.svg" height="20"> Trailers <sup class="badge badge-pill badge-warning">Experimental</sup></a>
-						</div>
-					</li>
-				</ul>
+				<!-- Filled dynamically -->
 			</div>
 		</nav>
 		<br />
 
 		<!-- Here comes the content *sings* -->
-		<div class="row">
-			<div class="col-auto">
-				<div class="card border-secondary mb-3" style="max-width: 10rem;">
-					<a href="pa_payouts.html" class="card-link link-alternative">
-						<div class="card-body text-center">
-							<img alt="PA Payouts" src="images/svg-icons/pa_payouts.svg" height="60">
-							<div>PA Payouts</div>
-						</div>
-					</a>
-				</div>
-				<div class="card border-secondary mb-3" style="max-width: 10rem;">
-					<a href="oc_overview.html" class="card-link link-alternative">
-						<div class="card-body text-center">
-							<img alt="OC Overview" src="images/svg-icons/oc_overview.svg" height="60">
-							<div>OC Overview</div>
-						</div>
-					</a>
-				</div>
-				<div class="card border-secondary mb-3" style="max-width: 10rem;">
-					<a href="pa_planner.html" class="card-link link-alternative">
-						<div class="card-body text-center">
-							<img alt="PA Planner" src="images/svg-icons/pa_planner.svg" height="60">
-							<div>PA Planner</div>
-						</div>
-					</a>
-				</div>
-				<div class="card border-secondary mb-3" style="max-width: 10rem;">
-					<a href="news.html" class="card-link link-alternative">
-						<div class="card-body text-center">
-							<img alt="Faction News" src="images/svg-icons/news.svg" height="60">
-							<div >Faction News</div>
-						</div>
-					</a>
-				</div>
-				<div class="card border-secondary mb-3" style="max-width: 10rem;">
-					<a href="oc2_center.html" class="card-link link-alternative">
-						<div class="card-body text-center">
-							<img alt="OC 2.0" src="images/svg-icons/oc2.svg" height="60">
-							<div >OC 2.0</div>
-						</div>
-					</a>
-				</div>
-			</div>
-			<div class="col-auto">
-				<div class="card border-secondary mb-3" style="max-width: 10rem;">
-					<a href="members.html" class="card-link link-alternative">
-
-						<div class="card-body text-center">
-							<img alt="Member Status" src="images/svg-icons/members.svg" height="60">
-							<div >Member Status</div>
-						</div>
-					</a>
-				</div>
-				<div class="card border-secondary mb-3" style="max-width: 10rem;">
-					<a href="rankedwars.html" class="card-link link-alternative">
-
-						<div class="card-body text-center">
-							<img alt="Ranked Wars" src="images/svg-icons/rankedwars.svg" height="60">
-							<div >Ranked Wars</div>
-						</div>
-					</a>
-				</div>
-				<div class="card border-secondary mb-3" style="max-width: 10rem;">
-					<a href="citymap.html" class="card-link link-alternative">
-
-						<div class="card-body text-center">
-							<img alt="City Map" src="images/svg-icons/citymap.svg" height="60">
-							<div >City Map</div>
-						</div>
-					</a>
-				</div>
-			</div>
-			<div class="col-auto">
-				<div class="card border-secondary mb-3" style="max-width: 10rem;">
-					<a href="keycheck.html" class="card-link link-alternative">
-
-						<div class="card-body text-center">
-							<img alt="API Key Check" src="images/svg-icons/keycheck.svg" height="60">
-							<div >API Key Check</div>
-						</div>
-					</a>
-				</div>
-				<div class="card border-secondary mb-3" style="max-width: 10rem;">
-					<a href="discord.html" class="card-link link-alternative">
-
-						<div class="card-body text-center">
-							<img alt="Discord Time" src="images/svg-icons/discord.svg" height="60">
-							<div >Discord Time</div>
-						</div>
-					</a>
-				</div>
-				<div class="card border-secondary mb-3" style="max-width: 10rem;">
-					<a href="trailers.html" class="card-link link-alternative">
-
-						<div class="card-body text-center">
-							<img alt="Trailers" src="images/svg-icons/trailers.svg" height="60">
-							<div >Trailers!</div>
-						</div>
-					</a>
-				</div>
-			</div>
-			<div class="col-auto">
-				<div class="card border-secondary mb-3" style="max-width: 10rem;">
-					<a href="https://www.torn.com/messages.php#/p=compose&XID=1132772" class="card-link link-alternative"
-						target="_blank">
-
-						<div class="card-body text-center">
-							<img alt="Contact" src="images/svg-icons/coffee.svg" height="60">
-							<div >Contact byrod</div>
-						</div>
-					</a>
-				</div>
-				<div class="card border-secondary mb-3" style="max-width: 10rem;">
-					<a href="https://www.torn.com/forums.php#/p=threads&f=67&t=16379783" class="card-link link-alternative"
-						target="_blank">
-						<div class="card-body text-center">
-							<img alt="Contact" src="images/svg-icons/forum.svg" height="60">
-							<div >Forum Post</div>
-						</div>
-					</a>
-				</div>
-			</div>
-		</div>
+		<div class="row" id="cardContainer">
+			<!-- Cards will be built here -->
+		  </div>
 	</div>
 
 	<br /> <br />
@@ -220,22 +58,7 @@
 	<!--p id="summary"></p> <br/-->
 	<!--p id="output"></p> <br/-->
 
-
-	<div class="card border-primary mb-3" style="max-width: 100%;">
-		<div class="card-header">Fineprint</div>
-		<div class="card-body" id="contact">
-			<p class="card-text">
-				Let me (<a href="https://www.torn.com/profiles.php?XID=1132772" class="card-link" target="_blank"> byrod
-					[1132772] </a>) know
-				about any issues. Thanks!<br />Your API key will not be stored
-				or logged, and is only used to call <a href="https://api.torn.com" class="card-link"
-					target="_blank">https://api.torn.com</a>.<br />
-			</p>
-		</div>
-	</div>
-	<a href="https://ko-fi.com/N4N6L8OBN" target="_blank"><img height="36" style="border:0px;height:36px;"
-			src="https://storage.ko-fi.com/cdn/kofi2.png?v=3" alt="Buy Me a Coffee at ko-fi.com" /></a>
-	</div>
+	<div id="footerContainer"></div>
 	<br />
 	<br />
 </body>

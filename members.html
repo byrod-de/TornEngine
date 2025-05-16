@@ -15,8 +15,13 @@
   <link rel="stylesheet" href="css/bootstrap.css" />
   <link rel="stylesheet" href="css/dataTables.min.css" />
 
+  <script src="script/te_core.js"></script>
+  <script src="script/te_builder.js"></script>
+  <script src="script/te_utils.js"></script>
+  <script src="script/te_api.js"></script>
+  <script src="script/te_parser.js"></script>
+  <script src="script/te_pages.js"></script>
 
-  <script src="script/scripts.js"></script>
   <script src="script/jquery.min.js"></script>
   <script src="script/bootstrap.bundle.min.js"></script>
   <script src="script/custom.js"></script>
@@ -28,68 +33,24 @@
 
   <link rel="stylesheet" href="css/custom.css" />
 
+  <!-- Page Loader -->
+  <script src="script/te_init.js"></script>
+
 </head>
 
-<body onload="loadKeyFromSession('members'); checkAPIKey(), loadFiltersFromSession(), overrideMemberFilters()">
+<body onload="loadKeyFromSession('members'); loadFiltersFromSession(), overrideMemberFilters();" data-page="members">
 
   <div class="container-fluid">
     <br />
-    <div class="row">
-      <div class="col-sm-2">
-        <br /> <br />
-        <h1>
-          Torn Engine <small></small>
-        </h1>
-      </div>
-      <div class="col-sm-2">
-        <img alt="Logo" src="images/logo-100x100.png">
-      </div>
-    </div>
-    <br />
-    <div class="row">
-      <div class="col-sm-4 badge-primary">
-        <b>Faction Tools</b>
-      </div>
-      <div class="col-sm-8 badge-secondary">Faction members status</div>
-    </div>
-    <br />
+    <div id="headerContainer"></div>
 
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
       <a class="navbar-brand" href="index.html">Home</a>
 
       <div class="navbar-collapse" id="navbarColor01">
-				<ul class="navbar-nav mr-auto">
-					<li class="nav-item dropdown show"><a class="nav-link dropdown-toggle" data-toggle="dropdown"
-							href="#" role="button" aria-haspopup="true" aria-expanded="true">Faction Tools</a>
-						<div class="dropdown-menu ">
-							<a class="dropdown-item" href="pa_payouts.html"><img alt="PA Payouts" src="images/svg-icons/pa_payouts.svg" height="20"> PA Payouts</a>
-							<a class="dropdown-item" href="oc_overview.html"><img alt="OC Overview" src="images/svg-icons/oc_overview.svg" height="20"> OC Overview</a>
-              <a class="dropdown-item" href="pa_planner.html"><img alt="PA Payouts" src="images/svg-icons/pa_planner.svg" height="20"> PA Planner</a>
-              <a class="dropdown-item" href="news.html"><img alt="Faction News" src="images/svg-icons/news.svg" height="20"> News</a>
-              <a class="dropdown-item" href="oc2_center.html"><img alt="Faction News" src="images/svg-icons/oc2.svg" height="20"> OC 2.0 <sup class="badge badge-pill badge-warning">Experimental</sup></a>
-            </div>
-					</li>
-
-					<li class="nav-item dropdown show"><a class="nav-link dropdown-toggle" data-toggle="dropdown"
-							href="#" role="button" aria-haspopup="true" aria-expanded="true">Warring Tools</a>
-						<div class="dropdown-menu ">
-							<a class="dropdown-item active" href="members.html"><img alt="Member Status" src="images/svg-icons/members_active.svg" height="20"> Member Status</a>
-							<a class="dropdown-item" href="rankedwars.html"><img alt="Ranked Wars" src="images/svg-icons/rankedwars.svg" height="20"> Ranked Wars <sup class="badge badge-pill badge-secondary">BETA</sup></a>
-							<a class="dropdown-item" href="citymap.html"><img alt="City Map" src="images/svg-icons/citymap.svg" height="20"> City Map <sup class="badge badge-pill badge-warning">Experimental</sup></a>
-						</div>
-					</li>
-
-					<li class="nav-item dropdown show"><a class="nav-link dropdown-toggle" data-toggle="dropdown"
-							href="#" role="button" aria-haspopup="true" aria-expanded="true">Helpful Tools</a>
-						<div class="dropdown-menu ">
-							<a class="dropdown-item" href="keycheck.html"><img alt="Keycheck" src="images/svg-icons/keycheck.svg" height="20"> API Key Check</a>
-							<a class="dropdown-item" href="discord.html"><img alt="Discord" src="images/svg-icons/discord.svg" height="20"> Timestamp</a>
-							<a class="dropdown-item" href="trailers.html"><img alt="Trailers" src="images/svg-icons/trailers.svg" height="20"> Trailers <sup class="badge badge-pill badge-warning">Experimental</sup></a>
-						</div>
-					</li>
-				</ul>
-			</div>
+        <!-- Filled dynamically -->
+      </div>
     </nav>
     <br />
 
@@ -111,81 +72,90 @@
       </div>
 
       <div class="row">
-        <div class="form-group col-sm-3" id="alert"></div>
+        <div class="form-group col-sm-3"></div>
         <div class="row" id="filter">
           <div class="form-group col-sm-3">
             <legend>Status</legend>
             <fieldset class="form-group">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="Online" name="status" id="Online" />
-                <label class="form-check-label" for="Online"> Online </label>
+              <div class="custom-control custom-checkbox">
+                <input class="custom-control-input" type="checkbox" value="Online" name="status" id="Online" />
+                <label class="custom-control-label" for="Online"> Online </label>
               </div>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="Idle" name="status" id="Idle" />
-                <label class="form-check-label" for="Idle"> Idle </label>
+              <div class="custom-control  custom-checkbox">
+                <input class="custom-control-input" type="checkbox" value="Idle" name="status" id="Idle" />
+                <label class="custom-control-label" for="Idle"> Idle </label>
               </div>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="Offline" name="status" id="Offline" />
-                <label class="form-check-label" for="Offline"> Offline </label>
+              <div class="custom-control custom-checkbox">
+                <input class="custom-control-input" type="checkbox" value="Offline" name="status" id="Offline" />
+                <label class="custom-control-label" for="Offline"> Offline </label>
               </div>
             </fieldset>
             <fieldset class="form-group">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="FilterActive" id="FilterActive" name="status"
+              <div class="custom-control custom-checkbox">
+                <input class="custom-control-input" type="checkbox" value="FilterActive" id="FilterActive" name="status"
                   onclick="disableElement('FilterActive', 'TimeActive');" />
-                <label class="form-check-label" for="FilterActive"> Filter <strong>Last Active</strong> time </label>
+                <label class="custom-control-label" for="FilterActive"> Filter <strong>Last Active</strong> time
+                </label>
               </div>
-              <div class="form-check">
+              <div class="custom-control custom-checkbox">
                 <label for="TimeActive" class="form-label">Skip members with action of less than <span id="rangeValue"
                     class="rangeValue">15</span> minutes ago</label>
                 <input type="range" class="form-range" min="0" max="240" step="5" id="TimeActive" disabled="disabled"
                   value="15" />
               </div>
             </fieldset>
-            <legend>Experimental</legend>
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" value="FactionStats" name="FactionStats" id="FactionStats"
+            <div class="custom-control custom-checkbox">
+              <input class="custom-control-input" type="checkbox" value="FactionStats" name="FactionStats"
+                id="FactionStats" checked="checked" />
+              <label class="custom-control-label" for="FactionStats"> TornStats integration</label>
+            </div>
+            <div class="custom-control custom-checkbox">
+              <input class="custom-control-input" type="checkbox" value="Revivable" name="advanced" id="Revivable"
                 checked="checked" />
-              <label class="form-check-label" for="FactionStats"> TornStats integration <sup
-                  class="badge badge-pill badge-warning">Experimental</sup> </label>
+              <label class="custom-control-label" for="Revivable"> Revivable <sup
+                  class="badge badge-pill badge-warning">Experimental</sup></label>
             </div>
           </div>
 
           <div class="form-group col-sm-3">
             <legend>Details</legend>
             <fieldset class="form-group">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="Okay" name="details" id="Okay" />
-                <label class="form-check-label" for="Okay"> Okay </label>
+              <div class="custom-control custom-checkbox">
+                <input class="custom-control-input" type="checkbox" value="Okay" name="details" id="Okay" />
+                <label class="custom-control-label" for="Okay"> Okay </label>
               </div>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="Hospital" name="details" id="Hospital"
+              <div class="custom-control custom-checkbox">
+                <input class="custom-control-input" type="checkbox" value="Hospital" name="details" id="Hospital"
                   onclick="disableElement('Hospital', 'MinutesHosp');" />
-                <label class="form-check-label" for="Hospital"> Hospital </label>
+                <label class="custom-control-label" for="Hospital"> Hospital </label>
+                <div class="custom-control custom-checkbox"><input
+                  class="custom-control-input" name="details" type="checkbox" value="MinutesHosp" id="MinutesHosp" />
+                <label class="custom-control-label" for="MinutesHosp"> less than 15 minutes</label> </div>
               </div>
-              <div class="form-check">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input class="form-check-input"
-                  name="details" type="checkbox" value="MinutesHosp" id="MinutesHosp" /> less than 15 minutes </div>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="Jail" name="details" id="Jail" />
-                <label class="form-check-label" for="Jail"> Jail </label>
+              
+              <div class="custom-control custom-checkbox">
+                <input class="custom-control-input" type="checkbox" value="Jail" name="details" id="Jail" />
+                <label class="custom-control-label" for="Jail"> Jail </label>
               </div>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="Traveling" name="details" id="Traveling" />
-                <label class="form-check-label" for="Traveling"> Traveling </label>
+              <div class="custom-control custom-checkbox">
+                <input class="custom-control-input" type="checkbox" value="Traveling" name="details" id="Traveling" />
+                <label class="custom-control-label" for="Traveling"> Traveling </label>
               </div>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="Abroad" name="details" id="Abroad" />
-                <label class="form-check-label" for="Abroad"> Abroad </label>
+              <div class="custom-control custom-checkbox">
+                <input class="custom-control-input" type="checkbox" value="Abroad" name="details" id="Abroad" />
+                <label class="custom-control-label" for="Abroad"> Abroad </label>
               </div>
- 
+
             </fieldset>
             <legend>Level</legend>
-            <div class="form-check">
-              <label for="Level" class="form-label"><span id="levelRange" class="levelRange"></span></label>
+            <div class="custom-control custom-checkbox">
+              <label class="form-label"><span id="levelRange" class="levelRange"></span></label>
               <div class="slider-styled" id="slider"></div>
             </div>
           </div>
-          <div class="form-group col-sm-3" id="additionalFilters">
+          <div class="form-group col-sm-3" id="additionalFilters"><legend>Positions</legend>
+            <fieldset class="form-group">
+            </fieldset>
           </div>
         </div>
       </div>
@@ -219,12 +189,17 @@
 
     <div class="row">
       <div class="form-group col-sm-3">
-        <button onclick="userSubmit('members')" class="btn btn-primary" id="submit">Submit</button>
+        <button type="button" class="btn btn-primary" id="submit">Submit</button>
       </div>
       <div class="form-group col-sm-2 link-group">
-        <button onclick="hideElementByID('filter')" class="btn btn-outline-secondary" id="btnHideFilter">Hide&nbsp;Filter</button>&nbsp;
-        <button onclick="copyFilterAsURL('members')" class="btn btn-outline-primary" id="btnHideFilter">Copy&nbsp;Filter&nbsp;as&nbsp;URL</button>
+        <button onclick="hideElementByID('filter')" class="btn btn-outline-secondary"
+          id="btnHideFilter">Hide&nbsp;Filter</button>&nbsp;
+        <button id="copyLinkBtn" class="btn btn-outline-primary" onclick="copyFilterAsURL('members')">Copy&nbsp;Filter&nbsp;Link</button>
       </div>
+    </div>
+
+    <div class="row">
+      <div class="form-group col-sm-8" id="alert"></div>
     </div>
 
     <p id="summary"></p>
@@ -255,23 +230,9 @@
 
 
 
-    <div class="card border-primary mb-3" style="max-width: 100%;">
-      <div class="card-header" id="contact">Fineprint</div>
-      <div class="card-body">
-        <p class="card-text">
-          Let me (<a href="https://www.torn.com/profiles.php?XID=1132772" class="card-link" target="_blank"> byrod
-            [1132772] </a>) know
-          about any issues. Thanks!<br /> * Your API key will not be stored
-          or logged, and is only used to call <a href="https://api.torn.com" class="card-link"
-            target="_blank">https://api.torn.com</a>.
-        </p>
-      </div>
-    </div>
-    <a href="https://ko-fi.com/N4N6L8OBN" target="_blank"><img height="36" style="border:0px;height:36px;"
-        src="https://storage.ko-fi.com/cdn/kofi2.png?v=3" alt="Buy Me a Coffee at ko-fi.com" /></a>
-  </div>
-  <br />
-  <br />
+    <div id="footerContainer"></div>
+    <br />
+    <br />
 </body>
 
 </html>

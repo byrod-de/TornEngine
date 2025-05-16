@@ -15,86 +15,32 @@
 	<link rel="stylesheet" href="css/bootstrap.css">
 	<link rel="stylesheet" href="css/dataTables.min.css">
 
-	<script src="script/scripts.js"></script>
+	<script src="script/te_core.js"></script>
+	<script src="script/te_builder.js"></script>
+	<script src="script/te_discord.js"></script>
+
 	<script src="script/jquery.min.js"></script>
 	<script src="script/bootstrap.bundle.min.js"></script>
 	<script src="script/custom.js"></script>
 	<script src="script/jquery.dataTables.min.js"></script>
 
+	<!-- Page Loader -->
+	<script src="script/te_init.js"></script>
+
 </head>
 
-<body onload="loadKeyFromSession('keycheck');">
+<body data-page="discord">
 
 	<div class="container-fluid">
 		<br />
-		<div class="row">
-			<div class="col-sm-2">
-				<br /> <br />
-				<h1>
-					Torn Engine <small></small>
-				</h1>
-			</div>
-			<div class="col-sm-2">
-				<img alt="Logo" src="images/logo-100x100.png">
-			</div>
-		</div>
-		<br />
-		<div class="row">
-			<div class="col-sm-4 badge-primary">
-				<b>Discord Tools</b>
-			</div>
-			<div class="col-sm-8 badge-secondary">Get a timestamp formatted for Discord</div>
-		</div>
-		<br />
+		<div id="headerContainer"></div>
 
 		<!-- Navbar -->
 		<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
 			<a class="navbar-brand" href="index.html">Home</a>
 
 			<div class="navbar-collapse" id="navbarColor01">
-				<ul class="navbar-nav mr-auto">
-					<li class="nav-item dropdown show"><a class="nav-link dropdown-toggle" data-toggle="dropdown"
-							href="#" role="button" aria-haspopup="true" aria-expanded="true">Faction Tools</a>
-						<div class="dropdown-menu ">
-							<a class="dropdown-item" href="pa_payouts.html"><img alt="PA Payouts"
-									src="images/svg-icons/pa_payouts.svg" height="20"> PA Payouts</a>
-							<a class="dropdown-item" href="oc_overview.html"><img alt="OC Overview"
-									src="images/svg-icons/oc_overview.svg" height="20"> OC Overview</a>
-									<a class="dropdown-item" href="pa_planner.html"><img alt="PA Payouts" src="images/svg-icons/pa_planner.svg" height="20"> PA Planner</a>
-
-							<a class="dropdown-item" href="news.html"><img alt="Faction News"
-									src="images/svg-icons/news.svg" height="20"> News</a>
-									<a class="dropdown-item" href="oc2_center.html"><img alt="Faction News" src="images/svg-icons/oc2.svg" height="20"> OC 2.0 <sup class="badge badge-pill badge-warning">Experimental</sup></a>
-								</div>
-					</li>
-
-					<li class="nav-item dropdown show"><a class="nav-link dropdown-toggle" data-toggle="dropdown"
-							href="#" role="button" aria-haspopup="true" aria-expanded="true">Warring Tools</a>
-						<div class="dropdown-menu ">
-							<a class="dropdown-item" href="members.html"><img alt="Member Status"
-									src="images/svg-icons/members.svg" height="20"> Member Status</a>
-							<a class="dropdown-item" href="rankedwars.html"><img alt="Ranked Wars"
-									src="images/svg-icons/rankedwars.svg" height="20"> Ranked Wars <sup
-									class="badge badge-pill badge-secondary">BETA</sup></a>
-							<a class="dropdown-item" href="citymap.html"><img alt="City Map"
-									src="images/svg-icons/citymap.svg" height="20"> City Map <sup
-									class="badge badge-pill badge-warning">Experimental</sup></a>
-						</div>
-					</li>
-
-					<li class="nav-item dropdown show"><a class="nav-link dropdown-toggle" data-toggle="dropdown"
-							href="#" role="button" aria-haspopup="true" aria-expanded="true">Helpful Tools</a>
-						<div class="dropdown-menu ">
-							<a class="dropdown-item" href="keycheck.html"><img alt="Keycheck"
-									src="images/svg-icons/keycheck.svg" height="20"> API Key Check</a>
-							<a class="dropdown-item active" href="discord.html"><img alt="Discord"
-									src="images/svg-icons/discord_active.svg" height="20"> Timestamp</a>
-							<a class="dropdown-item" href="trailers.html"><img alt="Trailers"
-									src="images/svg-icons/trailers.svg" height="20"> Trailers <sup
-									class="badge badge-pill badge-warning">Experimental</sup></a>
-						</div>
-					</li>
-				</ul>
+				<!-- Filled dynamically -->
 			</div>
 		</nav>
 		<br />
@@ -134,60 +80,32 @@
 				<div class="form-group col-sm-2">
 
 					<label class="col-form-label" for="outputDate">Output</label>
-					<input type="text" class="form-control" value="Default input" id="outputDate" readonly="">
+					<input type="text" class="form-control" value="Default input" id="outputDate" readonly="" />
 
 					<label class="col-form-label" for="outputCode">Code</label>
 					<div class="input-group">
-						<input type="text" class="form-control" value="Default input" id="outputCode" readonly="">
-						<div class="input-group-append"><button class="btn btn-secondary" id="copyButton">Copy</button>
+						<input type="text" class="form-control" value="Default input" id="outputCode" readonly="" />
+						<div class="input-group-append"><button type="button" class="btn btn-secondary"
+								id="copyButton">Copy</button>
 						</div>
 					</div>
-
+					<small id="copyConfirm" class="form-text text-success" style="display: none;">Copied to clipboard!</small>
 				</div>
 			</div>
-
-			<div class="form-group col-sm-5">
-
-			</div>
-	</div>
-
-	<div class="row">
-		<div class="form-group col-sm-3" id="alert"></div>
-		<div class="form-group col-sm-2"></div>
-	</div>
-	</form>
-
-	<p id="summary"></p>
-	<br />
-	<p id="output"></p>
-	<br />
+		</form>
 
 
-	<script>
-		formatDiscordTimestamp();
-	</script>
-
-
-	<div class="card border-primary mb-3" style="max-width: 100%;">
-		<div class="card-header" id="contact">Fineprint</div>
-		<div class="card-body">
-			<p class="card-text">
-				Let me (<a href="https://www.torn.com/profiles.php?XID=1132772" class="card-link" target="_blank">
-					byrod [1132772] </a>) know
-				about any issues. Thanks!<br /> * Your API key will not be stored
-				or logged, and is only used to call <a href="https://api.torn.com" class="card-link"
-					target="_blank">https://api.torn.com</a>.
-			</p>
+		<div class="row">
+			<div class="form-group col-sm-8" id="alert"></div>
 		</div>
+
+		<br />
+
+		<div id="footerContainer"></div>
+
+		<br />
+		<br />
 	</div>
-
-	<a href="https://ko-fi.com/N4N6L8OBN" target="_blank"><img height="36" style="border:0px;height:36px;"
-			src="https://storage.ko-fi.com/cdn/kofi2.png?v=3" alt="Buy Me a Coffee at ko-fi.com" /></a>
-	</div>
-	<br />
-	<br />
-
-
 </body>
 
 </html>

@@ -31,7 +31,7 @@
 
 </head>
 
-<body onload="loadKeyFromSession('oc2_center')" data-page="oc2_center">
+<body onload="loadKeyFromSession('missing_items')" data-page="missing_items">
 
 	<div class="container-fluid">
 		<br />
@@ -58,60 +58,6 @@
 							Access</i> and faction AA permission required
 					</small>
 				</div>
-
-
-				<div class="form-group col-sm-5">
-
-					<label>Select timeframe for PA results</label>
-					<div class="form-group">
-						<select class="custom-select" id="monthSelect">
-						</select>
-					</div>
-				</div>
-			</div>
-
-			<script>
-				buildMonthDropdown(); // Call the function to populate the options
-			</script>
-
-			<div class="row">
-				<div class="form-group col-sm-3"></div>
-				<div class="form-group col-sm-2">
-
-					<legend>Category</legend>
-					<fieldset class="form-group">
-						<div class="custom-control custom-radio">
-							<input class="custom-control-input" type="radio" name="categoryRadio" value="available"
-								id="available"> <label class="custom-control-label" for="available"> Available
-								(Recruiting &amp; Planning) </label>
-						</div>
-						<div class="custom-control custom-radio">
-							<input class="custom-control-input" type="radio" name="categoryRadio" value="recruiting"
-								id="recruiting"> <label class="custom-control-label" for="recruiting"> Recruiting </label>
-						</div>
-						<div class="custom-control custom-radio">
-							<input class="custom-control-input" type="radio" name="categoryRadio" value="planning"
-								id="planning"> <label class="custom-control-label" for="planning"> Planning </label>
-						</div>
-
-						<div class="custom-control custom-radio">
-							<input class="custom-control-input" type="radio" name="categoryRadio" value="completed"
-								id="completed" checked=""> <label class="custom-control-label" for="completed"> Completed
-								(successful
-								&amp; failure) </label>
-						</div>
-
-						<div class="custom-control custom-radio">
-							<input class="custom-control-input" type="radio" name="categoryRadio" value="successful"
-								id="successful"> <label class="custom-control-label" for="successful"> Successful </label>
-						</div>
-
-						<div class="custom-control custom-radio">
-							<input class="custom-control-input" type="radio" name="categoryRadio" value="failure"
-								id="failure"> <label class="custom-control-label" for="failure"> Failure </label>
-						</div>
-					</fieldset>
-				</div>
 			</div>
 
 		</form>
@@ -122,7 +68,7 @@
 			</div>
 			<div class="form-group col-sm-8" id="alert"></div>
 		</div>
-
+		
 		<p id="summary"></p>
 		<br />
 		<div class="container-fluid">
