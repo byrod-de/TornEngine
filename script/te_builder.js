@@ -29,6 +29,13 @@ const menuData = [
       { name: "Discord Time", icon: "discord", href: "discord.html" },
       { name: "Trailers!", icon: "trailers", href: "trailers.html" }
     ]
+  },
+    {
+    category: "Contact",
+    items: [
+      { name: "Contact byrod", icon: "coffee", href: "https://www.torn.com/messages.php#/p=compose&XID=1132772" },
+      { name: "Forum Post", icon: "forum", href: "https://www.torn.com/forums.php#/p=threads&f=67&t=16379783" }
+    ]
   }
 ];
 
