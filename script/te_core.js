@@ -241,7 +241,7 @@ function loadKeyFromSession(source) {
 
   // Set input fields if they exist
   const apiKeyInput = document.getElementById('trustedkey');
-  console.log('API Key:', trustedKey);
+
   if (apiKeyInput) {
     apiKeyInput.value = trustedKey;
   }
