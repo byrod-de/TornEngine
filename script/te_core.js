@@ -12,7 +12,11 @@ function replaceFirstAmpersandWithQuestionMark(inputString) {
   return inputString;
 }
 
-
+/**
+ * Abbreviates a large number and adds a suffix (k, m, b, t, wtf)
+ * @param {number} value - The number to be abbreviated
+ * @return {string} The abbreviated number with suffix
+ */
 function abbreviateNumber(value) {
   var newValue = value;
   if (value >= 1000) {
@@ -309,11 +313,13 @@ function overrideMemberFilters() {
   const activityFilter = getUrlParam('lastactive', 'NOT_SET');
   const advancedFilter = getUrlParam('advanced', 'NOT_SET');
 
+  console.log('statusFilters:', statusFilters);
+  console.log('detailsFilters:', detailsFilters);
+  console.log('activityFilter:', activityFilter);
+  console.log('advancedFilter:', advancedFilter);
+
   const urlLevelMin = parseInt(getUrlParam('levelMin', ''));
   const urlLevelMax = parseInt(getUrlParam('levelMax', ''));
-
-  console.log('urlLevelMin:', urlLevelMin);
-  console.log('urlLevelMax:', urlLevelMax);
 
   if (!isNaN(urlLevelMin) && !isNaN(urlLevelMax)) {
     slider.noUiSlider.set([urlLevelMin, urlLevelMax]);

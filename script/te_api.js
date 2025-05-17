@@ -155,18 +155,18 @@ function handleApiData(data, part, selections, cacheStats = false) {
     const page = document.body.dataset.page;
 
     if (part.startsWith('user') && selections === 'basic,properties') {
-        printAlert('Success', 'The API Call successful, find the results below.');
+        printAlert('Success', 'API Call successful, find the results below.');
         parsePropertyInfo(data, 'properties', 'output');
     }
 
     if (part === 'torn' && selections === 'rankedwars') {
-        printAlert('Success', 'The API Call successful, find the results below.');
+        printAlert('Success', 'API Call successful, find the results below.');
         parseRankedWars(data, 'output');
     }
 
     if (part.startsWith('torn/') && selections === 'rankedwarreport') {
         if (data.rankedwarreport) {
-            printAlert('Success', 'The API Call successful, find the results below.');
+            printAlert('Success', 'API Call successful, find the results below.');
             parseRankedWarDetails(data.rankedwarreport, 'rankedWarModalBody');
         } else {
             document.getElementById('rankedWarModalBody').innerHTML = '<div class="alert alert-warning">No report data found for this war.</div>';
@@ -175,7 +175,7 @@ function handleApiData(data, part, selections, cacheStats = false) {
 
     if (part === 'faction' && selections === 'basic,crimeexp') {
         if (data.crimeexp && data.members) {
-            printAlert('Success', 'The API Call successful, find the results below.');
+            printAlert('Success', 'API Call successful, find the results below.');
             parseCrimeexp(data.crimeexp, 'output', data.members);
         } else {
             printAlert('Warning', 'Faction API permissions may be missing.');
@@ -186,11 +186,11 @@ function handleApiData(data, part, selections, cacheStats = false) {
         if (data.crimes && data.members) {
             switch (page) {
                 case 'pa_payouts':
-                    printAlert('Success', 'The API Call successful, find the results below.');
+                    printAlert('Success', 'API Call successful, find the results below.');
                     parsePayouts(data.crimes, 'output', data.members);
                     break;
                 case 'oc_overview':
-                    printAlert('Success', 'The API Call successful, find the results below.');
+                    printAlert('Success', 'API Call successful, find the results below.');
                     parseOCs(data.crimes, 'output', data.members);
                     break;
                 default:
@@ -205,11 +205,11 @@ function handleApiData(data, part, selections, cacheStats = false) {
         if (data.crimes && data.members) {
             switch (page) {
                 case 'oc2_center':
-                    printAlert('Success', 'The API Call successful, find the results below.');
+                    printAlert('Success', 'API Call successful, find the results below.');
                     parseOC2(data, 'summary');
                     break;
                 case 'missing_items':
-                    printAlert('Success', 'The API Call successful, find the results below.');
+                    printAlert('Success', 'API Call successful, find the results below.');
                     parseMissingItems(data, 'output');
                     break;
                 default:
@@ -222,7 +222,7 @@ function handleApiData(data, part, selections, cacheStats = false) {
 
     if (part.startsWith('faction/') && selections === 'basic,members,wars') {
         if (data.members && data.wars) {
-            printAlert('Success', 'The API Call successful, find the results below.');
+            printAlert('Success', 'API Call successful, find the results below.');
             parseMembers(data, 'output');
         } else {
             printAlert('Warning', 'Faction API permissions may be missing.');
@@ -265,7 +265,7 @@ function getApiKey() {
 
     sessionStorage.trustedApiKey = trustedApiKey;
     localStorage.setItem('api_key', trustedApiKey);
-
+ 
     return trustedApiKey;
 }
 

@@ -91,14 +91,10 @@ function getPlayerById(request, object, id) {
         if (statCell) {
           statCell.innerHTML =
             abbreviateNumber(result.total).toLocaleString('en-US')
-            + '&nbsp;<span class="text-muted">' + stats + '</div>'
+            + '&nbsp;<span class="text-muted">' + stats + '</span>'
             + '<div class="text-secondary">' + ts.toISOString().substring(0, ts.toISOString().indexOf('T')) + '</div>';
 
           statCell.setAttribute('data-order', result.total);
-
-          const row = statCell.closest('tr');
-          const table = $('#members').DataTable();
-          table.row(row).invalidate().draw(false);
         }
       }
     };

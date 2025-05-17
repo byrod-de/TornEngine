@@ -1206,7 +1206,7 @@ function parseMembers(factionData, element) {
     + '<th>Last Action&nbsp;&nbsp;</th>'
     + '<th>Level&nbsp;&nbsp;</th>'
     + '<th>Position&nbsp;&nbsp;</th>';
-  if (integrateFactionStats) table = table + '<th>Torn Stats&nbsp;&nbsp;</th>';
+  if (integrateFactionStats) table = table + '<th class="stat-column">Torn Stats&nbsp;&nbsp;</th>';
   table = table + '<th>Stats Popup&nbsp;&nbsp;</th>'
 
   table = table + '</tr></thead><tbody>';
@@ -1395,15 +1395,6 @@ function parseMembers(factionData, element) {
   }
   table = table + '</tbody></table>';
 
-  $(document).ready(function () {
-    $('#members').DataTable({
-      "paging": false,
-      "order": [[5, "asc"]],
-      "info": false,
-      "stateSave": true
-    });
-  });
-
   if (!document.getElementById(member.position)) generatePositionCheckboxes(uniquePositions);
 
   document.getElementById(element).innerHTML = table;
@@ -1432,6 +1423,27 @@ function parseMembers(factionData, element) {
   }
 
   startHospitalCountdowns();
+
+  $('#members').DataTable({
+    paging: false,
+    order: [[5, 'asc']],
+    info: false,
+    stateSave: true,
+    columnDefs: [
+      {
+        targets: 'stat-column', // Add this class to your <th>
+        orderDataType: 'dom-data-order'
+      }
+    ]
+  });
+
+  if (!$.fn.dataTable.ext.order['dom-data-order']) {
+    $.fn.dataTable.ext.order['dom-data-order'] = function (settings, col) {
+      return this.api().column(col, { order: 'index' }).nodes().map(td =>
+        $(td).data('order') || 0
+      );
+    };
+  }
 }
 
 
