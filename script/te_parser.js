@@ -1149,11 +1149,7 @@ function parseMembers(factionData, element) {
     if (checkbox.checked) detailsList = detailsList + checkbox.value + ',';
   }
 
-  var advancedFilterList = '';
-  var markedCheckboxAdvanced = document.getElementsByName('advanced');
-  for (var checkbox of markedCheckboxAdvanced) {
-    if (checkbox.checked) advancedFilterList = advancedFilterList + checkbox.value + ',';
-  }
+  const revivableFilter = document.getElementById('revivableToggle')?.dataset.state || 'all';
 
   var filterMinutesHosp = false;
   if (document.getElementById('MinutesHosp').checked) {
@@ -1334,14 +1330,16 @@ function parseMembers(factionData, element) {
 
     if (member.is_revivable) {
       detail = detail + '<span class="badge badge-pill badge-primary">Revivable</span>';
-      if (advancedFilterList.includes('Revivable')) printEntry = true; else printEntry = false;
     }
     if (member.has_early_discharge) {
-      detail = detail + '<span class="badge badge-pill badge-primary">Early Discharge</span>';
+      detail = detail + '<span class="badge badge-pill badge-warning">Early Discharge</span>';
     }
     if (member.is_on_wall) {
-      detail = detail + '<span class="badge badge-pill badge-primary">On Wall</span>';
+      detail = detail + '<span class="badge badge-pill badge-info">On Wall</span>';
     }
+
+    if (revivableFilter === 'only' && !member.is_revivable) printEntry = false;
+    if (revivableFilter === 'hide' && member.is_revivable) printEntry = false;
 
     if (statusList.includes(member.last_action.status)
       && detailsList.includes(memberStatusState)

@@ -38,7 +38,7 @@
 
 </head>
 
-<body onload="loadKeyFromSession('members'); loadFiltersFromSession(), overrideMemberFilters();" data-page="members">
+<body onload="loadKeyFromSession('members'), loadFiltersFromSession(), overrideMemberFilters();" data-page="members">
 
   <div class="container-fluid">
     <br />
@@ -109,12 +109,15 @@
                 id="FactionStats" checked="checked" />
               <label class="custom-control-label" for="FactionStats"> TornStats integration</label>
             </div>
-            <div class="custom-control custom-checkbox">
-              <input class="custom-control-input" type="checkbox" value="Revivable" name="advanced" id="Revivable"
-                checked="checked" />
-              <label class="custom-control-label" for="Revivable"> Revivable <sup
-                  class="badge badge-pill badge-warning">Experimental</sup></label>
+            <div class="form-group">
+              <span class="badge badge-pill badge-warning">Experimental:</span><br />
+              <label for="revivableToggle">Revivable:</label>
+              <span id="revivableToggle" class="badge badge-pill badge-primary" data-state="all"
+                style="cursor: pointer;">
+                Show all
+              </span>
             </div>
+
           </div>
 
           <div class="form-group col-sm-3">
@@ -128,11 +131,12 @@
                 <input class="custom-control-input" type="checkbox" value="Hospital" name="details" id="Hospital"
                   onclick="disableElement('Hospital', 'MinutesHosp');" />
                 <label class="custom-control-label" for="Hospital"> Hospital </label>
-                <div class="custom-control custom-checkbox"><input
-                  class="custom-control-input" name="details" type="checkbox" value="MinutesHosp" id="MinutesHosp" />
-                <label class="custom-control-label" for="MinutesHosp"> less than 15 minutes</label> </div>
+                <div class="custom-control custom-checkbox"><input class="custom-control-input" name="details"
+                    type="checkbox" value="MinutesHosp" id="MinutesHosp" />
+                  <label class="custom-control-label" for="MinutesHosp"> less than 15 minutes</label>
+                </div>
               </div>
-              
+
               <div class="custom-control custom-checkbox">
                 <input class="custom-control-input" type="checkbox" value="Jail" name="details" id="Jail" />
                 <label class="custom-control-label" for="Jail"> Jail </label>
@@ -153,7 +157,8 @@
               <div class="slider-styled" id="slider"></div>
             </div>
           </div>
-          <div class="form-group col-sm-3" id="additionalFilters"><legend>Positions</legend>
+          <div class="form-group col-sm-3" id="additionalFilters">
+            <legend>Positions</legend>
             <fieldset class="form-group">
             </fieldset>
           </div>
@@ -185,6 +190,32 @@
         $('span.levelRange').text(levelRange[0] + ' - ' + levelRange[1]);
       });
 
+      const revivableToggle = document.getElementById('revivableToggle');
+
+      revivableToggle.addEventListener('click', () => {
+        const current = revivableToggle.dataset.state;
+        let nextState, label;
+
+        switch (current) {
+          case 'all':
+            nextState = 'hide';
+            label = 'Hide revivable';
+            break;
+          case 'hide':
+            nextState = 'only';
+            label = 'Revivable only';
+            break;
+          default:
+            nextState = 'all';
+            label = 'Show all';
+            break;
+        }
+
+        revivableToggle.dataset.state = nextState;
+        revivableToggle.textContent = label;
+      });
+
+
     </script>
 
     <div class="row">
@@ -195,7 +226,8 @@
       <div class="form-group col-sm-2 link-group">
         <button onclick="hideElementByID('filter')" class="btn btn-outline-secondary"
           id="btnHideFilter">Hide&nbsp;Filter</button>&nbsp;
-        <button id="copyLinkBtn" class="btn btn-outline-primary" onclick="copyFilterAsURL('members')">Copy&nbsp;Filter&nbsp;Link</button>
+        <button id="copyLinkBtn" class="btn btn-outline-primary"
+          onclick="copyFilterAsURL('members')">Copy&nbsp;Filter&nbsp;Link</button>
       </div>
     </div>
 

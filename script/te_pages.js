@@ -5,8 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const page = document.body.dataset.page;
 
     submit.addEventListener('click', () => {
-        const key = getApiKey();
-        if (!key || key.length !== 16) {
+        const apiKey = getApiKey();
+        if (!apiKey || apiKey.length !== 16) {
             printAlert('Error', 'Please enter a valid API key.');
             return;
         }
@@ -22,23 +22,23 @@ document.addEventListener('DOMContentLoaded', () => {
         switch (page) {
             case 'trailers':
                 const playerId = document.getElementById('playerid').value.trim() || '';
-                callTornAPI({ apiKey: key, part: `user/${playerId}`, selections: 'basic,properties' });
+                callTornAPI({ apiKey: apiKey, part: `user/${playerId}`, selections: 'basic,properties' });
                 break;
 
             case 'pa_planner':
-                callTornAPI({ apiKey: key, part: 'faction', selections: 'basic,crimeexp' });
+                callTornAPI({ apiKey: apiKey, part: 'faction', selections: 'basic,crimeexp' });
                 break;
 
             case 'pa_payouts':
-                callTornAPI({ apiKey: key, part: 'faction', selections: 'basic,crimes', from: firstDay, to: lastDay });
+                callTornAPI({ apiKey: apiKey, part: 'faction', selections: 'basic,crimes', from: firstDay, to: lastDay });
                 break;
 
             case 'rankedwars':
-                callTornAPI({ apiKey: key, part: 'torn', selections: 'rankedwars' });
+                callTornAPI({ apiKey: apiKey, part: 'torn', selections: 'rankedwars' });
                 break;
 
             case 'oc_overview':
-                callTornAPI({ apiKey: key, part: 'faction', selections: 'basic,crimes', from: firstDay, to: lastDay });
+                callTornAPI({ apiKey: apiKey, part: 'faction', selections: 'basic,crimes', from: firstDay, to: lastDay });
                 break;
 
             case 'oc2_center':
@@ -47,18 +47,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 for (let radio of category) {
                     if (radio.checked) selectedCategory = radio.value;
                 }
-                callTornAPIv2({ apiKey: key, part: 'faction', selections: 'basic,crimes,members', from: firstDay, to: lastDay, category: selectedCategory });
+                callTornAPIv2({ apiKey: apiKey, part: 'faction', selections: 'basic,crimes,members', from: firstDay, to: lastDay, category: selectedCategory });
                 break;
 
             case 'missing_items':
                 let availableCategory = 'available';
 
-                callTornAPIv2({ apiKey: key, part: 'faction', selections: 'basic,crimes,members', from: firstDay, to: lastDay, category: availableCategory });
+                callTornAPIv2({ apiKey: apiKey, part: 'faction', selections: 'basic,crimes,members', from: firstDay, to: lastDay, category: availableCategory });
                 break;
 
             case 'members':
                 const factionId = document.getElementById('factionid').value.trim() || '';
-                callTornAPIv2({ apiKey: key, part: `faction/${factionId}`, selections: 'basic,members,wars' });
+                callTornAPIv2({ apiKey: apiKey, part: `faction/${factionId}`, selections: 'basic,members,wars' });
                 break;
         }
     });

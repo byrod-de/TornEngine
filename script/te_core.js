@@ -221,6 +221,8 @@ function generateLast12MonthsOptions() {
  *                          Valid values are 'members', 'trailers', or any other value.
  */
 function loadKeyFromSession(source) {
+  // Load API key from local storage if not already in session storage
+  loadKeyFromLocalStorage();
   const trustedKey = sessionStorage.getItem('trustedApiKey') || '';
   const factionId = sessionStorage.getItem('factionid') || '';
   const playerId = sessionStorage.getItem('playerid') || '';
@@ -239,6 +241,7 @@ function loadKeyFromSession(source) {
 
   // Set input fields if they exist
   const apiKeyInput = document.getElementById('trustedkey');
+  console.log('API Key:', trustedKey);
   if (apiKeyInput) {
     apiKeyInput.value = trustedKey;
   }
@@ -280,8 +283,24 @@ function loadFiltersFromSession() {
         if (checkbox.value !== 'FilterActive') document.getElementById(checkbox.value).checked = true;
       }
     }
-  }
 
+    const revivableToggle = document.getElementById('revivableToggle');
+    if (revivableToggle && sessionStorage.revivable) {
+      const state = sessionStorage.revivable;
+      revivableToggle.dataset.state = state;
+
+      switch (state) {
+        case 'only':
+          revivableToggle.innerText = 'Only revivable';
+          break;
+        case 'none':
+          revivableToggle.innerText = 'Hide revivable';
+          break;
+        default:
+          revivableToggle.innerText = 'Show all';
+      }
+    }
+  }
 }
 
 function loadKeyFromLocalStorage() {
@@ -311,12 +330,7 @@ function overrideMemberFilters() {
   const statusFilters = getUrlParam('status', 'NOT_SET');
   const detailsFilters = getUrlParam('details', 'NOT_SET');
   const activityFilter = getUrlParam('lastactive', 'NOT_SET');
-  const advancedFilter = getUrlParam('advanced', 'NOT_SET');
-
-  console.log('statusFilters:', statusFilters);
-  console.log('detailsFilters:', detailsFilters);
-  console.log('activityFilter:', activityFilter);
-  console.log('advancedFilter:', advancedFilter);
+  const revivableFilter = getUrlParam('revivable', 'all');
 
   const urlLevelMin = parseInt(getUrlParam('levelMin', ''));
   const urlLevelMax = parseInt(getUrlParam('levelMax', ''));
@@ -332,7 +346,6 @@ function overrideMemberFilters() {
       if (checkboxElement) {
         checkboxElement.checked = false;
         if (statusFilters.includes(checkbox.value)) checkboxElement.checked = true;
-        //console.log(checkbox.value, checkboxElement.checked);
       } else {
         console.log('Checkbox element not found:', checkbox.id);
       }
@@ -349,8 +362,6 @@ function overrideMemberFilters() {
         document.getElementById('rangeValue').innerHTML = activityFilter;
         document.getElementById('TimeActive').disabled = false;
       }
-      //console.log(activityFilter, activityCheckbox.checked);
-
     }
     else {
       console.log('Checkbox element not found:', checkbox.id);
@@ -364,25 +375,27 @@ function overrideMemberFilters() {
       if (checkboxElement) {
         checkboxElement.checked = false;
         if (detailsFilters.includes(checkbox.value)) checkboxElement.checked = true;
-        //console.log(checkbox.value, checkboxElement.checked);
       } else {
         console.log('Checkbox element not found:', checkbox.id);
       }
     }
   }
 
-  if (advancedFilter != 'NOT_SET') {
-    var markedCheckboxAdvanced = document.getElementsByName('advanced');
-    for (var checkbox of markedCheckboxAdvanced) {
-      var checkboxElement = document.getElementById(checkbox.id);
-      if (checkboxElement) {
-        checkboxElement.checked = false;
-        if (advancedFilter.includes(checkbox.value)) checkboxElement.checked = true;
-        //console.log(checkbox.value, checkboxElement.checked);
-      } else {
-        console.log('Checkbox element not found:', checkbox.id);
-      }
+  if (revivableFilter !== 'NOT_SET') {
+    const toggle = document.getElementById('revivableToggle');
+    let label = '';
+    switch (revivableFilter) {
+      case 'hide':
+        label = 'Hide revivable';
+        break;
+      case 'only':
+        label = 'Revivable only';
+        break;
+      default:
+        label = 'Show all';
     }
+    toggle.dataset.state = revivableFilter;
+    toggle.textContent = label;
   }
 }
 
@@ -452,6 +465,9 @@ function getMembersFilters() {
     if (checkbox.checked) statusList += checkbox.value + ',';
   }
 
+  const revivableToggle = document.getElementById('revivableToggle');
+  const revivableState = revivableToggle ? revivableToggle.dataset.state : 'all';
+
   const page = document.body.dataset.page;
   let selectedID = '';
   if (page === 'members') {
@@ -461,11 +477,14 @@ function getMembersFilters() {
 
   sessionStorage.detailsList = detailsList;
   sessionStorage.statusList = statusList;
+  sessionStorage.revivable = revivableState;
+
 
   if (storageAvailable('localStorage')) {
     localStorage.setItem('detailsList', detailsList);
     localStorage.setItem('statusList', statusList);
+    localStorage.setItem('revivable', revivableState);
   }
 
-  return detailsList + '#' + statusList;
+  return detailsList + '#' + statusList + '#' + revivableState;
 }

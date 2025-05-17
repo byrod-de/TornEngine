@@ -115,20 +115,23 @@ function copyFilterAsURL(selection) {
 
     const statusList = [...document.getElementsByName('status')].filter(cb => cb.checked && cb.value !== "FilterActive").map(cb => cb.value).join(',');
     const detailsList = [...document.getElementsByName('details')].filter(cb => cb.checked).map(cb => cb.value).join(',');
-    const advancedFilter = [...document.getElementsByName('advanced')].filter(cb => cb.checked).map(cb => cb.value).join(',');
     const activityValue = document.getElementById('FilterActive').checked ? document.getElementById('TimeActive').value : '';
+    const revivableState = document.getElementById('revivableToggle')?.dataset.state ?? 'all';
+
     const factionID = document.getElementById('factionid').value;
-    const levelRange = slider.noUiSlider.get(); // assuming [min, max]
+    const levelRange = slider.noUiSlider.get();
 
     const params = new URLSearchParams();
     if (statusList) params.set('status', statusList);
     if (detailsList) params.set('details', detailsList);
-    if (advancedFilter) params.set('advanced', advancedFilter);
     if (activityValue) params.set('lastactive', activityValue);
     if (factionID) params.set('factionID', factionID);
     if (levelRange) {
       params.set('levelMin', Math.round(levelRange[0]));
       params.set('levelMax', Math.round(levelRange[1]));
+    }
+    if (revivableState !== 'all') {
+      params.set('revivable', revivableState);
     }
 
     const fullUrl = `${siteUrl}?${params.toString()}`;
@@ -147,8 +150,6 @@ function copyFilterAsURL(selection) {
     });
   }
 }
-
-
 
 function startHospitalCountdowns() {
   const updateCountdown = () => {
