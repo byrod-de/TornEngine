@@ -261,6 +261,16 @@ function loadKeyFromSession(source) {
   }
 }
 
+/**
+ * Loads filter settings from session storage and updates the UI accordingly.
+ * It first calls loadFiltersFromLocalStorage to fetch any stored filters from local storage.
+ * If session storage is available, it checks the current filters for details and status
+ * and updates the corresponding checkbox elements in the document. Additionally, it updates
+ * the state of toggle elements for revivable, early discharge, and on-wall filters based on
+ * session storage values, modifying their inner text and dataset state to reflect the current
+ * filter settings.
+ */
+
 function loadFiltersFromSession() {
   loadFiltersFromLocalStorage();
 
@@ -300,9 +310,47 @@ function loadFiltersFromSession() {
           revivableToggle.innerText = 'Show all';
       }
     }
+
+    const earlyDischargeToggle = document.getElementById('edToggle');
+    if (earlyDischargeToggle && sessionStorage.earlyDischarge) {
+      const state = sessionStorage.earlyDischarge;
+      earlyDischargeToggle.dataset.state = state;
+
+      switch (state) {
+        case 'only':
+          earlyDischargeToggle.innerText = 'ED Only';
+          break;
+        case 'none':
+          earlyDischargeToggle.innerText = 'Hide ED';
+          break;
+        default:
+          earlyDischargeToggle.innerText = 'Show all';
+      }
+    }
+
+    const onWallToggle = document.getElementById('onWallToggle');
+    if (onWallToggle && sessionStorage.onWall) {
+      const state = sessionStorage.onWall;
+      onWallToggle.dataset.state = state;
+
+      switch (state) {
+        case 'only':
+          onWallToggle.innerText = 'On Wall Only';
+          break;
+        case 'none':
+          onWallToggle.innerText = 'Hide On Wall';
+          break;
+        default:
+          onWallToggle.innerText = 'Show all';
+      }
+    }
   }
 }
 
+/**
+ * Loads the API key from local storage and stores it in session storage if it is not already present.
+ * This is used to persist the API key across page reloads.
+ */
 function loadKeyFromLocalStorage() {
   if (storageAvailable('localStorage') && typeof (Storage) !== "undefined") {
     let localStorageApiKey = localStorage.getItem('api_key') || "";
@@ -311,6 +359,13 @@ function loadKeyFromLocalStorage() {
     }
   }
 }
+
+/**
+ * Loads filters from local storage into session storage if they are not already present.
+ * Specifically, it retrieves 'detailsList' and 'statusList' from local storage and assigns
+ * them to session storage if corresponding session storage items are empty or undefined.
+ * This ensures the persistence of filter settings across page reloads.
+ */
 
 function loadFiltersFromLocalStorage() {
   if (storageAvailable('localStorage') && typeof (Storage) !== "undefined") {
@@ -326,11 +381,21 @@ function loadFiltersFromLocalStorage() {
   }
 }
 
+/**
+ * Overrides filter settings based on the current URL query parameters.
+ * The function first looks for the 'status', 'details', 'lastactive', 'revivable', 'earlyDischarge', and 'onWall' query parameters.
+ * If any of these parameters are present, the corresponding checkbox elements are updated to reflect the new filter settings.
+ * The 'lastactive' parameter is used to set the activity filter, and the 'levelMin' and 'levelMax' parameters are used to set the level range slider.
+ * The 'revivable', 'earlyDischarge', and 'onWall' parameters are used to set the state of the corresponding toggle elements.
+ * If any of these query parameters are not present or are set to 'NOT_SET', the corresponding filter settings are not updated.
+ */
 function overrideMemberFilters() {
   const statusFilters = getUrlParam('status', 'NOT_SET');
   const detailsFilters = getUrlParam('details', 'NOT_SET');
   const activityFilter = getUrlParam('lastactive', 'NOT_SET');
   const revivableFilter = getUrlParam('revivable', 'all');
+  const earlyDischargeFilter = getUrlParam('earlyDischarge', 'all');
+  const onWallFilter = getUrlParam('onWall', 'all');
 
   const urlLevelMin = parseInt(getUrlParam('levelMin', ''));
   const urlLevelMax = parseInt(getUrlParam('levelMax', ''));
@@ -397,7 +462,51 @@ function overrideMemberFilters() {
     toggle.dataset.state = revivableFilter;
     toggle.textContent = label;
   }
+
+  if (earlyDischargeFilter !== 'NOT_SET') {
+    const toggle = document.getElementById('edToggle');
+    let label = '';
+    switch (earlyDischargeFilter) {
+      case 'hide':
+        label = 'Hide ED';
+        break;
+      case 'only':
+        label = 'ED Only';
+        break;
+      default:
+        label = 'Show all';
+    }
+    toggle.dataset.state = earlyDischargeFilter;
+    toggle.textContent = label;
+  }
+
+  if (onWallFilter !== 'NOT_SET') {
+    const toggle = document.getElementById('onWallToggle');
+    let label = '';
+    switch (onWallFilter) {
+      case 'hide':
+        label = 'Hide On Wall';
+        break;
+      case 'only':
+        label = 'On Wall Only';
+        break;
+      default:
+        label = 'Show all';
+    }
+    toggle.dataset.state = onWallFilter;
+    toggle.textContent = label;
+  }
 }
+
+/**
+ * Generates and inserts checkboxes for each unique position into the 'additionalFilters' div.
+ *
+ * @param {Array} uniquePositions - An array of unique position names to create checkboxes for.
+ *
+ * This function dynamically creates a group of checkboxes based on the unique positions provided.
+ * Each checkbox is labeled with the name of the position, and all checkboxes are checked by default.
+ * The generated HTML is then inserted into the element with the ID 'additionalFilters'.
+ */
 
 function generatePositionCheckboxes(uniquePositions) {
   var additionalFiltersDiv = document.getElementById('additionalFilters');
@@ -418,6 +527,13 @@ function generatePositionCheckboxes(uniquePositions) {
   additionalFiltersDiv.innerHTML = positionCheckboxes;
 }
 
+/**
+ * Sorts the properties of an object by their keys in ascending order.
+ *
+ * @param {Object} obj - The object to be sorted.
+ * @returns {Object} A new object with the properties sorted by key.
+ */
+
 function sortObj(obj) {
   return Object.keys(obj).sort().reduce(function (result, key) {
     result[key] = obj[key];
@@ -425,7 +541,18 @@ function sortObj(obj) {
   }, {});
 }
 
-
+/**
+ * Checks if a given type of storage is available.
+ *
+ * This function attempts to write a dummy item to the given storage type, and
+ * then immediately removes it. If the write operation throws an exception, or
+ * if the storage is empty after the write, the function returns false. Otherwise
+ * it returns true.
+ *
+ * @param {string} type - The type of storage to check, e.g. 'localStorage' or
+ *   'sessionStorage'.
+ * @returns {boolean} Whether the given type of storage is available.
+ */
 function storageAvailable(type) {
   let storage;
   try {
@@ -451,6 +578,20 @@ function storageAvailable(type) {
   }
 }
 
+/**
+ * Collects and stores the currently checked filter settings for the members
+ * page and returns them as a string.
+ *
+ * The returned string is in the format
+ * "detailsList#statusList#revivableState", where detailsList and statusList are
+ * comma-separated lists of the currently checked filter options for the
+ * corresponding categories, and revivableState is one of "all", "only", or
+ * "none", indicating whether to show all members, only revivable members, or
+ * only non-revivable members, respectively.
+ *
+ * Additionally, the function stores the filter settings in both session storage
+ * and local storage, if available.
+ */
 function getMembersFilters() {
   let detailsList = '';
   let statusList = '';

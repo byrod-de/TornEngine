@@ -1150,6 +1150,8 @@ function parseMembers(factionData, element) {
   }
 
   const revivableFilter = document.getElementById('revivableToggle')?.dataset.state || 'all';
+  const earlyDischargeFilter = document.getElementById('edToggle')?.dataset.state || 'all';
+  const onWallFilter = document.getElementById('onWallToggle')?.dataset.state || 'all';
 
   var filterMinutesHosp = false;
   if (document.getElementById('MinutesHosp').checked) {
@@ -1340,6 +1342,12 @@ function parseMembers(factionData, element) {
 
     if (revivableFilter === 'only' && !member.is_revivable) printEntry = false;
     if (revivableFilter === 'hide' && member.is_revivable) printEntry = false;
+
+    if (earlyDischargeFilter === 'only' && !member.has_early_discharge) printEntry = false;
+    if (earlyDischargeFilter === 'hide' && member.has_early_discharge) printEntry = false;
+
+    if (onWallFilter === 'only' && !member.is_on_wall) printEntry = false;
+    if (onWallFilter === 'hide' && member.is_on_wall) printEntry = false;
 
     if (statusList.includes(member.last_action.status)
       && detailsList.includes(memberStatusState)

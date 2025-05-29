@@ -117,6 +117,8 @@ function copyFilterAsURL(selection) {
     const detailsList = [...document.getElementsByName('details')].filter(cb => cb.checked).map(cb => cb.value).join(',');
     const activityValue = document.getElementById('FilterActive').checked ? document.getElementById('TimeActive').value : '';
     const revivableState = document.getElementById('revivableToggle')?.dataset.state ?? 'all';
+    const earlyDischargeState = document.getElementById('edToggle')?.dataset.state ?? 'all';
+    const onWallState = document.getElementById('onWallToggle')?.dataset.state ?? 'all';
 
     const factionID = document.getElementById('factionid').value;
     const levelRange = slider.noUiSlider.get();
@@ -132,6 +134,14 @@ function copyFilterAsURL(selection) {
     }
     if (revivableState !== 'all') {
       params.set('revivable', revivableState);
+    }
+
+    if (earlyDischargeState !== 'all') {
+      params.set('earlyDischarge', earlyDischargeState);
+    }
+
+    if (onWallState !== 'all') {
+      params.set('onWall', onWallState);
     }
 
     const fullUrl = `${siteUrl}?${params.toString()}`;

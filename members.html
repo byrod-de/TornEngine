@@ -109,13 +109,33 @@
                 id="FactionStats" checked="checked" />
               <label class="custom-control-label" for="FactionStats"> TornStats integration</label>
             </div>
+            
             <div class="form-group">
-              <span class="badge badge-pill badge-warning">Experimental:</span><br />
-              <label for="revivableToggle">Revivable:</label>
-              <span id="revivableToggle" class="badge badge-pill badge-primary" data-state="all"
-                style="cursor: pointer;">
-                Show all
-              </span>
+              <span class="badge badge-pill badge-warning mb-2">Experimental:</span>
+
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="mb-0" for="revivableToggle">Revivable:</label>
+                <span id="revivableToggle" class="badge badge-pill badge-primary ml-2" data-state="all"
+                  style="cursor: pointer;">
+                  Show all
+                </span>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="mb-0" for="edToggle">Early Discharge:</label>
+                <span id="edToggle" class="badge badge-pill badge-primary ml-2" data-state="all"
+                  style="cursor: pointer;">
+                  Show all
+                </span>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center">
+                <label class="mb-0" for="onWallToggle">On Wall:</label>
+                <span id="onWallToggle" class="badge badge-pill badge-primary ml-2" data-state="all"
+                  style="cursor: pointer;">
+                  Show all
+                </span>
+              </div>
             </div>
 
           </div>
@@ -213,6 +233,55 @@
 
         revivableToggle.dataset.state = nextState;
         revivableToggle.textContent = label;
+      });
+
+      const earlyDischargeToggle = document.getElementById('edToggle');
+
+      earlyDischargeToggle.addEventListener('click', () => {
+        const current = earlyDischargeToggle.dataset.state;
+        let nextState, label;
+
+        switch (current) {
+          case 'all':
+            nextState = 'hide';
+            label = 'Hide ED';
+            break;
+          case 'hide':
+            nextState = 'only';
+            label = 'ED only';
+            break;
+          default:
+            nextState = 'all';
+            label = 'Show all';
+            break;
+        }
+
+        earlyDischargeToggle.dataset.state = nextState;
+        earlyDischargeToggle.textContent = label;
+      });
+
+      const onWallToggle = document.getElementById('onWallToggle');
+
+      onWallToggle.addEventListener('click', () => {
+        const current = onWallToggle.dataset.state;
+        let nextState, label;
+
+        switch (current) {
+          case 'all':
+            nextState = 'hide';
+            label = 'Hide on wall';
+            break;
+          case 'hide':
+            nextState = 'only';
+            label = 'On wall only';
+            break;
+          default:
+            nextState = 'all';
+            label = 'Show all';
+            break;
+        }
+        onWallToggle.dataset.state = nextState;
+        onWallToggle.textContent = label;
       });
 
 
