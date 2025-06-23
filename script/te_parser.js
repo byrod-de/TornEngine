@@ -908,16 +908,16 @@ function parseOC2(oc2Data, element) {
       let badgeSuccessChance = 'badge-success';
       let badgeItemRequirement = 'badge-secondary';
       //members is an array of objects, the member id is in the element id
-      const member = members.find(member => member.id === slot.user_id);
+      const member = members.find(member => member.id === slot.user?.id);
       let memberName = '';
 
-      if (member !== undefined) memberName = '<a href="https://www.torn.com/profiles.php?XID=' + slot.user_id + '" target="_blank">' + member.name + ' [' + slot.user_id + ']</a>';
+      if (member !== undefined) memberName = '<a href="https://www.torn.com/profiles.php?XID=' + slot.user?.id + '" target="_blank">' + member.name + ' [' + slot.user?.id + ']</a>';
       if (member === undefined) memberName = '<span class="badge badge-pill badge-warning">no member assigned</span>';
 
       if (slot.success_chance >= 75) badgeSuccessChance = 'badge-success';
       if (slot.success_chance >= 50 && slot.success_chance < 75) badgeSuccessChance = 'badge-warning';
       if (slot.success_chance < 50) badgeSuccessChance = 'badge-danger';
-      if (slot.user_id === null) badgeSuccessChance = 'badge-secondary';
+      if (slot.user?.id === null) badgeSuccessChance = 'badge-secondary';
 
       const succesIcon = '<span class="badge badge-pill ' + badgeSuccessChance + '">' + slot.success_chance + '</span>';
 
