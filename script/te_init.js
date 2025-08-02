@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const modal = document.getElementById('disclaimerModal');
       if (modal) {
         $('#disclaimerModal').modal('show');
-      } else {
+      } else {  
         // Retry until the modal is injected by buildFooter
         setTimeout(tryShowModal, 50);
       }

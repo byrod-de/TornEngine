@@ -16,8 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ? parseInt(document.getElementById('monthSelect').value)
             : 0;
         const currentMonth = today.getMonth();
-        const { firstDay, lastDay } = calculateMonthTimestamps(today, currentMonth - monthOffset, 192);
-
+        const { firstDay, lastDay } = calculateMonthTimestamps(today, currentMonth - monthOffset);
 
         switch (page) {
             case 'trailers':
@@ -47,7 +46,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 for (let radio of category) {
                     if (radio.checked) selectedCategory = radio.value;
                 }
-                callTornAPIv2({ apiKey: apiKey, part: 'faction', selections: 'basic,crimes,members', from: firstDay, to: lastDay, category: selectedCategory });
+
+                console.log(`Selected category: ${selectedCategory}`);
+
+                let filters = '';
+                if (selectedCategory === 'completed' || selectedCategory === 'failure' || selectedCategory === 'successful') { filters = 'executed_at'; }
+                if (selectedCategory === 'available' || selectedCategory === 'recruiting' || selectedCategory === 'planning') { filters = 'created_at'; }
+
+
+                callTornAPIv2({ apiKey: apiKey, part: 'faction', selections: 'basic,crimes,members', from: firstDay, to: lastDay, category: selectedCategory, filters: filters });
                 break;
 
             case 'missing_items':

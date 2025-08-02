@@ -49,12 +49,13 @@ async function callTornAPI({ apiKey, part = '', selections = '', from = '', to =
  * @param {string} [options.category] - the category to use for the API request
  * @returns {void}
  */
-async function callTornAPIv2({ apiKey, part = '', selections = '', from = '', to = '', category = '' }) {
+async function callTornAPIv2({ apiKey, part = '', selections = '', from = '', to = '', category = '', filters = '' }) {
     try {
         let url = `https://api.torn.com/v2/${part}/${selections}?key=${apiKey}&comment=tornengine`;
         if (category) url += `&cat=${category}`;
         if (from) url += `&from=${from}`;
         if (to) url += `&to=${to}`;
+        if (filters) url += `&filters=${filters}`;
 
         const response = await fetch(url);
         const data = await response.json();
@@ -119,6 +120,14 @@ function callRankedWarDetails(apiKey, warId) {
     });
 }
 
+
+function canRevive(apiKey) {
+    callTornAPI({
+        apiKey: apiKey,
+        part: 'user/2',
+        selections: 'profile'
+    });
+}
 
 /**
  * Handles errors returned by the Torn API.
@@ -238,7 +247,7 @@ function handleApiData(data, part, selections, cacheStats = false) {
         }
     }
 
-        if (part === 'tornstats' && selections === 'faction') {
+    if (part === 'tornstats' && selections === 'faction') {
         if (data) {
             printAlert('Success', 'TornStats API Call successful, find the results below.');
             parseFactionSpy(data, cacheStats);
@@ -246,6 +255,16 @@ function handleApiData(data, part, selections, cacheStats = false) {
             printAlert('Warning', 'TornStats API permissions may be missing.');
         }
     }
+
+    if (part === 'user/2' && selections === 'profile') {
+        if (data) {
+            printAlert('Success', 'User API Call successful, find the results below.');
+            parseUserProfile(data, 'output');
+        } else {
+            printAlert('Warning', 'User API permissions may be missing.');
+        }
+    }
+
     // Add other pages here when needed
 }
 

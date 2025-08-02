@@ -869,7 +869,6 @@ function parseOCs(crimeData, element, membersList) {
 function parseOC2(oc2Data, element) {
   const crimes = Object.values(oc2Data['crimes']).sort((a, b) => b.difficulty - a.difficulty);
 
-
   var basic = oc2Data['basic'];
   var members = oc2Data['members'];
 
@@ -898,7 +897,7 @@ function parseOC2(oc2Data, element) {
     if (crimeData.status === 'Successful') {
       summaryData[key].successes++;
       summaryData[key].income += crimeData.rewards?.money || 0;
-    } else if (crimeData.status === 'Failed') {
+    } else if (crimeData.status === 'Failure') {
       summaryData[key].failures++;
     }
 
@@ -952,54 +951,121 @@ function parseOC2(oc2Data, element) {
       rewards = '<span class="text-success">Rewards: $' + abbreviateNumber(money) + ', ' + items + ', ' + respect + ' respect</span><br />';
     }
 
-    //create card for each crime
-    const header = crimeData.difficulty + ' - ' + crimeData.name;
-    let color = 'primary';
-    switch (crimeData.status) {
-      case 'Recruiting': color = 'primary'; break;
-      case 'Planning': color = 'info'; break;
-      case 'Successful': color = 'success'; break;
-      case 'Failure': color = 'danger'; break;
-      case 'Expired': color = 'secondary'; break;
-      default: color = 'primary'; break;
+    let tableHTML = `
+  <table class="table table-bordered table-sm text-center" id="oc2Table">
+    <thead>
+      <tr>
+        <th>Scenario</th>
+        <th>ID</th>
+        <th>Status</th>
+        <th>Created At</th>
+        <th>Ready At</th>
+        <th>Rewards</th>
+        <th>Participants</th>
+      </tr>
+    </thead>
+    <tbody>
+`;
+
+    for (const crimeData of crimes) {
+      let color = 'primary';
+      switch (crimeData.status) {
+        case 'Recruiting': color = 'primary'; break;
+        case 'Planning': color = 'info'; break;
+        case 'Successful': color = 'success'; break;
+        case 'Failure': color = 'danger'; break;
+        case 'Expired': color = 'secondary'; break;
+        default: color = 'primary'; break;
+      }
+
+      const name = crimeData.name;
+      const status = crimeData.status;
+      const createdAt = new Date(crimeData.created_at * 1000).toISOString().replace('T', ' ').replace('.000Z', '');;
+      const readyAt = crimeData.ready_at ? new Date(crimeData.ready_at * 1000).toISOString().replace('T', ' ').replace('.000Z', '') : '-';
+
+      // Rewards
+      let rewardHTML = '';
+      if (status === 'Successful') {
+        const money = crimeData.rewards.money || 0;
+        const items = (crimeData.rewards.items.length > 0) ? crimeData.rewards.items.join(', ') : '<i>no items</i>';
+        const respect = crimeData.rewards.respect || 0;
+        rewardHTML = `$${abbreviateNumber(money)}, ${items}, ${respect} respect`;
+      } else {
+        rewardHTML = '-';
+      }
+
+      // Participants
+      let participantHTML = '';
+      for (const slot of crimeData.slots) {
+        const member = members.find(m => m.id === slot.user?.id);
+        const nameHTML = member
+          ? `<a href="https://www.torn.com/profiles.php?XID=${slot.user?.id}" target="_blank">${member.name} [${slot.user?.id}]</a>`
+          : `<span class="badge badge-pill badge-secondary">${slot.user?.id || 'empty'}</span>`;
+
+        let chanceBadge = 'badge-secondary';
+        if (slot.checkpoint_pass_rate >= 75) chanceBadge = 'badge-success';
+        else if (slot.checkpoint_pass_rate >= 50) chanceBadge = 'badge-warning';
+        else if (slot.checkpoint_pass_rate < 50) chanceBadge = 'badge-danger';
+
+        const chance = `<span class="badge badge-pill ${chanceBadge}">${slot.checkpoint_pass_rate ?? 0}</span>`;
+
+        let itemBadge = 'badge-secondary';
+        let itemText = 'no item';
+        if (slot.item_requirement) {
+          if (slot.item_requirement.is_available) {
+            itemBadge = 'badge-success';
+            itemText = 'item available';
+          } else {
+            itemBadge = 'badge-danger';
+            itemText = 'item missing';
+          }
+        }
+        const timeSpendInCrime = crimeData.executed_at - slot.user?.joined_at || 0; // Time spent in crime in seconds
+        // Format time spent in crime in days, hours, minutes
+        const days = Math.floor(timeSpendInCrime / (24 * 3600));
+        const hours = Math.floor((timeSpendInCrime % (24 * 3600)) / 3600);
+        const minutes = Math.floor((timeSpendInCrime % 3600) / 60);
+
+        let formattedTime = '';
+        if (days > 0) formattedTime = ` > ${days}d ${hours}h ${minutes}m`;
+
+        let itemHTML = '';
+        if (crimeData.status === 'Recruiting' || crimeData.status === 'Planning') {
+          if (slot.user !== null) {
+            console.log(slot.user);
+            itemHTML = `<span class="badge badge-pill ${itemBadge}">${itemText}</span>`;
+          } else {
+            itemHTML = '';
+          }
+        }
+        participantHTML += `<div class="text-left mb-2">${chance} <strong>${slot.position}</strong> – ${nameHTML} ${formattedTime} ${itemHTML}</div>`;
+      }
+
+      const crimeLink = `https://www.torn.com/factions.php?step=your#/tab=crimes&crimeId=${crimeData.id}`;
+
+      tableHTML += `
+    <tr>
+      <td><strong><a href="${crimeLink}" target="_blank">${crimeData.difficulty} - ${name}</a></strong></td>
+      <td>${crimeData.id}</td>
+      <td><span class="badge badge-pill badge-${color}">${status}</span></td>
+      <td>${createdAt}</td>
+      <td>${readyAt}</td>
+      <td>${rewardHTML}</td>
+      <td>${participantHTML}</td>
+    </tr>
+  `;
     }
+    tableHTML += '</tbody></table>';
+    document.getElementById('output').innerHTML = tableHTML;
 
-    let formatted_date = 'N/A';
-    formatted_date = 'Created at ' + new Date(crimeData.created_at * 1000).toISOString().replace('T', ' ').replace('.000Z', '') + '<br />';
+    $('#oc2Table').DataTable({
+      paging: false,
+      order: [[4, 'asc']],
+      info: false,
+      stateSave: true,
+    });
 
-    if (crimeData.ready_at > 0 && crimeData.ready_at !== null) {
-      formatted_date += 'Ready at ' + new Date(crimeData.ready_at * 1000).toISOString().replace('T', ' ').replace('.000Z', '');
-    }
-    const title = 'ID: ' + crimeData.id + ' - <span class="badge badge-pill badge-' + color + '">Status: ' + crimeData.status + '</span>';
-    const text = rewards + formatted_date + '<br />' + slotsString;
 
-    const card = document.createElement('div');
-    card.classList.add('card', `border-${color}`, 'mb-4');
-    card.style.maxWidth = '20rem';
-
-    const cardHeader = document.createElement('div');
-    cardHeader.classList.add('card-header', `bg-${color}`, 'text-white');
-    cardHeader.textContent = header;
-    card.appendChild(cardHeader);
-
-    const cardBody = document.createElement('div');
-    cardBody.classList.add('card-body');
-    card.appendChild(cardBody);
-
-    const cardTitle = document.createElement('strong');
-    cardTitle.classList.add('card-title');
-    cardTitle.innerHTML = title;
-    cardBody.appendChild(cardTitle);
-
-    const cardText = document.createElement('p');
-    cardText.classList.add('card-text');
-    cardText.innerHTML = text;
-    cardBody.appendChild(cardText);
-
-    const col = document.createElement('div');
-    col.classList.add('col-md-3', 'mb-3');
-    col.appendChild(card);
-    cardsContainer.appendChild(col);
   }
 
   const category = document.getElementsByName('categoryRadio');
@@ -1007,32 +1073,54 @@ function parseOC2(oc2Data, element) {
   for (let radio of category) {
     if (radio.checked) selectedCategory = radio.value;
   }
-  if (selectedCategory === 'completed') {
+  if (selectedCategory === 'completed' || selectedCategory === 'failure' || selectedCategory === 'successful') {
 
     let summaryHTML = `<div class="col-sm-12 badge-primary"><b>Completed OC Overview</b></div><br>`;
     summaryHTML += `<table class="table table-sm table-hover text-center" id="oc2summary"><thead><tr>
-  <th>Scenario</th>
-  <th>Completions</th>
-  <th>Successes</th>
-  <th>Failures</th>
-  <th>Success Rate</th>
-  <th>Income</th>
-</tr></thead><tbody>`;
+    <th>Scenario</th>
+    <th>Completions</th>
+    <th>Successes</th>
+    <th>Failures</th>
+    <th>Success Rate</th>
+    <th>Income</th>
+    </tr></thead><tbody>`;
+
+    let totalCompletions = 0;
+    let totalSuccesses = 0;
+    let totalFailures = 0;
+    let totalIncome = 0;
 
     for (const key of Object.keys(summaryData).sort()) {
+
       const d = summaryData[key];
       const rate = d.completions > 0 ? `${((d.successes / d.completions) * 100).toFixed(2)}%` : '-';
+      totalCompletions += d.completions;
+      totalSuccesses += d.successes;
+      totalFailures += d.failures;
+      totalIncome += d.income;
       summaryHTML += `<tr>
-    <td>${key}</td>
-    <td>${d.completions}</td>
-    <td>${d.successes}</td>
-    <td>${d.failures}</td>
-    <td>${rate}</td>
-    <td>$${d.income.toLocaleString()}</td>
-  </tr>`;
+      <td>${key}</td>
+      <td><span class="badge badge-pill badge-secondary">${d.completions}</span></td>
+      <td><span class="badge badge-pill badge-success">${d.successes}</span></td>
+      <td><span class="badge badge-pill badge-danger">${d.failures}</span></td>
+      <td>${rate}</td>
+      <td>$${d.income.toLocaleString()}</td>
+      </tr>`;
     }
-    summaryHTML += `</tbody></table><br>`;
+    summaryHTML += `</tbody>`;
+    summaryHTML += `<tfoot><tr class="table-dark">
+  <td>Total</td>
+  <td><span class="badge badge-pill badge-secondary">${totalCompletions}</span></td>
+  <td><span class="badge badge-pill badge-success">${totalSuccesses}</span></td>
+  <td><span class="badge badge-pill badge-danger">${totalFailures}</span></td>
+  <td>${((totalSuccesses / totalCompletions) * 100).toFixed(2)}%</td>
+  <td>$${totalIncome.toLocaleString()}</td>
+  </tr></tfoot>`;
+
+    summaryHTML += `</table><br>`;
     document.getElementById(element).innerHTML = summaryHTML;
+  } else {
+    document.getElementById(element).innerHTML = '';
   }
 
 }
@@ -1052,12 +1140,47 @@ async function parseMissingItems(oc2Data, element) {
   const container = document.getElementById(element);
   container.innerHTML = '';
 
+  const itemInformation = [
+    { "id": 568, "name": "Jemmy" },
+    { "id": 1361, "name": "Dog Treats" },
+    { "id": 1362, "name": "Net" },
+    { "id": 1203, "name": "Lockpicks" },
+    { "id": 1350, "name": "Police Badge" },
+    { "id": 1381, "name": "ID Badge" },
+    { "id": 1379, "name": "ATM Key" },
+    { "id": 643, "name": "Construction Helmet" },
+    { "id": 172, "name": "Gasoline" },
+    { "id": 1380, "name": "RF Detector" },
+    { "id": 1383, "name": "DSLR Camera" },
+    { "id": 201, "name": "PCP" },
+    { "id": 1258, "name": "Binoculars" },
+    { "id": 1429, "name": "Zip Ties" },
+    { "id": 73, "name": "Stealth Virus" },
+    { "id": 981, "name": "Wire Cutters" },
+    { "id": 159, "name": "Bolt Cutters" },
+    { "id": 856, "name": "Spray Paint : Black" },
+    { "id": 576, "name": "Chloroform" },
+    { "id": 222, "name": "Flash Grenade" },
+    { "id": 1284, "name": "Dental Mirror" },
+    { "id": 190, "name": "C4 Explosive" },
+    { "id": 1080, "name": "Billfold" },
+    { "id": 103, "name": "Firewalk Virus" },
+    { "id": 1431, "name": "Core Drill" },
+    { "id": 1430, "name": "Shaped Charge" },
+    { "id": 1331, "name": "Hand Drill" },
+    { "id": 226, "name": "Smoke Grenade" }
+  ];
+
+
   var crimes = oc2Data['crimes'];
   var basic = oc2Data['basic'];
   var members = oc2Data['members'];
 
   let issuesFound = 0;
-  let html = `<div class="col-sm-12 badge-primary"><b>Missing Items in Active OCs</b></div><br />`;
+  let html = `
+  <div class="col-sm-12 badge-primary"><b>Missing Items in Active OCs</b></div><br />
+  <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
+`;
 
   for (const crime of Object.values(crimes)) {
     const crimeLink = `https://www.torn.com/factions.php?step=your#/tab=crimes&crimeId=${crime.id}`;
@@ -1066,9 +1189,6 @@ async function parseMissingItems(oc2Data, element) {
     for (const slot of slots) {
 
       const memberId = slot.user?.id || 'empty';
-      const member = members.find(member => member.id === memberId);
-      const memberName = member ? member.name : 'empty';
-      const position = slot.position;
 
       if (slot.item_requirement !== null && memberId !== 'empty') {
         if (slot.item_requirement.is_available === false) {
@@ -1079,7 +1199,7 @@ async function parseMissingItems(oc2Data, element) {
           const position = slot.position || 'Unknown';
 
           const itemId = slot.item_requirement.id;
-          const itemName = slot.item_requirement.name || `Item ${itemId}`;
+          const itemName = itemInformation.find(item => item.id === itemId)?.name || `Item ${itemId}`;
           const itemLink = `https://www.torn.com/page.php?sid=ItemMarket#/market/view=search&itemID=${itemId}`;
 
           html += `
@@ -1109,6 +1229,9 @@ async function parseMissingItems(oc2Data, element) {
       </div>
     `;
   }
+
+  html += '</div>';
+
 
   container.innerHTML = html;
 }
@@ -1467,9 +1590,6 @@ function parseUserSpy(data, element) {
   const spyData = data.spy || data.spyData;
   const compareData = data.compare || null;
 
-  console.log('Spy Data:', spyData);
-  console.log('Compare Data:', compareData);
-
   if (!spyData || !spyData.player_id) {
     document.getElementById('statsModalLabel').innerHTML = 'Spy Not Found';
     document.getElementById('statsModalBody').innerHTML = '<div class="alert alert-info">No spy data available for this user.</div>';
@@ -1526,7 +1646,6 @@ function parseFactionSpy(data, cacheStats = false) {
 
   for (const id in membersList) {
     const entry = membersList[id];
-    console.log('Entry:', entry);
     if (!entry || !entry.id || !entry.spy) continue;
 
 
@@ -1540,9 +1659,6 @@ function parseFactionSpy(data, cacheStats = false) {
       total: entry.spy.total,
       timestamp: entry.spy.timestamp
     };
-
-    console.log('Player Data:', player);
-    console.log('Cache Stats:', cacheStats);
 
     if (cacheStats) {
       const request = openIndexedDB('TornEngine_pst', 1);
