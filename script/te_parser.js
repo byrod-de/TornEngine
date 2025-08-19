@@ -1168,7 +1168,9 @@ async function parseMissingItems(oc2Data, element) {
     { "id": 1431, "name": "Core Drill" },
     { "id": 1430, "name": "Shaped Charge" },
     { "id": 1331, "name": "Hand Drill" },
-    { "id": 226, "name": "Smoke Grenade" }
+    { "id": 226, "name": "Smoke Grenade" },
+    { "id": 1094, "name": "Syringe" },
+    { "id": 1012, "name": "Blood Bag : Irradiated" }
   ];
 
 
