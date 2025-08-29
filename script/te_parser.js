@@ -962,6 +962,7 @@ function parseOC2(oc2Data, element) {
         <th>Ready At</th>
         <th>Rewards</th>
         <th>Participants</th>
+        <th>Details</th>
       </tr>
     </thead>
     <tbody>
@@ -1032,7 +1033,6 @@ function parseOC2(oc2Data, element) {
         let itemHTML = '';
         if (crimeData.status === 'Recruiting' || crimeData.status === 'Planning') {
           if (slot.user !== null) {
-            console.log(slot.user);
             itemHTML = `<span class="badge badge-pill ${itemBadge}">${itemText}</span>`;
           } else {
             itemHTML = '';
@@ -1043,6 +1043,12 @@ function parseOC2(oc2Data, element) {
 
       const crimeLink = `https://www.torn.com/factions.php?step=your#/tab=crimes&crimeId=${crimeData.id}`;
 
+      const crimeDataString = encodeURIComponent(JSON.stringify(crimeData));
+
+      const detailsHTML = '<td class="align-middle">'
+        + '<img alt="Show Stats" title="Show Stats" src="images/svg-icons/stats.svg" height="25" onclick="fetchCrimeDetails(\'' + crimeDataString + '\')" data-toggle="modal" data-target="#detailsModal">'
+        + '</td>'
+
       tableHTML += `
     <tr>
       <td><strong><a href="${crimeLink}" target="_blank">${crimeData.difficulty} - ${name}</a></strong></td>
@@ -1052,6 +1058,7 @@ function parseOC2(oc2Data, element) {
       <td>${readyAt}</td>
       <td>${rewardHTML}</td>
       <td>${participantHTML}</td>
+      ${detailsHTML}
     </tr>
   `;
     }
@@ -1621,6 +1628,46 @@ function parseUserSpy(data, element) {
   }
 
   document.getElementById('statsModalBody').innerHTML = modalBody;
+}
+
+
+function fetchCrimeDetails(crimeDataString) {
+  const decodedString = decodeURIComponent(crimeDataString);
+  const crimeData = JSON.parse(decodedString);
+
+  const name = crimeData.name;
+  const difficulty = crimeData.difficulty;
+  const id = crimeData.id;
+
+  const createdAt = new Date(crimeData.created_at * 1000).toISOString().replace('T', ' ').replace('.000Z', '');
+  const readyAt = crimeData.ready_at ? new Date(crimeData.ready_at * 1000).toISOString().replace('T', ' ').replace('.000Z', '') : '-';
+  const executedAt = crimeData.executed_at ? new Date(crimeData.executed_at * 1000).toISOString().replace('T', ' ').replace('.000Z', '') : '-';
+  const expiredAt = crimeData.expired_at ? new Date(crimeData.expired_at * 1000).toISOString().replace('T', ' ').replace('.000Z', '') : '-';
+
+  //If currentdate > readyAt, the oc is delayed. Calculate the delay in <days>d <hours>h
+  const ocDelayedBy = readyAt !== '-' && new Date(readyAt) < new Date() ? Math.floor((new Date() - new Date(readyAt)) / (1000 * 60 * 60 * 24)) + 'd ' + Math.floor(((new Date() - new Date(readyAt)) % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) + 'h' : '-';
+
+  //If currentdate < readyAt, calculate the time when it is ready in <days>d <hours>h
+  const ocReadyIn = readyAt !== '-' && new Date(readyAt) > new Date() ? Math.floor((new Date(readyAt) - new Date()) / (1000 * 60 * 60 * 24)) + 'd ' + Math.floor(((new Date(readyAt) - new Date()) % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) + 'h' : '-';
+
+  const crimeLink = `https://www.torn.com/factions.php?step=your#/tab=crimes&crimeId=${id}`;
+
+  let modalBody = '';
+  document.getElementById('detailsModalLabel').innerHTML = `Crime: ${difficulty} - ${name} [${id}] <a href="${crimeLink}" target="_blank"><img src="images/svg-icons/oc2.svg" height="25" alt="Link to Crime" title="Link to Crime" /></a>`;
+
+  modalBody += `<div><strong>Created At:</strong> ${createdAt}</div>`;
+  modalBody += `<div><strong>Ready At:</strong> ${readyAt}</div>`;
+  if (ocReadyIn !== '-') {
+    modalBody += `<div class="text-success"><strong>OC Ready In:</strong> ${ocReadyIn}</div>`;
+  }
+  modalBody += `<div><strong>Executed At:</strong> ${executedAt}</div>`;
+  modalBody += `<div><strong>Expired At:</strong> ${expiredAt}</div>`;
+
+  if (ocDelayedBy !== '-') {
+    modalBody += `<div class="text-danger"><strong>OC Delayed By:</strong> ${ocDelayedBy}</div>`;
+  }
+
+  document.getElementById('detailsModalBody').innerHTML = modalBody;
 }
 
 

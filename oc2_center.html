@@ -87,7 +87,8 @@
 						</div>
 						<div class="custom-control custom-radio">
 							<input class="custom-control-input" type="radio" name="categoryRadio" value="recruiting"
-								id="recruiting"> <label class="custom-control-label" for="recruiting"> Recruiting </label>
+								id="recruiting"> <label class="custom-control-label" for="recruiting"> Recruiting
+							</label>
 						</div>
 						<div class="custom-control custom-radio">
 							<input class="custom-control-input" type="radio" name="categoryRadio" value="planning"
@@ -96,14 +97,16 @@
 
 						<div class="custom-control custom-radio">
 							<input class="custom-control-input" type="radio" name="categoryRadio" value="completed"
-								id="completed" checked=""> <label class="custom-control-label" for="completed"> Completed
+								id="completed" checked=""> <label class="custom-control-label" for="completed">
+								Completed
 								(successful
 								&amp; failure) </label>
 						</div>
 
 						<div class="custom-control custom-radio">
 							<input class="custom-control-input" type="radio" name="categoryRadio" value="successful"
-								id="successful"> <label class="custom-control-label" for="successful"> Successful </label>
+								id="successful"> <label class="custom-control-label" for="successful"> Successful
+							</label>
 						</div>
 
 						<div class="custom-control custom-radio">
@@ -132,6 +135,26 @@
 		<p id="output"></p>
 		<br />
 
+
+		<!-- Modal -->
+		<div class="modal fade" id="detailsModal" tabindex="-1" role="dialog" aria-labelledby="detailsModal"
+			aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="detailsModalLabel">Fetching crime details</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body" id="detailsModalBody">Please hold
+						the line...</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
 
 		<div id="footerContainer"></div>
 		<br />
