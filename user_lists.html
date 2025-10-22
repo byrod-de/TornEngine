@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Torn Engine - A collection of more or less useful things</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
+  <link rel="icon" type="image/png" href="images/mstile-144x144.png" sizes="32x32" />
+  <meta name="msapplication-TileColor" content="#ffffff" />
+  <meta name="msapplication-TileImage" content="images/logo-144x144.png" />
+
+  <link rel="stylesheet" href="css/bootstrap.min.css" />
+  <link rel="stylesheet" href="css/bootstrap.css" />
+  <link rel="stylesheet" href="css/dataTables.min.css" />
+
+  <script src="script/te_core.js"></script>
+  <script src="script/te_builder.js"></script>
+  <script src="script/te_utils.js"></script>
+  <script src="script/te_api.js"></script>
+  <script src="script/te_parser.js"></script>
+  <script src="script/te_pages.js"></script>
+
+  <script src="script/jquery.min.js"></script>
+  <script src="script/bootstrap.bundle.min.js"></script>
+  <script src="script/custom.js"></script>
+  <script src="script/jquery.dataTables.min.js"></script>
+
+  <link rel="stylesheet" href="ext/nouislider.css">
+  <script src="ext/nouislider.js"></script>
+  <script src="ext/wNumb.js"></script>
+
+  <link rel="stylesheet" href="css/custom.css" />
+
+  <!-- Page Loader -->
+  <script src="script/te_init.js"></script>
+
+</head>
+
+<body onload="loadKeyFromSession('user_lists'), loadFiltersFromSession();" data-page="user_lists">
+
+  <div class="container-fluid">
+    <br />
+    <div id="headerContainer"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <a class="navbar-brand" href="index.html">Home</a>
+
+      <div class="navbar-collapse" id="navbarColor01">
+        <!-- Filled dynamically -->
+      </div>
+    </nav>
+    <br />
+
+    <!-- Here comes the content *sings* -->
+    <form id="userForm">
+      <div class="row">
+        <div class="form-group col-sm-3">
+          <label for="trustedkey">API Key *</label>
+          <input type="input" class="form-control" id="trustedkey" name="trustedkey" placeholder="API Key" />
+          <small id="hint" class="form-text text-muted">API key with <i>Limited Access</i> to your Lists is required</small>
+        </div>
+        <div class="form-group col-sm-5">
+          <label for="listTypeSelect">List Type</label>
+          <select class="listtype form-control" id="listTypeSelect" name="listTypeSelect">
+            <option value="Friends">Friends</option>
+            <option value="Enemies">Enemies</option>
+            <option value="Targets" selected>Targets</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group col-sm-3"></div>
+        <div class="row" id="filter">
+          <div class="form-group col-sm-3">
+            <legend>Status</legend>
+            <fieldset class="form-group">
+              <div class="custom-control custom-checkbox">
+                <input class="custom-control-input" type="checkbox" value="Online" name="status" id="Online" />
+                <label class="custom-control-label" for="Online"> Online </label>
+              </div>
+              <div class="custom-control  custom-checkbox">
+                <input class="custom-control-input" type="checkbox" value="Idle" name="status" id="Idle" />
+                <label class="custom-control-label" for="Idle"> Idle </label>
+              </div>
+              <div class="custom-control custom-checkbox">
+                <input class="custom-control-input" type="checkbox" value="Offline" name="status" id="Offline" />
+                <label class="custom-control-label" for="Offline"> Offline </label>
+              </div>
+            </fieldset>
+            <fieldset class="form-group">
+              <div class="custom-control custom-checkbox">
+                <input class="custom-control-input" type="checkbox" value="FilterActive" id="FilterActive" name="status"
+                  onclick="disableElement('FilterActive', 'TimeActive');" />
+                <label class="custom-control-label" for="FilterActive"> Filter <strong>Last Active</strong> time
+                </label>
+              </div>
+              <div class="custom-control custom-checkbox">
+                <label for="TimeActive" class="form-label">Skip players with action of less than <span id="rangeValue"
+                    class="rangeValue">15</span> minutes ago</label>
+                <input type="range" class="form-range" min="0" max="240" step="5" id="TimeActive" disabled="disabled"
+                  value="15" />
+              </div>
+            </fieldset>
+
+          </div>
+
+          <div class="form-group col-sm-3">
+            <legend>Details</legend>
+            <fieldset class="form-group">
+              <div class="custom-control custom-checkbox">
+                <input class="custom-control-input" type="checkbox" value="Okay" name="details" id="Okay" />
+                <label class="custom-control-label" for="Okay"> Okay </label>
+              </div>
+              <div class="custom-control custom-checkbox">
+                <input class="custom-control-input" type="checkbox" value="Hospital" name="details" id="Hospital"
+                  onclick="disableElement('Hospital', 'MinutesHosp');" />
+                <label class="custom-control-label" for="Hospital"> Hospital </label>
+                <div class="custom-control custom-checkbox"><input class="custom-control-input" name="details"
+                    type="checkbox" value="MinutesHosp" id="MinutesHosp" />
+                  <label class="custom-control-label" for="MinutesHosp"> less than 15 minutes</label>
+                </div>
+              </div>
+
+              <div class="custom-control custom-checkbox">
+                <input class="custom-control-input" type="checkbox" value="Jail" name="details" id="Jail" />
+                <label class="custom-control-label" for="Jail"> Jail </label>
+              </div>
+              <div class="custom-control custom-checkbox">
+                <input class="custom-control-input" type="checkbox" value="Traveling" name="details" id="Traveling" />
+                <label class="custom-control-label" for="Traveling"> Traveling </label>
+              </div>
+              <div class="custom-control custom-checkbox">
+                <input class="custom-control-input" type="checkbox" value="Abroad" name="details" id="Abroad" />
+                <label class="custom-control-label" for="Abroad"> Abroad </label>
+              </div>
+
+            </fieldset>
+            <legend>Level</legend>
+            <div class="custom-control custom-checkbox">
+              <label class="form-label"><span id="levelRange" class="levelRange"></span></label>
+              <div class="slider-styled" id="slider"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <script>
+
+      noUiSlider.create(slider, {
+        start: [0, 100],
+        connect: true,
+        tooltips: false,
+        range: {
+          'min': 0,
+          'max': 100
+        },
+        format: wNumb({ decimals: 0 })
+      });
+      $(document).ready(function () {
+        $('#TimeActive').on('input', function () {
+          $('span.rangeValue').text($('#TimeActive').val());
+        });
+      });
+
+      var sliderInput = document.getElementById('levelRange');
+      slider.noUiSlider.on('update', function (values, handle, unencoded) {
+        var levelRange = slider.noUiSlider.get();
+        $('span.levelRange').text(levelRange[0] + ' - ' + levelRange[1]);
+      });
+
+    </script>
+
+    <div class="row">
+      <div class="form-group col-sm-1">
+        <button type="button" class="btn btn-primary" id="submit">Submit</button>
+      </div>
+      <div class="form-group col-sm-2" id="alert"></div>
+      <div class="form-group col-sm-2 link-group">
+        <button onclick="hideElementByID('filter')" class="btn btn-outline-secondary"
+          id="btnHideFilter">Hide&nbsp;Filter</button>&nbsp;
+      </div>
+    </div>
+
+    <p id="summary"></p>
+    <br />
+    <p id="output"></p>
+    <br />
+
+    <!-- Modal -->
+    <div class="modal fade" id="statsModal" tabindex="-1" role="dialog" aria-labelledby="statsModal" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="statsModalLabel">Calling
+              TornStats API</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" id="statsModalBody">Please hold
+            the line...</div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <div id="footerContainer"></div>
+    <br />
+    <br />
+</body>
+
+</html>

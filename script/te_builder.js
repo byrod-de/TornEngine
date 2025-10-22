@@ -25,7 +25,7 @@ const menuData = [
   {
     category: "Helpful Tools",
     items: [
-      //{ name: "API Key Check", icon: "keycheck", href: "keycheck.html" },
+      { name: "User Lists", icon: "user_lists", href: "user_lists.html" },
       { name: "Discord Time", icon: "discord", href: "discord.html" },
       { name: "Trailers!", icon: "trailers", href: "trailers.html" }
     ]

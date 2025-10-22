@@ -1585,6 +1585,259 @@ function parseMembers(factionData, element) {
 }
 
 
+function parseUserLists(listData, element) {
+  const listType = document.getElementById('listTypeSelect')?.value || 'Targets';
+  console.log(listType, listData);
+
+  var trustedApiKey = document.getElementById("trustedkey").value;
+
+  var statusList = '';
+  var markedCheckboxStatus = document.getElementsByName('status');
+  for (var checkbox of markedCheckboxStatus) {
+    if (checkbox.checked) statusList = statusList + checkbox.value + ',';
+  }
+
+  var detailsList = '';
+  var markedCheckboxDetails = document.getElementsByName('details');
+  for (var checkbox of markedCheckboxDetails) {
+    if (checkbox.checked) detailsList = detailsList + checkbox.value + ',';
+  }
+
+  var filterMinutesHosp = false;
+  if (document.getElementById('MinutesHosp').checked) {
+    filterMinutesHosp = true;
+  }
+
+  var filterMinutesAction = 0;
+  if (document.getElementById('FilterActive').checked) {
+    filterMinutesAction = document.getElementById('TimeActive').value;
+  }
+
+  var levelRange = slider.noUiSlider.get();
+
+  var printEntry = false;
+
+  var table = '<div class="col-sm-12 badge-primary" >  <b>' + listType;
+
+  table = table + '</b></div>';
+  table += '<div class="col-sm-12 badge-secondary" ><img alt="Reload" title="Reload" src="images/svg-icons/refresh.svg" height="25" onclick="document.getElementById(\'submit\')?.click()"><img alt="select table content" title="select table content" src="images/svg-icons/text-selection.svg" height="25" onclick="selectElementContents(document.getElementById(\'members\'));">';
+
+  table += '</div></div>';
+
+  table = table + '<br /><table class="table table-hover" id="members"><thead><tr>'
+    + '<th>Name&nbsp;&nbsp;</th>'
+    + '<th>Icons&nbsp;&nbsp;</th>'
+    + '<th>Attack Link&nbsp;&nbsp;</th>'
+    + '<th>Status&nbsp;&nbsp;</th>'
+    + '<th>Details&nbsp;&nbsp;</th>'
+    + '<th>Description&nbsp;&nbsp;</th>'
+    + '<th>Last Action&nbsp;&nbsp;</th>'
+    + '<th>Level&nbsp;&nbsp;</th>'
+    + '<th>Faction Links&nbsp;&nbsp;</th>';
+  table = table + '<th>Stats Popup&nbsp;&nbsp;</th>'
+
+  table = table + '</tr></thead><tbody>';
+
+  var statusFormat = '';
+  var detailFormat = '';
+  var countMembers = 0;
+  var filteredMembers = 0;
+  var statusDescriptionText = '';
+
+  var timeStamp = Math.floor(Date.now() / 1000);
+  var timeDifference = 0;
+
+  var playerList = listData['list'];
+
+  for (var entryId in playerList) {
+
+    printEntry = false;
+    statusDescriptionText = '';
+
+    var player = playerList[entryId];
+    const id = player.id;
+    var playerStatusState = player.status.state;
+    var hospitalTime = '';
+
+    if ((filterMinutesHosp && playerStatusState == 'Hospital')
+      || (!filterMinutesHosp && playerStatusState == 'Hospital')
+      || (player.status.state !== 'Hospital')) {
+
+      if (filterMinutesHosp && playerStatusState == 'Hospital') {
+        timeDifference = (player.status.until - timeStamp) / 60;
+        if (timeDifference < 15) {
+          printEntry = true;
+        }
+      } else {
+        printEntry = true;
+      }
+    }
+
+    if (playerStatusState === 'Hospital') {
+      const rawTimestamp = player.status.until;
+
+      // Initially blank — will be filled by the countdown updater
+      const timePlaceholder = `<span class="hospital-timer" data-hospital-until="${rawTimestamp}"></span>`;
+
+      statusDescriptionText = `Out of hospital in ${timePlaceholder}`;
+      hospitalTime = ` out in ${timePlaceholder}`;
+    }
+
+
+    else {
+      statusDescriptionText = player.status.description.replace('to Torn ', '');
+    }
+
+    var playerLastActionTimestamp = (timeStamp - player.last_action.timestamp);
+    var playerLastAction = '';
+
+    if (filterMinutesAction > playerLastActionTimestamp / 60) {
+      printEntry = false;
+    }
+
+
+
+    const time = playerLastActionTimestamp;
+
+    const days = Math.floor(time / 86400);
+    const hours = Math.floor((time % 86400) / 3600);
+    const minutes = Math.floor((time % 3600) / 60);
+    const seconds = time % 60;
+
+    const segments = [
+      { val: days, label: 'd:' },
+      { val: hours, label: 'h:' },
+      { val: minutes, label: 'm:' },
+      { val: seconds, label: 's' }
+    ];
+
+    let leading = true;
+    playerLastAction = segments.map(({ val, label }) => {
+      const str = val.toString().padStart(2, '0') + label;
+      if (leading && val === 0) {
+        return `<span class="text-secondary">${str}</span>`;
+      } else {
+        leading = false;
+        return str;
+      }
+    }).join('');
+
+
+
+    var icon = '';
+    var detail = '';
+    if (player.last_action.status == 'Online') statusFormat = 'badge-success';
+    if (player.last_action.status == 'Idle') statusFormat = 'badge-warning';
+    if (player.last_action.status == 'Offline') statusFormat = 'badge-dark';
+
+    if (playerStatusState == 'Hospital') {
+      detailFormat = 'badge-danger';
+      icon = icon + '<img src="images/icon_hosp.png" alt="Hospital" title="Hospital" width="20" height="20"/>&nbsp;';
+      detail = '<span class="badge badge-pill ' + detailFormat + '">' + playerStatusState + '</span>';
+      if (player.status.description.includes('In a')) {
+        playerStatusState = 'Abroad';
+      }
+    }
+    if (playerStatusState == 'Okay') {
+      detailFormat = 'badge-success';
+      detail = '<span class="badge badge-pill ' + detailFormat + '">' + playerStatusState + '</span>';
+    }
+    if (playerStatusState == 'Jail') {
+      detailFormat = 'badge-warning';
+      icon = icon + '<img src="images/icon_jail.png" alt="Jail" title="Jail" width="20" height="20"/>&nbsp;';
+      detail = '<span class="badge badge-pill ' + detailFormat + '">' + playerStatusState + '</span>';
+    }
+    if (playerStatusState == 'Traveling') {
+      detailFormat = 'badge-dark';
+      icon = icon + '<img src="images/icon_travel.png" alt="Traveling" title="Traveling" width="20" height="20"/>&nbsp;';
+      detail = '<span class="badge badge-pill ' + detailFormat + '">' + playerStatusState + '</span>';
+    }
+    if (playerStatusState == 'Abroad') {
+      detailFormat = 'badge-info';
+      icon = icon + '<img src="images/icon_abroad.png" alt="Abroad" title="Abroad" width="20" height="20"/>&nbsp;';
+      detail = detail + '<span class="badge badge-pill ' + detailFormat + '">' + playerStatusState + '</span>';
+    }
+
+
+    if (statusList.includes(player.last_action.status)
+      && detailsList.includes(playerStatusState)
+      && printEntry
+      && (!document.getElementById(player.position) || document.getElementById(player.position).checked)
+      && (player.level >= levelRange[0] && player.level <= levelRange[1])) {
+
+      var copyableText = ' >> ' + player.name + ' << https://www.torn.com/loader.php?sid=attack&user2ID=' + id;
+
+      table = table + '<tr>'
+
+        + '<td class="align-middle"><a href="https://www.torn.com/profiles.php?XID=' + id + '" target="_blank">' + player.name + '<br/>[' + id + ']</a><br/></td>'
+        + '<td class="align-middle">' + icon + '</td>'
+        + '<td class="align-middle">'
+        + '<div class="link-group" role="group">'
+        + '<a class="btn btn-link btn-sm" role="button" href="https://www.torn.com/loader.php?sid=attack&user2ID=' + id + '" target="_blank"><img alt="Attack" title="Attack" src="images/svg-icons/attack2.svg" height="25"></a>&nbsp;'
+        //+ '<button type="button" onclick="copyButton(' + id + ')" class="btn btn-secondary btn-sm" id="copy-button' + id + '" data-toggle="tooltip" data-placement="button" title="Copy for Faction Chat">'
+        + '</div>'
+        + '<input type="hidden" class="form-control" value="' + copyableText + '" placeholder="..." id="copy-input-' + id + '">'
+        //+ 'Copy</button>'
+        + '</td>'
+        + '<td class="align-middle">' + '<span class="badge badge-pill ' + statusFormat + '">' + player.last_action.status + '</span>' + '</td>'
+        + '<td class="align-middle">' + detail + '</td>'
+        + '<td class="align-middle">' + statusDescriptionText + '</td>'
+        + '<td class="align-middle">' + playerLastAction + '</td>'
+        + '<td class="align-middle">' + player.level + '</td>'
+        + '<td class="align-middle">';
+      
+      if (player.faction_id != null) {
+        table = table + `<a href="https://www.torn.com/factions.php?step=profile&ID=${player.faction_id}" target="_blank">Torn Link to Faction</a><br/>`;
+        table = table + `<a href="members.html?factionID=${player.faction_id}">Link to Faction Member Status</a>`;
+      } 
+        
+      table = table + '</td>'
+
+      table = table + '<td class="align-middle">'
+        + '<img alt="Show Stats" title="Show Stats" src="images/svg-icons/stats.svg" height="25" onclick="callTornStatsAPI(\'' + trustedApiKey + '\', \'spy\',' + id + ', \'user\')" data-toggle="modal" data-target="#statsModal">'
+        //+ '<button type="button" onclick="callTornStatsAPI(\'' + trustedApiKey + '\', ' + id + ', \'user\', false)" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#statsModal">Show Stats</button>'
+        + '</td>'
+
+      filteredMembers++;
+    }
+
+    table = table + '</tr>';
+    countMembers++;
+  }
+  table = table + '</tbody></table>';
+
+  document.getElementById(element).innerHTML = table;
+
+  var ts = new Date(timeStamp * 1000);
+  var formatted_date = ts.toISOString().replace('T', ' ').replace('.000Z', '');
+
+  const summary = `<span class="text-primary">${filteredMembers} members out of ${countMembers} total members filtered.</span> <span class="text-muted">Last refreshed: ${formatted_date}</span><div class="war-info"></div>`;
+  document.getElementById('summary').innerHTML = summary;
+
+  startHospitalCountdowns();
+
+  $('#members').DataTable({
+    paging: false,
+    order: [[5, 'asc']],
+    info: false,
+    stateSave: true,
+    columnDefs: [
+      {
+        targets: 'stat-column', // Add this class to your <th>
+        orderDataType: 'dom-data-order'
+      }
+    ]
+  });
+
+  if (!$.fn.dataTable.ext.order['dom-data-order']) {
+    $.fn.dataTable.ext.order['dom-data-order'] = function (settings, col) {
+      return this.api().column(col, { order: 'index' }).nodes().map(td =>
+        $(td).data('order') || 0
+      );
+    };
+  }
+}
+
 /**
  * Parses spy data from TornStats and updates the specified HTML element with a table of user details.
  *

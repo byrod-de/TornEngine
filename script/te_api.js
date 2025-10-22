@@ -265,6 +265,15 @@ function handleApiData(data, part, selections, cacheStats = false) {
         }
     }
 
+    if (part === 'user' && selections === 'list') {
+        if (data) {
+            printAlert('Success', 'User Lists API Call successful, find the results below.');
+            parseUserLists(data, 'output');
+        } else {
+            printAlert('Warning', 'User Lists API permissions may be missing.');
+        }
+    }
+
     // Add other pages here when needed
 }
 

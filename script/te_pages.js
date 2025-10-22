@@ -67,6 +67,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const factionId = document.getElementById('factionid').value.trim() || '';
                 callTornAPIv2({ apiKey: apiKey, part: `faction/${factionId}`, selections: 'basic,members,wars' });
                 break;
+
+            case 'user_lists':
+                const listType = document.getElementById('listTypeSelect')?.value || 'Targets';
+                callTornAPIv2({ apiKey: apiKey, part: `user`, selections: 'list' , category: listType });
+                break;
         }
     });
 });
