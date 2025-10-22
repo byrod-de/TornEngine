@@ -10,8 +10,8 @@ const menuData = [
   {
     category: "OC 2.0 Tools",
     items: [
-      { name: "OC 2.0", icon: "oc2", href: "oc2_center.html", badge: "Alpha" },
-      { name: "Missing Items", icon: "missing_items", href: "missing_items.html", badge: "Alpha" }
+      { name: "OC 2.0", icon: "oc2", href: "oc2_center.html" },
+      { name: "Missing Items", icon: "missing_items", href: "missing_items.html" }
     ]
   },
   {
@@ -25,7 +25,7 @@ const menuData = [
   {
     category: "Helpful Tools",
     items: [
-      { name: "User Lists", icon: "user_lists", href: "user_lists.html" },
+      { name: "User Lists", icon: "user_lists", href: "user_lists.html", badge: "Alpha" },
       { name: "Discord Time", icon: "discord", href: "discord.html" },
       { name: "Trailers!", icon: "trailers", href: "trailers.html" }
     ]
