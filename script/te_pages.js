@@ -72,6 +72,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const listType = document.getElementById('listTypeSelect')?.value || 'Targets';
                 callTornAPIv2({ apiKey: apiKey, part: `user`, selections: 'list' , category: listType });
                 break;
+
+            // Add more cases as needed for other pages
         }
     });
 });

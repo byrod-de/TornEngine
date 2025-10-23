@@ -36,6 +36,38 @@ async function callTornAPI({ apiKey, part = '', selections = '', from = '', to =
     }
 }
 
+/**
+ * A function to call the Torn API v2 with a custom URL and handle the response.
+ *
+ * @param {object} options - an object containing the parameters for the API call
+ * @param {string} options.apiKey - the API key to use for the call
+ * @param {string} options.url - the custom URL to use for the API call
+ * @returns {void}
+ */
+async function callTornAPIv2ByURL({ apiKey, url }) {
+    try {
+        const fullUrl = `${url}&key=${apiKey}&comment=tornengine`;
+        //replace https://api.torn.com/ with empty string for logging
+        const shortUrl = url.replace('https://api.torn.com/v2/', '').split('?')[0]; //remove query parameters for logging
+
+        const response = await fetch(fullUrl);
+        const data = await response.json();
+
+        if (response.ok) {
+            if (data.error) {
+                handleTornApiError(data.error);
+            } else {
+                handleApiURLData(data, shortUrl );
+            }
+        } else {
+            printAlert('Error', 'Torn API v2 not available.');
+        }
+    } catch (error) {
+        console.error('callTornAPI error:', error);
+        printAlert('Error', 'API call failed.');
+    }
+}
+
 
 /**
  * A function to call the Torn API v2 with specified parameters and handle the response.
@@ -277,6 +309,21 @@ function handleApiData(data, part, selections, cacheStats = false) {
     // Add other pages here when needed
 }
 
+function handleApiURLData(data, url) {
+  switch (url) {
+    case 'user/list':
+        if (data) {
+            printAlert('Success', 'User Lists API Call successful, find the results below.');
+            parseUserLists(data, 'output');
+        } else {
+            printAlert('Warning', 'User Lists API permissions may be missing.');
+        }
+        break;
+    default:
+        printAlert('Warning', 'Unhandled API URL.');
+  }
+}
+
 /**
  * Retrieves the trusted API key from localStorage and sets it to sessionStorage.
  * If the trusted key in localStorage is empty, it will use the value in the
@@ -293,7 +340,7 @@ function getApiKey() {
 
     sessionStorage.trustedApiKey = trustedApiKey;
     localStorage.setItem('api_key', trustedApiKey);
- 
+
     return trustedApiKey;
 }
 
@@ -316,4 +363,10 @@ function userSubmit() {
     printAlert('Success', 'API key saved successfully.');
 
     // Trigger a key check or data reload if necessary
+}
+
+function submitPagination(paginationButton, url) {
+    const apiKey = getApiKey();
+    
+    callTornAPIv2ByURL({ apiKey: apiKey, url: url });
 }
