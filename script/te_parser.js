@@ -1591,8 +1591,6 @@ function parseUserLists(listData, element) {
   let total = 0;
   let prevUrl = '';
   let nextUrl = '';
-  let showPrevButton = false;
-  let showNextButton = false;
 
   const listType = document.getElementById('listTypeSelect')?.value || 'Targets';
 
@@ -1609,15 +1607,12 @@ function parseUserLists(listData, element) {
       break;
   }
 
-
   if (listData['_metadata'] !== undefined) {
     total = listData['_metadata']?.total || 0;
 
     totalEntries = total + ' total entries found in <a href="' + listURL + '" target="_blank" class="alert-link">' + listType + '</a> list.';
     prevUrl = listData['_metadata']?.links?.prev || null;
     nextUrl = listData['_metadata']?.links?.next || null;
-    if (prevUrl !== null) showPrevButton = true;
-    if (nextUrl !== null) showNextButton = true;
   }
 
   var trustedApiKey = document.getElementById("trustedkey").value;
@@ -1840,26 +1835,22 @@ function parseUserLists(listData, element) {
   var ts = new Date(timeStamp * 1000);
   var formatted_date = ts.toISOString().replace('T', ' ').replace('.000Z', '');
 
-  let summary = `<span class="text-primary">${filteredMembers} members out of ${countMembers} found members filtered.</span><br /><span class="text-muted">${totalEntries}</span><br /><span class="text-secondary">Last refreshed: ${formatted_date}</span><br />`;
+  let summary = `<span class="text-primary">${filteredMembers} members out of ${countMembers} found members filtered.</span> <span class="text-muted">${totalEntries}</span><br /><span class="text-secondary">Last refreshed: ${formatted_date}</span><br />`;
 
-  let buttons = '';
-  //if (showPrevButton), add a button to go to prevUrl in the summary
-  if (showPrevButton) {
-    const prevButton = `<button onclick="submitPagination('btnPrevPage', '${prevUrl}')" class="btn btn-primary btn-sm" id="btnPrevPage">< Previous</button>`;
-    buttons = buttons + ' ' + prevButton;
+  const buttons = setPaginationButtons(listData._metadata);
+
+  let batchButtons = '';
+  if ((prevUrl || nextUrl) && total > 50) {
+    const batchSize = 5;
+    let limit = batchSize * 50;
+    if (total < limit) {
+      limit = total;
+    }
+    batchButtons = '<br/><br/>Merge up to ' + limit + ' entries <span class="badge badge-pill badge-danger mb-2">Experimental</span>: ';
+    batchButtons += setPaginationButtons(listData._metadata, batchSize);
   }
 
-  //if (showNextButton), add a button to go to nextUrl in the summary
-  if (showNextButton) {
-    const nextButton = `<button onclick="submitPagination('btnNextPage', '${nextUrl}')" class="btn btn-primary btn-sm" id="btnNextPage">Next ></button>`;
-    buttons = buttons + ' ' + nextButton;
-  }
-
-  if (buttons.length > 0) {
-    buttons = `<br /><div class="pagination-buttons">${buttons}</div>`;
-    summary = summary + buttons;
-  }
-
+  summary = summary + buttons + batchButtons;
   document.getElementById('summary').innerHTML = summary;
 
   startHospitalCountdowns();

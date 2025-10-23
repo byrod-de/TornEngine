@@ -218,3 +218,24 @@ function copyButton(memberID, factionID = '') {
     navigator.clipboard.writeText(copyText.value + stats);
   }, 1000);
 }
+
+function setPaginationButtons(metadata, batchSize = 0) {
+  const prevUrl = metadata.links?.prev || null;
+  const nextUrl = metadata.links?.next || null;
+  let prevButton = '';
+  if (prevUrl && batchSize === 0) {
+    prevButton = `<button onclick="submitPagination('${prevUrl}')" class="btn btn-primary btn-sm" id="btnPrevPage">< Previous</button>`;
+  }
+  let nextButton = '';
+  if (nextUrl && batchSize === 0) {
+    nextButton = `<button onclick="submitPagination('${nextUrl}')" class="btn btn-primary btn-sm" id="btnNextPage">Next ></button>`;
+  }
+  
+  if ((nextUrl || prevUrl) && batchSize > 0) {
+    nextButton = `<button onclick="submitPagination('${nextUrl}', ${batchSize})" class="btn btn-danger btn-sm" id="btnShowMore">Show more</button>`;
+  }
+
+  const buttons = prevButton + ' ' + nextButton;
+
+  return buttons.trim();
+}

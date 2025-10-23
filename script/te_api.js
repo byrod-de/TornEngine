@@ -46,7 +46,10 @@ async function callTornAPI({ apiKey, part = '', selections = '', from = '', to =
  */
 async function callTornAPIv2ByURL({ apiKey, url }) {
     try {
-        const fullUrl = `${url}&key=${apiKey}&comment=tornengine`;
+        const fullUrl = new URL(url);
+        fullUrl.searchParams.set('key', apiKey);
+        fullUrl.searchParams.set('comment', 'tornengine');
+
         //replace https://api.torn.com/ with empty string for logging
         const shortUrl = url.replace('https://api.torn.com/v2/', '').split('?')[0]; //remove query parameters for logging
 
@@ -57,7 +60,7 @@ async function callTornAPIv2ByURL({ apiKey, url }) {
             if (data.error) {
                 handleTornApiError(data.error);
             } else {
-                handleApiURLData(data, shortUrl );
+                handleApiURLData(data, shortUrl);
             }
         } else {
             printAlert('Error', 'Torn API v2 not available.');
@@ -68,6 +71,85 @@ async function callTornAPIv2ByURL({ apiKey, url }) {
     }
 }
 
+async function callTornAPIv2InBatch({ apiKey, url, batchSize = 5 }) {
+    try {
+        const fullUrl = new URL(url);
+        fullUrl.searchParams.set('key', apiKey);
+        fullUrl.searchParams.set('comment', 'tornengine');
+        fullUrl.searchParams.delete('offset');
+
+        //replace https://api.torn.com/ with empty string for logging
+        const shortUrl = url.replace('https://api.torn.com/v2/', '').split('?')[0];
+
+        const response = await fetch(fullUrl);
+        const data = await response.json();
+
+        if (response.ok) {
+            if (data.error) {
+                handleTornApiError(data.error);
+            } else {
+                if (data._metadata && data._metadata.links && data._metadata.links.next) {
+                    let mergedData = { ...data };
+                    console.log(mergedData);
+                    let nextUrl = data._metadata.links?.next || null;
+                    let count = 1;
+
+                    const prevBtn = document.getElementById('btnPrevPage');
+                    const nextBtn = document.getElementById('btnNextPage');
+                    const showMoreBtn = document.getElementById('btnShowMore');
+                    
+                    if (prevBtn) prevBtn.disabled = true;
+                    if (nextBtn) nextBtn.disabled = true;
+                    if (showMoreBtn) showMoreBtn.disabled = true;
+
+                    const summaryEl = document.getElementById('summary');
+                    summaryEl?.insertAdjacentHTML('beforeend', '<div id="batchStatus">Starting batch merge...</div>');
+
+                    while (count < batchSize && nextUrl) {
+
+                        if (summaryEl) {
+                            const dots = '...'.repeat(count % 4);
+                            summaryEl.querySelector('#batchStatus').textContent =`Merging pages ${dots}`;
+                        }
+
+                        const nextUrlFull = new URL(nextUrl);
+                        nextUrlFull.searchParams.set('key', apiKey);
+                        nextUrlFull.searchParams.set('comment', 'tornengine');
+
+                        const nextResponse = await fetch(nextUrlFull);
+                        const nextData = await nextResponse.json();
+
+                        if (nextResponse.ok) {
+                            if (nextData.error) {
+                                handleTornApiError(nextData.error);
+                            } else {
+                                mergedData.list.push(...nextData.list);
+                                nextUrl = nextData._metadata.links.next;
+                            }
+                        } else {
+                            printAlert('Error', 'Torn API not available.');
+                            break;
+                        }
+
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        count++;
+                    }
+                    summaryEl?.querySelector('#batchStatus')?.remove();
+                    if (prevBtn) prevBtn.disabled = false;
+                    if (nextBtn) nextBtn.disabled = false;
+                    handleApiURLData(mergedData, shortUrl);
+                } else {
+                    handleApiURLData(data, shortUrl);
+                }
+            }
+        } else {
+            printAlert('Error', 'Torn API not available.');
+        }
+    } catch (error) {
+        console.error('callTornAPI error:', error);
+        printAlert('Error', 'API call failed.');
+    }
+}
 
 /**
  * A function to call the Torn API v2 with specified parameters and handle the response.
@@ -83,11 +165,14 @@ async function callTornAPIv2ByURL({ apiKey, url }) {
  */
 async function callTornAPIv2({ apiKey, part = '', selections = '', from = '', to = '', category = '', filters = '' }) {
     try {
-        let url = `https://api.torn.com/v2/${part}/${selections}?key=${apiKey}&comment=tornengine`;
-        if (category) url += `&cat=${category}`;
-        if (from) url += `&from=${from}`;
-        if (to) url += `&to=${to}`;
-        if (filters) url += `&filters=${filters}`;
+        const url = new URL(`https://api.torn.com/v2/${part}/${selections}`);
+
+        url.searchParams.set('key', apiKey);
+        url.searchParams.set('comment', 'tornengine');
+        if (category) url.searchParams.set('cat', category);
+        if (from) url.searchParams.set('from', from);
+        if (to) url.searchParams.set('to', to);
+        if (filters) url.searchParams.set('filters', filters);
 
         const response = await fetch(url);
         const data = await response.json();
@@ -310,18 +395,18 @@ function handleApiData(data, part, selections, cacheStats = false) {
 }
 
 function handleApiURLData(data, url) {
-  switch (url) {
-    case 'user/list':
-        if (data) {
-            printAlert('Success', 'User Lists API Call successful, find the results below.');
-            parseUserLists(data, 'output');
-        } else {
-            printAlert('Warning', 'User Lists API permissions may be missing.');
-        }
-        break;
-    default:
-        printAlert('Warning', 'Unhandled API URL.');
-  }
+    switch (url) {
+        case 'user/list':
+            if (data) {
+                printAlert('Success', 'User Lists API Call successful, find the results below.');
+                parseUserLists(data, 'output');
+            } else {
+                printAlert('Warning', 'User Lists API permissions may be missing.');
+            }
+            break;
+        default:
+            printAlert('Warning', 'Unhandled API URL.');
+    }
 }
 
 /**
@@ -365,8 +450,12 @@ function userSubmit() {
     // Trigger a key check or data reload if necessary
 }
 
-function submitPagination(paginationButton, url) {
+function submitPagination(url, batchSize = 0) {
     const apiKey = getApiKey();
-    
-    callTornAPIv2ByURL({ apiKey: apiKey, url: url });
+
+    if (batchSize === 0) {
+        callTornAPIv2ByURL({ apiKey: apiKey, url: url });
+    } else {
+        callTornAPIv2InBatch({ apiKey: apiKey, url: url, batchSize: batchSize });
+    }
 }
