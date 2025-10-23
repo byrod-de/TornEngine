@@ -131,7 +131,7 @@ async function callTornAPIv2InBatch({ apiKey, url, batchSize = 5 }) {
                             break;
                         }
 
-                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        await new Promise(resolve => setTimeout(resolve, delayRandomizer())); //delay between calls
                         count++;
                     }
                     summaryEl?.querySelector('#batchStatus')?.remove();

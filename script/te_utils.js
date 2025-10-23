@@ -239,3 +239,9 @@ function setPaginationButtons(metadata, batchSize = 0) {
 
   return buttons.trim();
 }
+
+function delayRandomizer() {
+  // Random delay between 1000ms and 1500ms
+  const delay = Math.floor(Math.random() * 500) + 1000;
+  return delay;
+}
