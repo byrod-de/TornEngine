@@ -188,7 +188,7 @@ function buildHeader(activePage) {
   }
 
   // --- Find the current page title from menuData ---
-  let pageTitle = "A collection of more or less useful things"; // fallback
+  let pageTitle = "A collection of tools for Torn.com"; // fallback
   menuData.forEach(section => {
     section.items.forEach(item => {
       if (item.href === activePage) {
