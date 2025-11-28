@@ -265,8 +265,9 @@ function buildFooter() {
   const kofiImg = document.createElement('img');
   kofiImg.height = 36;
   kofiImg.style.border = '0px';
-  kofiImg.src = 'https://storage.ko-fi.com/cdn/kofi2.png?v=3';
-  kofiImg.alt = 'Buy Me a Coffee at ko-fi.com';
+  kofiImg.src = './images/kofi.png';
+  kofiImg.alt = 'If you like Torn Engine, consider buying me a coffee on Ko-fi!';
+  kofiImg.title = 'If you like Torn Engine, consider buying me a coffee on Ko-fi!';
 
   kofiLink.appendChild(kofiImg);
 
