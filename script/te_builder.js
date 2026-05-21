@@ -335,3 +335,30 @@ function buildMonthDropdown() {
     `<option value="${opt.value}">${opt.label}</option>`
   ).join('');
 }
+
+function buildMigrationModal() {
+  const modalWrapper = document.createElement('div');
+  modalWrapper.innerHTML = `
+    <div class="modal fade" id="migrationModal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">📦 TornEngine has moved!</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            TornEngine has a new home at <a href="https://tornengine.com" target="_blank"><strong>tornengine.com</strong></a>.<br><br>
+            Please update your bookmarks!
+          </div>
+          <div class="modal-footer">
+            <a href="https://tornengine.com" class="btn btn-primary">Take me there</a>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modalWrapper);
+}

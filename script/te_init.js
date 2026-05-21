@@ -29,3 +29,18 @@ function getQueryParam(name) {
   const urlParams = new URLSearchParams(window.location.search);
   return urlParams.get(name);
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+// Migration notice
+buildMigrationModal();
+
+const tryShowMigration = () => {
+  const modal = document.getElementById('migrationModal');
+  if (modal) {
+    $('#migrationModal').modal('show');
+  } else {
+    setTimeout(tryShowMigration, 50);
+  }
+};
+tryShowMigration();
+});
